@@ -123,32 +123,32 @@ Complie/fast:
 	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/build
 .PHONY : Complie/fast
 
-DFA.o: DFA.cpp.o
+PrefixTree.o: PrefixTree.cpp.o
 
-.PHONY : DFA.o
+.PHONY : PrefixTree.o
 
 # target to build an object file
-DFA.cpp.o:
-	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/DFA.cpp.o
-.PHONY : DFA.cpp.o
+PrefixTree.cpp.o:
+	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/PrefixTree.cpp.o
+.PHONY : PrefixTree.cpp.o
 
-DFA.i: DFA.cpp.i
+PrefixTree.i: PrefixTree.cpp.i
 
-.PHONY : DFA.i
+.PHONY : PrefixTree.i
 
 # target to preprocess a source file
-DFA.cpp.i:
-	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/DFA.cpp.i
-.PHONY : DFA.cpp.i
+PrefixTree.cpp.i:
+	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/PrefixTree.cpp.i
+.PHONY : PrefixTree.cpp.i
 
-DFA.s: DFA.cpp.s
+PrefixTree.s: PrefixTree.cpp.s
 
-.PHONY : DFA.s
+.PHONY : PrefixTree.s
 
 # target to generate assembly for a file
-DFA.cpp.s:
-	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/DFA.cpp.s
-.PHONY : DFA.cpp.s
+PrefixTree.cpp.s:
+	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/PrefixTree.cpp.s
+.PHONY : PrefixTree.cpp.s
 
 WordAnalysis.o: WordAnalysis.cpp.o
 
@@ -213,9 +213,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... Complie"
-	@echo "... DFA.o"
-	@echo "... DFA.i"
-	@echo "... DFA.s"
+	@echo "... PrefixTree.o"
+	@echo "... PrefixTree.i"
+	@echo "... PrefixTree.s"
 	@echo "... WordAnalysis.o"
 	@echo "... WordAnalysis.i"
 	@echo "... WordAnalysis.s"

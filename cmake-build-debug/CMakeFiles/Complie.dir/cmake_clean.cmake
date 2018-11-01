@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/Complie.dir/main.cpp.o"
   "CMakeFiles/Complie.dir/WordAnalysis.cpp.o"
-  "CMakeFiles/Complie.dir/DFA.cpp.o"
+  "CMakeFiles/Complie.dir/PrefixTree.cpp.o"
   "Complie.pdb"
   "Complie"
 )

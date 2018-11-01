@@ -105,42 +105,42 @@ CMakeFiles/Complie.dir/WordAnalysis.cpp.o.provides: CMakeFiles/Complie.dir/WordA
 CMakeFiles/Complie.dir/WordAnalysis.cpp.o.provides.build: CMakeFiles/Complie.dir/WordAnalysis.cpp.o
 
 
-CMakeFiles/Complie.dir/DFA.cpp.o: CMakeFiles/Complie.dir/flags.make
-CMakeFiles/Complie.dir/DFA.cpp.o: ../DFA.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/wmj/Projects/Complie/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Complie.dir/DFA.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Complie.dir/DFA.cpp.o -c /home/wmj/Projects/Complie/DFA.cpp
+CMakeFiles/Complie.dir/PrefixTree.cpp.o: CMakeFiles/Complie.dir/flags.make
+CMakeFiles/Complie.dir/PrefixTree.cpp.o: ../PrefixTree.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/wmj/Projects/Complie/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Complie.dir/PrefixTree.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Complie.dir/PrefixTree.cpp.o -c /home/wmj/Projects/Complie/PrefixTree.cpp
 
-CMakeFiles/Complie.dir/DFA.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Complie.dir/DFA.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/wmj/Projects/Complie/DFA.cpp > CMakeFiles/Complie.dir/DFA.cpp.i
+CMakeFiles/Complie.dir/PrefixTree.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Complie.dir/PrefixTree.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/wmj/Projects/Complie/PrefixTree.cpp > CMakeFiles/Complie.dir/PrefixTree.cpp.i
 
-CMakeFiles/Complie.dir/DFA.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Complie.dir/DFA.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/wmj/Projects/Complie/DFA.cpp -o CMakeFiles/Complie.dir/DFA.cpp.s
+CMakeFiles/Complie.dir/PrefixTree.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Complie.dir/PrefixTree.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/wmj/Projects/Complie/PrefixTree.cpp -o CMakeFiles/Complie.dir/PrefixTree.cpp.s
 
-CMakeFiles/Complie.dir/DFA.cpp.o.requires:
+CMakeFiles/Complie.dir/PrefixTree.cpp.o.requires:
 
-.PHONY : CMakeFiles/Complie.dir/DFA.cpp.o.requires
+.PHONY : CMakeFiles/Complie.dir/PrefixTree.cpp.o.requires
 
-CMakeFiles/Complie.dir/DFA.cpp.o.provides: CMakeFiles/Complie.dir/DFA.cpp.o.requires
-	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/DFA.cpp.o.provides.build
-.PHONY : CMakeFiles/Complie.dir/DFA.cpp.o.provides
+CMakeFiles/Complie.dir/PrefixTree.cpp.o.provides: CMakeFiles/Complie.dir/PrefixTree.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Complie.dir/build.make CMakeFiles/Complie.dir/PrefixTree.cpp.o.provides.build
+.PHONY : CMakeFiles/Complie.dir/PrefixTree.cpp.o.provides
 
-CMakeFiles/Complie.dir/DFA.cpp.o.provides.build: CMakeFiles/Complie.dir/DFA.cpp.o
+CMakeFiles/Complie.dir/PrefixTree.cpp.o.provides.build: CMakeFiles/Complie.dir/PrefixTree.cpp.o
 
 
 # Object files for target Complie
 Complie_OBJECTS = \
 "CMakeFiles/Complie.dir/main.cpp.o" \
 "CMakeFiles/Complie.dir/WordAnalysis.cpp.o" \
-"CMakeFiles/Complie.dir/DFA.cpp.o"
+"CMakeFiles/Complie.dir/PrefixTree.cpp.o"
 
 # External object files for target Complie
 Complie_EXTERNAL_OBJECTS =
 
 Complie: CMakeFiles/Complie.dir/main.cpp.o
 Complie: CMakeFiles/Complie.dir/WordAnalysis.cpp.o
-Complie: CMakeFiles/Complie.dir/DFA.cpp.o
+Complie: CMakeFiles/Complie.dir/PrefixTree.cpp.o
 Complie: CMakeFiles/Complie.dir/build.make
 Complie: CMakeFiles/Complie.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/wmj/Projects/Complie/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable Complie"
@@ -153,7 +153,7 @@ CMakeFiles/Complie.dir/build: Complie
 
 CMakeFiles/Complie.dir/requires: CMakeFiles/Complie.dir/main.cpp.o.requires
 CMakeFiles/Complie.dir/requires: CMakeFiles/Complie.dir/WordAnalysis.cpp.o.requires
-CMakeFiles/Complie.dir/requires: CMakeFiles/Complie.dir/DFA.cpp.o.requires
+CMakeFiles/Complie.dir/requires: CMakeFiles/Complie.dir/PrefixTree.cpp.o.requires
 
 .PHONY : CMakeFiles/Complie.dir/requires
 

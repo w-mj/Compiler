@@ -63,7 +63,7 @@ std::string WordAnalysis::token2str(long i) {
 
 bool WordAnalysis::process_key(std::string::iterator &iter, const std::string::iterator& end) {
     string::iterator start = iter;
-    bool m = key_tree.match(iter, end);
+    bool m = key_tree.match(iter, end, isalnumunder);
     if (m) {
         token.emplace_back('k', find(key.begin(), key.end(), string(start, iter)) - key.begin());
     }

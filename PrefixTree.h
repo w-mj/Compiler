@@ -2,14 +2,14 @@
 // Created by wmj on 18-11-1.
 //
 
-#ifndef COMPLIE_DFA_H
-#define COMPLIE_DFA_H
+#ifndef COMPLIE_PrefixTree_H
+#define COMPLIE_PrefixTree_H
 
 #include <map>
 #include <string>
 #include <vector>
 
-class DFA {
+class PrefixTree {
 private:
     struct Node {
         bool final = false;
@@ -18,15 +18,15 @@ private:
     Node* root;
     std::vector<Node*> node_list;
 public:
-    DFA();
-    DFA(std::vector<std::string> init_list);
-    // insert a path into DFA, return false for the path is already exists.
+    PrefixTree();
+    PrefixTree(std::vector<std::string> init_list);
+    // insert a path into PrefixTree, return false for the path is already exists.
     bool insert(const std::string& s);
     bool insert(std::string::iterator& iter, const std::string::iterator& end, bool (*func)(int) = nullptr);
     bool match(const std::string& s);
     bool match(std::string::iterator& iter, const std::string::iterator& end, bool (*func)(int) = nullptr);
-    ~DFA();
+    ~PrefixTree();
 };
 
 
-#endif //COMPLIE_DFA_H
+#endif //COMPLIE_PrefixTree_H

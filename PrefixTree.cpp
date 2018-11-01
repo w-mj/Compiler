@@ -2,9 +2,9 @@
 // Created by wmj on 18-11-1.
 //
 
-#include "DFA.h"
+#include "PrefixTree.h"
 using namespace std;
-bool DFA::insert(const std::string& s) {
+bool PrefixTree::insert(const std::string& s) {
     Node* cursor = root;
     bool inserted = false;
     for (char c: s) {
@@ -20,7 +20,7 @@ bool DFA::insert(const std::string& s) {
     return inserted;
 }
 
-bool DFA::match(const std::string& s) {
+bool PrefixTree::match(const std::string& s) {
     Node* cursor = root;
     for (char c: s) {
         if (cursor->trans.find(c) == cursor->trans.end())
@@ -30,24 +30,24 @@ bool DFA::match(const std::string& s) {
     return cursor->final;
 }
 
-DFA::DFA(std::vector<string> init_list) {
+PrefixTree::PrefixTree(std::vector<string> init_list) {
     root = new Node();
     node_list.push_back(root);
     for (const string& s: init_list)
         insert(s);
 }
 
-DFA::DFA() {
+PrefixTree::PrefixTree() {
     root = new Node();
     node_list.push_back(root);
 }
 
-DFA::~DFA() {
+PrefixTree::~PrefixTree() {
     for (Node* n: node_list)
         delete n;
 }
 
-bool DFA::match(std::string::iterator &iter, const std::string::iterator &end, bool (*func)(int)) {
+bool PrefixTree::match(std::string::iterator &iter, const std::string::iterator &end, bool (*func)(int)) {
     string::iterator start = iter;
     Node* cursor = root;
     while (iter != end && (!func || func(*iter))) {
@@ -56,13 +56,13 @@ bool DFA::match(std::string::iterator &iter, const std::string::iterator &end, b
         cursor = cursor->trans[*iter];
         iter++;
     }
-    if (cursor->final)
+    if ((!func || !func(*iter)) && cursor->final)
         return true;
     iter = start;
     return false;
 }
 
-bool DFA::insert(std::string::iterator &iter, const std::string::iterator &end, bool (*func)(int)) {
+bool PrefixTree::insert(std::string::iterator &iter, const std::string::iterator &end, bool (*func)(int)) {
     Node* cursor = root;
     bool inserted = false;
     while (iter != end && (!func || func(*iter))) {

@@ -1,3 +1,5 @@
+int international;
+
 int main ( void ) {
     freopen("in.cpp","r",stdin);
     int a = 1 , d = 2 ;

@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "DFA.h"
+#include "PrefixTree.h"
 
 class WordAnalysis {
 private:
@@ -19,9 +19,9 @@ private:
     std::vector<std::string> key;
     std::vector<std::string> bound;
 
-    DFA key_tree;
-    DFA id_tree;
-    DFA bound_tree;
+    PrefixTree key_tree;
+    PrefixTree id_tree;
+    PrefixTree bound_tree;
 
     std::vector<std::pair<char, int>> token;
 public:
