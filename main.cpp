@@ -29,28 +29,40 @@ int main() {
                 }
                 continue;
             }
-
-            if (isalpha(*iter)) {
-                if (analyzer.process_key(iter, line.end())) {
-                    cout << "  " << analyzer.token2str(-1) << endl;
-                } else if (analyzer.process_id(iter, line.end())) {
-                    cout << "  " << analyzer.token2str(-1) << endl;
-                } else
+            try {
+                if (isspace(*iter)) {
                     iter++;
-            } else if (isdigit(*iter) || *iter == '.') {
-                analyzer.process_constant(iter, line.end());
-                cout << "  " << analyzer.token2str(-1) << endl;
-            } else if (*iter == '"') {
-                analyzer.process_str(iter, line.end());
-                cout << "  " << analyzer.token2str(-1) << endl;
-            } else if (*iter == '\'') {
-                analyzer.process_char(iter, line.end());
-                cout << "  " << analyzer.token2str(-1) << endl;
-            } else {
-                if(analyzer.process_bound(iter, line.end()))
+                    continue;  // skip space characters
+                }
+                if (isalpha(*iter)) {
+                    if (analyzer.process_key(iter, line.end())) {
+                        cout << "  " << analyzer.token2str(-1) << endl;
+                    } else if (analyzer.process_id(iter, line.end())) {
+                        cout << "  " << analyzer.token2str(-1) << endl;
+                    } else
+                        iter++;
+                } else if (isdigit(*iter) || *iter == '.') {
+                    analyzer.process_constant(iter, line.end());
                     cout << "  " << analyzer.token2str(-1) << endl;
-                else
-                    iter++;
+                } else if (*iter == '"') {
+                    analyzer.process_str(iter, line.end());
+                    cout << "  " << analyzer.token2str(-1) << endl;
+                } else if (*iter == '\'') {
+                    analyzer.process_char(iter, line.end());
+                    cout << "  " << analyzer.token2str(-1) << endl;
+                } else {
+                    if (analyzer.process_bound(iter, line.end()))
+                        cout << "  " << analyzer.token2str(-1) << endl;
+                    else
+                        iter++;
+                }
+            } catch (runtime_error &e) {
+                cout << line << endl;
+                for (int i = 0; i < iter - line.begin(); i++)
+                    cout << "~";
+                cout << "^" << endl;
+                cout << e.what() << endl;
+                exit(100);
             }
         }
     }

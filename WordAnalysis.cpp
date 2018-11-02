@@ -66,7 +66,7 @@ bool WordAnalysis::process_key(std::string::iterator &iter, const std::string::i
     bool m = key_tree.match(iter, end, isalnumunder);
     if (m) {
         token.emplace_back('k', find(key.begin(), key.end(), string(start, iter)) - key.begin());
-    }
+    } else iter = start;
     return m;
 }
 
@@ -123,5 +123,7 @@ bool WordAnalysis::process_bound(std::string::iterator &iter, const std::string:
     bool m = bound_tree.match(iter, end);
     if (m)
         token.emplace_back(make_pair('p', find(bound.begin(), bound.end(), string(start, iter)) - bound.begin()));
+    else
+        throw runtime_error("Unresolvable character " + string(start, iter));
     return m;
 }

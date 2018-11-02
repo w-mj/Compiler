@@ -48,7 +48,6 @@ PrefixTree::~PrefixTree() {
 }
 
 bool PrefixTree::match(std::string::iterator &iter, const std::string::iterator &end, bool (*func)(int)) {
-    string::iterator start = iter;
     Node* cursor = root;
     while (iter != end && (!func || func(*iter))) {
         if (cursor->trans.find(*iter) == cursor->trans.end())
@@ -56,10 +55,8 @@ bool PrefixTree::match(std::string::iterator &iter, const std::string::iterator 
         cursor = cursor->trans[*iter];
         iter++;
     }
-    if ((!func || !func(*iter)) && cursor->final)
-        return true;
-    iter = start;
-    return false;
+    return ((!func || !func(*iter)) && cursor->final);
+
 }
 
 bool PrefixTree::insert(std::string::iterator &iter, const std::string::iterator &end, bool (*func)(int)) {
