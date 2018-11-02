@@ -1,4 +1,5 @@
 int main(void) {
+    b = "abc\naa\051"
     int a = '\x41';
     1e10
     5e-9
@@ -12,5 +13,5 @@ int main(void) {
     -100
     0x13ABC
     077
-}@
+}
 

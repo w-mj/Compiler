@@ -81,16 +81,31 @@ const std::vector<std::pair<char, int>> &WordAnalysis::getToken() {
 }
 
 bool WordAnalysis::process_str(std::string::iterator &iter, const std::string::iterator &end) {
-    // TODO: escape character
     iter += 1; // skip first ""
     string::iterator start = iter;
+    string result;
 
-    while (*iter != '"')  // *end = '\0', so it is no use to check if iter == end
-        iter++;
+    while (*iter != '"' || *(iter - 1) == '\\') {
+        // *end = '\0', so it is no use to check if iter == end
+        if (*iter != '\\') {
+            result.push_back(*iter);
+            iter += 1;
+        } else {
+            iter += 1; // skip /
+            if (*iter == 'x' || *iter == 'X' || (*iter >= 1 && *iter <= 7) ||
+                (*iter == '0' && isoct(*iter + 1) && isoct(*iter + 2))) {
+                result.push_back(static_cast<char>(getEscape(iter, iter + 3)));
+                iter = iter + 3;
+            } else {
+                result.push_back(static_cast<char>(getEscape(iter, iter + 1)));
+                iter = iter + 1;
+            }
+        }
+    }
 
-    if (iter == end || *iter != '"')
-        return false;
-    str.emplace_back(start, iter);
+    if (iter == end)
+        throw runtime_error("missing terminating \" character");
+    str.push_back(result);
     token.emplace_back('s', str.size() - 1);
     iter ++; // skip the last "
     return true;
