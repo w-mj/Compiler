@@ -6,13 +6,9 @@
 #include <algorithm>
 #include <string>
 #include <cmath>
+#include "Utility.h"
 
 using namespace std;
-
-
-bool isalnumunder(int c) {
-    return isalnum((c)) || (c) == '_';
-}
 
 WordAnalysis::WordAnalysis():
     key{"char", "double", "enum", "float", "int", "long", "short", "signed", "struct",
@@ -101,13 +97,25 @@ bool WordAnalysis::process_str(std::string::iterator &iter, const std::string::i
 }
 
 bool WordAnalysis::process_char(std::string::iterator &iter, const std::string::iterator &end) {
-    // TODO: escape character
+    int c = 0;
     iter += 1; // skip '
-    if (iter == end || *(iter + 1) != '\'')
-        return false;
-    character.push_back(*iter);
+    string::iterator f = iter;
+    while (f != end && (*f != '\'' || *(f-1) == '\\')) f++;
+    if (f == end)
+        throw runtime_error("missing terminating ' character");
+    if (f - iter == 0)
+        throw runtime_error("empty character constant");
+    if (*iter == '\\')
+        c = getEscape(iter + 1, f);
+    else if (f - iter == 1)
+        c = *iter;
+    else
+        throw runtime_error("multi-character character constant");
+
+
+    character.push_back(c);
     token.emplace_back('h', character.size() - 1);
-    iter += 2; // skip the char and the last quotes
+    iter = f + 1;  // skip the char and the last quotes
     return true;
 }
 
@@ -124,6 +132,39 @@ bool WordAnalysis::process_bound(std::string::iterator &iter, const std::string:
     if (m)
         token.emplace_back(make_pair('p', find(bound.begin(), bound.end(), string(start, iter)) - bound.begin()));
     else
-        throw runtime_error("Unresolvable character " + string(start, iter));
+        throw runtime_error("Unresolvable character " + string(start, iter + 1));
     return m;
+}
+
+int WordAnalysis::getEscape(string::iterator s, string::iterator e) {
+    if (e - s == 1)
+        switch (*s) {
+            case 'a': return 7;
+            case 'b': return 8;
+            case 'f': return 12;
+            case 'n': return 10;
+            case 'r': return 13;
+            case 't': return 9;
+            case 'v': return 11;
+            case '\\': return 92;
+            case '\'': return 39;
+            case '"': return 34;
+            case '0': return 0;
+            default: break;
+        }
+    if (e - s == 3) {
+        if (isoct(*s) && isoct(*(s + 1)) && isoct(*(s + 2))) {
+            int a = *s - '0';
+            int b = *(s + 1) - '0';
+            int c = *(s + 2) - '0';
+            return (a << 6) + (b << 3) + c;
+        }
+        if ((*s == 'x' || *s == 'X') && ishex(*(s + 1)) && ishex(*(s + 2))) {
+            int a = hex2dec(*(s + 1));
+            int b = hex2dec(*(s + 2));
+            return (a << 4) + b;
+        }
+
+    }
+    throw runtime_error("unknown escape sequence: \\" + string(s, e));
 }

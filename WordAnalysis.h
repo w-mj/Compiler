@@ -25,6 +25,8 @@ private:
     PrefixTree bound_tree;
 
     std::vector<std::pair<char, int>> token;
+
+    int getEscape(std::string::iterator s, std::string::iterator e);
 public:
     WordAnalysis();
     bool process_key(std::string::iterator& iter, const std::string::iterator& end);

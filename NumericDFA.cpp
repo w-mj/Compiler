@@ -7,17 +7,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cmath>
-
-#define ishex(c) (((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
-#define isoct(c) ((c) >= '0' && (c) <= '7')
-#define isdec(c) ((c) >= '0' && (c) <= '9')
-
-int hex2dec(char c) {
-    if (isdigit(c)) return c - '0';
-    if ('a' <= c && c <= 'f') return 10 + c - 'a';
-    if ('A' <= c && c <= 'F') return 10 + c - 'A';
-    throw "not a hexadecimal character.";
-}
+#include "Utility.h"
 
 using namespace std;
 
@@ -182,6 +172,7 @@ bool NumericDFA::available(char c) {
     return isdigit(c) || (c >= 'a' && c <= 'e') || (c >= 'A' && c <= 'E') || c == '.' ||
            c == 'x' || c == 'X' || c == 'l' || c == 'L' || c == 'f' || c == 'F' || c == 'u' || c == 'U';
 }
+
 
 std::string Number::str() {
     switch (type) {
