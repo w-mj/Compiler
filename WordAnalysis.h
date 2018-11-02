@@ -9,13 +9,14 @@
 #include <string>
 #include <map>
 #include "PrefixTree.h"
+#include "NumericDFA.h"
 
 class WordAnalysis {
 private:
     std::vector<std::string> id;
     std::vector<char> character;
     std::vector<std::string> str;
-    std::vector<double> constants;
+    std::vector<Number> constants;
     std::vector<std::string> key;
     std::vector<std::string> bound;
 

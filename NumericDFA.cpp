@@ -3,3 +3,195 @@
 //
 
 #include "NumericDFA.h"
+#include <vector>
+#include <stdexcept>
+#include <algorithm>
+#include <cmath>
+
+#define ishex(c) (((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
+#define isoct(c) ((c) >= '0' && (c) <= '7')
+#define isdec(c) ((c) >= '0' && (c) <= '9')
+
+int hex2dec(char c) {
+    if (isdigit(c)) return c - '0';
+    if ('a' <= c && c <= 'f') return 10 + c - 'a';
+    if ('A' <= c && c <= 'F') return 10 + c - 'A';
+    throw "not a hexadecimal character.";
+}
+
+using namespace std;
+
+string c2s(char c) {
+    return string(1, c);
+}
+
+Number NumericDFA::match(std::string::iterator &iter, const std::string::iterator &end) {
+    long integer = 0, fraction = 0, cnt_fraction = 0, e_pow = 0;
+    int state = 0;
+    bool u = false, f = false, l = false, neg_pow = false, d = false;
+    vector<int> finals = {1, 2, 3, 4, 6, 9, 10, 11, 12};
+    Number result{};
+    char pre = *iter;
+    bool quit = false;
+    while (!quit) {
+        char c = *iter;
+        switch (state) {
+            case 0:
+                if (c == '0') state = 1;
+                else if (c >= '1' && c <= '9') state = 4;
+                else if (c == '.') state = 5;
+                else throw runtime_error("expect a digit but given " + c2s(c));
+                break;
+            case 1:
+                if (!available(c)) quit = true;
+                else if (c == 'X' || c == 'x') state = 13;
+                else if (isoct(c)) state = 3;
+                else if (c == '.') state = 5;
+                else throw runtime_error("expect 0 1 2 3 4 5 6 7 x X but given " + c2s(c));
+                break;
+            case 2:
+                integer = integer * 16 + hex2dec(pre);
+                if (!available(c)) quit = true;
+                else if (ishex(c)) state = 2;
+                else if (c == 'u' || c == 'U') state = 11;
+                else if (c == 'l' || c == 'L') state = 10;
+                else throw runtime_error("Unexpected " + c2s(c) + " in hexadecimal");
+                break;
+            case 3:
+                integer = integer * 8 + (pre - '0');
+                if (!available(c)) quit = true;
+                else if (isoct(c)) state = 3;
+                else if (c == 'u' || c == 'U') state = 11;
+                else if (c == 'l' || c == 'L') state = 10;
+                else throw runtime_error("Unexpected " + c2s(c) + " in octal");
+                break;
+            case 4:
+                integer = integer * 10 + (pre - '0');
+                if (!available(c)) quit = true;
+                else if (isdec(c)) state = 4;
+                else if (c == '.') state = 5;
+                else if (c == 'e' || c == 'E') state = 7;
+                else if (c == 'u' || c == 'U') state = 11;
+                else if (c == 'l' || c == 'L') state = 10;
+                else throw runtime_error("Unexpected " + c2s(c) + " in decimal number");
+                break;
+            case 5:
+                d = true;
+                if (isdec(c)) state = 6;
+                else throw runtime_error("Unexpected " + c2s(c) + " in fraction part");
+                break;
+            case 6:
+                fraction = fraction * 10 + pre - '0';
+                cnt_fraction += 1;
+                if (!available(c)) quit = true;
+                else if (isdec(c)) state = 6;
+                else if (c == 'f' || c == 'F') state = 12;
+                else if (c == 'e' || c == 'E') state = 7;
+                else throw runtime_error("Unexpected " + c2s(c) + " in fraction part");
+                break;
+            case 7:
+                d = true;
+                if (c == '-') state = 8;
+                else if (isdec(c)) state = 9;
+                else throw runtime_error("Unexpected " + c2s(c) + " in e-power part");
+                break;
+            case 8:
+                neg_pow = true;
+                if (isdec(c)) state = 9;
+                else throw runtime_error("Unexpected " + c2s(c) + " in e-power part");
+                break;
+            case 9:
+                e_pow = e_pow * 10 + pre - '0';
+                if (!available(c)) quit = true;
+                else if (isdec(c)) state = 9;
+                else if (c == 'f' || c == 'F') state = 12;
+                else if (c == 'l' || c == 'L') state = 14;
+                else throw runtime_error("Unexpected " + c2s(c) + " in e-power part");
+                break;
+            case 10:
+                if (!l) l = true;
+                else throw runtime_error("duplicate suffix l");
+                if (!available(c)) quit = true;
+                else if (c == 'u' || c == 'U') state = 11;
+                else throw runtime_error("Unexpected " + c2s(c) + " in suffix.");
+                break;
+            case 11:
+                if (!u) u = true;
+                else throw runtime_error("duplicate suffix u");
+                if (!available(c)) quit = true;
+                else if (c == 'l' || c == 'L') state = 12;
+                else throw runtime_error("Unexpected " + c2s(c) + " in suffix.");
+                if (!available(c)) quit = true;
+                break;
+            case 12:
+                if (!f) f = true;
+                else throw runtime_error("duplicate suffix f");
+                if (!available(c)) quit = true;
+                break;
+            case 13:
+                if (ishex(c)) state = 2;
+                else throw runtime_error("expect h H but given " + c2s(c));
+                break;
+            case 14:
+                if (!l) l = true;
+                else throw runtime_error("duplicate suffix l");
+                if (!available(c)) quit = true;
+                break;
+            default:
+                throw runtime_error("Inner Error in Numeric DFA");
+        }
+        pre = c;
+        if (!quit) iter++;
+    }
+    double value = (integer + fraction * pow(10, -cnt_fraction)) * pow(10, neg_pow? -e_pow: e_pow);
+    if (l && f) throw runtime_error("conflict suffix l and f");
+    if (l || f) {
+        if (f)
+            result.type = Number::NumberType::Float;
+        else if (u)
+            result.type = Number::NumberType::ULong;
+        else
+            result.type = Number::NumberType::Long;
+    } else if (d)
+        result.type = Number::NumberType::Double;
+    else {
+        if (!u) {
+            if (value > INT32_MAX || value < INT32_MIN) result.type = Number::NumberType::Long;
+            else if (value > INT16_MAX || value < INT16_MIN) result.type = Number::NumberType::Int;
+            else result.type = Number::NumberType::Short;
+        } else {
+            if (value > UINT32_MAX) result.type = Number::NumberType::ULong;
+            else if (value > UINT16_MAX) result.type = Number::NumberType::UInt;
+            else result.type = Number::NumberType::UShort;
+        }
+    }
+    switch (result.type) {
+        case Number::NumberType::UShort: result.value.us = static_cast<unsigned short>(value); break;
+        case Number::NumberType::Short: result.value.ss = static_cast<short>(value); break;
+        case Number::NumberType::UInt: result.value.ui = static_cast<unsigned int>(value); break;
+        case Number::NumberType::Int: result.value.si = static_cast<int>(value); break;
+        case Number::NumberType::ULong: result.value.ul = static_cast<unsigned long>(value); break;
+        case Number::NumberType::Long: result.value.sl = static_cast<long>(value); break;
+        case Number::NumberType::Float: result.value.ft = static_cast<float>(value); break;
+        case Number::NumberType::Double: result.value.db = static_cast<double>(value); break;
+    }
+    return result;
+}
+
+bool NumericDFA::available(char c) {
+    return isdigit(c) || (c >= 'a' && c <= 'e') || (c >= 'A' && c <= 'E') || c == '.' ||
+           c == 'x' || c == 'X' || c == 'l' || c == 'L' || c == 'f' || c == 'F' || c == 'u' || c == 'U';
+}
+
+std::string Number::str() {
+    switch (type) {
+        case Number::NumberType::UShort: return to_string(value.us) + " unsigned short";
+        case Number::NumberType::Short: return to_string(value.ss) + " short";
+        case Number::NumberType::UInt: return to_string(value.ui) + " unsigned int";
+        case Number::NumberType::Int: return to_string(value.si) + " int";
+        case Number::NumberType::ULong: return to_string(value.ul) + " unsigned long";
+        case Number::NumberType::Long: return to_string(value.sl) + " long";
+        case Number::NumberType::Float: return to_string(value.ft) + " float";
+        case Number::NumberType::Double: return to_string(value.db) + " double";
+    }
+}

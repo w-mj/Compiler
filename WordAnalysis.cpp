@@ -46,7 +46,7 @@ std::string WordAnalysis::token2str(long i) {
             break;
         case 'c':
             result.append("constant: ");
-            result.append(to_string(constants[t.second]));
+            result.append(constants[t.second].str());
             break;
         case 'k':
             result.append("keyword: ");
@@ -112,39 +112,8 @@ bool WordAnalysis::process_char(std::string::iterator &iter, const std::string::
 }
 
 bool WordAnalysis::process_constant(std::string::iterator &iter, const std::string::iterator &end) {
-    long integer = 0, fraction = 0, cnt_fraction = 0, e_pow = 0;
-    int base = 10;
-    if (*iter == '0') {
-        iter++;
-        if (*iter == 'x') {
-            base = 16;  // hexadecimal
-            iter++;
-        }
-        else if (isdigit(*iter)) base = 8;  // octal
-    }
-    while (iter != end && isdigit(*iter)) {
-        integer = integer * base + (*iter - '0');
-        iter++;
-    }
-    if (base == 10 && *iter == '.') {
-        iter++;
-        while (iter != end && isdigit(*iter)) {
-            fraction = fraction * 10 + (*iter - '0');
-            cnt_fraction += 1;
-            iter++;
-        }
-        // TODO: check cnt_fraction != 0
-    }
-    if (base == 10 && (*iter == 'e' or *iter == 'E')) {
-        iter++;
-        while (iter != end && isdigit(*iter)) {
-            e_pow = e_pow * 10 + (*iter - '0');
-            iter++;
-        }
-    }
-    double result = integer + static_cast<double>(fraction) / pow(10, cnt_fraction);
-    result = result * pow(10, e_pow);
-    constants.push_back(result);
+    static NumericDFA dfa;
+    constants.push_back(dfa.match(iter, end));
     token.emplace_back('c', constants.size() - 1);
     return true;
 }

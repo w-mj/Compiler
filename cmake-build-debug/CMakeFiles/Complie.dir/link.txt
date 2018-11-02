@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/Complie.dir/main.cpp.o CMakeFiles/Complie.dir/WordAnalysis.cpp.o CMakeFiles/Complie.dir/PrefixTree.cpp.o  -o Complie 

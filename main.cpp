@@ -37,7 +37,7 @@ int main() {
                     cout << "  " << analyzer.token2str(-1) << endl;
                 } else
                     iter++;
-            } else if (isdigit(*iter)) {
+            } else if (isdigit(*iter) || *iter == '.') {
                 analyzer.process_constant(iter, line.end());
                 cout << "  " << analyzer.token2str(-1) << endl;
             } else if (*iter == '"') {

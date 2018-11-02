@@ -1,4 +1,0 @@
-/home/wmj/ProgramFiles/clion-2018.1.2/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/wmj/Projects/Complie
--- Configuring done
--- Generating done
--- Build files have been written to: /home/wmj/Projects/Complie/cmake-build-debug
