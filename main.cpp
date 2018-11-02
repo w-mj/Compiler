@@ -10,6 +10,7 @@ int main() {
     file.open(fname);
     string line;
     WordAnalysis analyzer;
+    string::iterator start;
     bool in_commit = false;
     while(getline(file, line)) {
         cout << "in line: " << line << endl;
@@ -34,6 +35,7 @@ int main() {
                     iter++;
                     continue;  // skip space characters
                 }
+                start = iter;
                 if (isalpha(*iter)) {
                     if (analyzer.process_key(iter, line.end())) {
                         cout << "  " << analyzer.token2str(-1) << endl;
@@ -57,9 +59,11 @@ int main() {
                         iter++;
                 }
             } catch (runtime_error &e) {
-                cout << line << endl;
-                for (int i = 0; i < iter - line.begin(); i++)
-                    cout << "~";
+                cout << endl << "ERROR:" << endl << line << endl;
+                for (int i = 0; i < start - line.begin(); i++)
+                    cout << ' ';
+                for (int i = 0; i < iter - start; i++)
+                    cout << '~';
                 cout << "^" << endl;
                 cout << e.what() << endl;
                 exit(100);

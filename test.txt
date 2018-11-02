@@ -1,6 +1,10 @@
 int main(void) {
-    b = "abc\naa\051"
+    b = "abc\naa\051"; // \051是括号
     int a = '\x41';
+    float c = a + b;
+    /* in block commit
+    hahhaha~~
+    */ exit(-1);
     1e10
     5e-9
     4e5L
@@ -13,5 +17,6 @@ int main(void) {
     -100
     0x13ABC
     077
+    int c=1; printf("aaa", "bbb", "ccc"); int d = 0x1233P;
 }
 

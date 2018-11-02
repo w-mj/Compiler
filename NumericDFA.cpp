@@ -30,14 +30,14 @@ Number NumericDFA::match(std::string::iterator &iter, const std::string::iterato
                 if (c == '0') state = 1;
                 else if (c >= '1' && c <= '9') state = 4;
                 else if (c == '.') state = 5;
-                else throw runtime_error("expect a digit but given " + c2s(c));
+                else throw runtime_error("expect a digit but given '" + c2s(c) + "'");
                 break;
             case 1:
                 if (!available(c)) quit = true;
                 else if (c == 'X' || c == 'x') state = 13;
                 else if (isoct(c)) state = 3;
                 else if (c == '.') state = 5;
-                else throw runtime_error("expect 0 1 2 3 4 5 6 7 x X but given " + c2s(c));
+                else throw runtime_error("expect 0 1 2 3 4 5 6 7 x X but given '" + c2s(c) + "'");
                 break;
             case 2:
                 integer = integer * 16 + hex2dec(pre);
@@ -45,7 +45,7 @@ Number NumericDFA::match(std::string::iterator &iter, const std::string::iterato
                 else if (ishex(c)) state = 2;
                 else if (c == 'u' || c == 'U') state = 11;
                 else if (c == 'l' || c == 'L') state = 10;
-                else throw runtime_error("Unexpected " + c2s(c) + " in hexadecimal");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in hexadecimal");
                 break;
             case 3:
                 integer = integer * 8 + (pre - '0');
@@ -53,7 +53,7 @@ Number NumericDFA::match(std::string::iterator &iter, const std::string::iterato
                 else if (isoct(c)) state = 3;
                 else if (c == 'u' || c == 'U') state = 11;
                 else if (c == 'l' || c == 'L') state = 10;
-                else throw runtime_error("Unexpected " + c2s(c) + " in octal");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in octal");
                 break;
             case 4:
                 integer = integer * 10 + (pre - '0');
@@ -63,12 +63,12 @@ Number NumericDFA::match(std::string::iterator &iter, const std::string::iterato
                 else if (c == 'e' || c == 'E') state = 7;
                 else if (c == 'u' || c == 'U') state = 11;
                 else if (c == 'l' || c == 'L') state = 10;
-                else throw runtime_error("Unexpected " + c2s(c) + " in decimal number");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in decimal number");
                 break;
             case 5:
                 d = true;
                 if (isdec(c)) state = 6;
-                else throw runtime_error("Unexpected " + c2s(c) + " in fraction part");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in fraction part");
                 break;
             case 6:
                 fraction = fraction * 10 + pre - '0';
@@ -77,18 +77,18 @@ Number NumericDFA::match(std::string::iterator &iter, const std::string::iterato
                 else if (isdec(c)) state = 6;
                 else if (c == 'f' || c == 'F') state = 12;
                 else if (c == 'e' || c == 'E') state = 7;
-                else throw runtime_error("Unexpected " + c2s(c) + " in fraction part");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in fraction part");
                 break;
             case 7:
                 d = true;
                 if (c == '-') state = 8;
                 else if (isdec(c)) state = 9;
-                else throw runtime_error("Unexpected " + c2s(c) + " in e-power part");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in e-power part");
                 break;
             case 8:
                 neg_pow = true;
                 if (isdec(c)) state = 9;
-                else throw runtime_error("Unexpected " + c2s(c) + " in e-power part");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in e-power part");
                 break;
             case 9:
                 e_pow = e_pow * 10 + pre - '0';
@@ -96,21 +96,21 @@ Number NumericDFA::match(std::string::iterator &iter, const std::string::iterato
                 else if (isdec(c)) state = 9;
                 else if (c == 'f' || c == 'F') state = 12;
                 else if (c == 'l' || c == 'L') state = 14;
-                else throw runtime_error("Unexpected " + c2s(c) + " in e-power part");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in e-power part");
                 break;
             case 10:
                 if (!l) l = true;
                 else throw runtime_error("duplicate suffix l");
                 if (!available(c)) quit = true;
                 else if (c == 'u' || c == 'U') state = 11;
-                else throw runtime_error("Unexpected " + c2s(c) + " in suffix.");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in suffix.");
                 break;
             case 11:
                 if (!u) u = true;
                 else throw runtime_error("duplicate suffix u");
                 if (!available(c)) quit = true;
                 else if (c == 'l' || c == 'L') state = 12;
-                else throw runtime_error("Unexpected " + c2s(c) + " in suffix.");
+                else throw runtime_error("Unexpected '" + c2s(c) + "' in suffix.");
                 if (!available(c)) quit = true;
                 break;
             case 12:
@@ -120,7 +120,7 @@ Number NumericDFA::match(std::string::iterator &iter, const std::string::iterato
                 break;
             case 13:
                 if (ishex(c)) state = 2;
-                else throw runtime_error("expect h H but given " + c2s(c));
+                else throw runtime_error("expect h H but given '" + c2s(c) + "'");
                 break;
             case 14:
                 if (!l) l = true;
@@ -169,8 +169,7 @@ Number NumericDFA::match(std::string::iterator &iter, const std::string::iterato
 }
 
 bool NumericDFA::available(char c) {
-    return isdigit(c) || (c >= 'a' && c <= 'e') || (c >= 'A' && c <= 'E') || c == '.' ||
-           c == 'x' || c == 'X' || c == 'l' || c == 'L' || c == 'f' || c == 'F' || c == 'u' || c == 'U';
+    return isalnum(c) || c == '.';
 }
 
 
