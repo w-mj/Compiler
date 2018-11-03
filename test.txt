@@ -1,6 +1,7 @@
 int main(void) {
     b = "abc\naa\051"; // \051是括号
     int a = '\x41';
+    structure.member
     float c = a + b;
     /* in block commit
     hahhaha~~
