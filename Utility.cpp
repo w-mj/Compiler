@@ -4,6 +4,7 @@
 
 #include "Utility.h"
 #include <cctype>
+#include <stdexcept>
 
 int hex2dec(char c) {
     if (isdigit(c)) return c - '0';
