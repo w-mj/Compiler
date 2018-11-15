@@ -4,7 +4,7 @@
 #include "word_analysis/WordAnalysis.h"
 using namespace std;
 
-int main() {
+int main1() {
     string fname = "../test.txt";
     ifstream file;
     file.open(fname);
@@ -13,7 +13,7 @@ int main() {
     string::iterator start;
     bool in_commit = false;
     while(getline(file, line)) {
-        cout << "in line: " << line << endl;
+        cout << endl << "in line: " << line << endl;
         string::iterator iter = line.begin();
         while (iter != line.end()) {
             if (!in_commit && *iter == '/' && *(iter + 1) == '/')  // inline commit

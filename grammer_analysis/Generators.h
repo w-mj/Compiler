@@ -9,16 +9,30 @@
 #include <map>
 #include <set>
 
+typedef std::string generator_A;
+typedef std::vector<std::string> generator_B;
+typedef std::pair<generator_A, generator_B> generator;
+
 class Generators {
     
     std::vector<std::string> terminators;
     std::vector<std::string> non_terminators;
-    std::map<std::string, std::vector<std::vector<std::string>>> generators;
+    std::map<generator_A, std::vector<generator>> generators;
 
 public:
     Generators(const std::vector<std::string>& terminators, const std::vector<std::string>& non_terminators);
+    Generators();
     void load_text(std::string name);
+    void add_generator(const generator& g);
+    void add_generator(const generator_A& A, const generator_B& B);
+    std::vector<generator> get_generators(const generator_A& A);
+    std::set<std::string> first(const std::string& A);
+    bool isVN(const std::string& s) const;
+    bool isVT(const std::string& s) const;
 };
+
+generator_B make_generator_B(const std::string &s);
+generator make_generator(const std::string &A, const std::string &B);
 
 
 #endif //COMPLIE_Generators_H

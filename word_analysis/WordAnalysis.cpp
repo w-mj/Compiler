@@ -27,6 +27,9 @@ std::string WordAnalysis::token2str(long i) {
         i = token.size() + i;
     pair<char, int> t = token[i];
     std::string result;
+    result.append("{");
+    result.push_back(t.first);
+    result.append(", " + to_string(t.second) + "}    ");
     switch (t.first) {
         case 'i':
             result.append("identification: ");

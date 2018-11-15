@@ -19,6 +19,6 @@ int main(void) {
     -100
     0x13ABC
     077
-    int c=1; print("aaa", "bbb", "ccc"); int d = 0x1233P;
+    int a=1; print("aaa", "bbb", "ccc"); int d = 0x1233P;
 }
 
