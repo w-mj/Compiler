@@ -3,4 +3,16 @@ project(Complie)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Complie main.cpp WordAnalysis.cpp WordAnalysis.h PrefixTree.cpp PrefixTree.h NumericDFA.cpp NumericDFA.h Utility.cpp Utility.h LR0_analysis/LR0_DFA.cpp LR0_analysis/LR0_DFA.h LR0_analysis/LR0_Generators.cpp LR0_analysis/LR0_Generators.h)
+add_executable(Complie main.cpp
+        word_analysis/WordAnalysis.cpp
+        word_analysis/WordAnalysis.h
+        word_analysis/PrefixTree.cpp
+        word_analysis/PrefixTree.h
+        word_analysis/NumericDFA.cpp
+        word_analysis/NumericDFA.h
+        Utility.cpp
+        Utility.h
+        grammer_analysis/LR0_DFA.cpp
+        grammer_analysis/LR0_DFA.h
+        grammer_analysis/Generators.cpp
+        grammer_analysis/Generators.h)

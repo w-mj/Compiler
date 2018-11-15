@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "WordAnalysis.h"
+#include "word_analysis/WordAnalysis.h"
 using namespace std;
 
-int main1() {
+int main() {
     string fname = "../test.txt";
     ifstream file;
     file.open(fname);
