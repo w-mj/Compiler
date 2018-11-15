@@ -1,0 +1,19 @@
+Z`Z , A`A
+A`B = A`B += A`B -= A`B *= A`B |= A`B %= A`B <<= A`B >>= A`B &= A`B ^= A`B |= A`B
+B`B ? B : C`C
+C`C || D`D
+D`D && E`E
+E`E | F`F
+F`F ^ G`G
+G`G & H`H
+H`H == I`H != I`I
+I`J <= J`I >= J`I > J`I < J`J
+J`J << K`J >> K`K
+K`K + L`K - L`L
+L`L * M`L / M`L % M`M
+M`++ M`-- M`+ M`- M`! M`~ M`( t ) M`* M`& M`sizeof( M )`N
+N`O ++`O --`O ( Y )`O [ Z ]`O . i`O -> i`P
+P`( Z )`i
+
+Y`R,Q ` R
+R`Z`Y

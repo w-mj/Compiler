@@ -9,8 +9,13 @@
 #define isoct(c) ((c) >= '0' && (c) <= '7')
 #define isdec(c) ((c) >= '0' && (c) <= '9')
 
+#include <string>
+#include <vector>
+
 int hex2dec(char c);
 bool isalnumunder(int c);
+std::vector<std::string> split(const std::string &str, char sp=' ');
+
 
 
 #endif //COMPLIE_UTILITY_H

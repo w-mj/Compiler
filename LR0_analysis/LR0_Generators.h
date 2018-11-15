@@ -10,13 +10,14 @@
 #include <set>
 
 class LR0_Generators {
-    using namespace std;
-    vector<string> terminators;
-    vector<string> non_terminators;
-    map<string, vector<string>> generators;
+    
+    std::vector<std::string> terminators;
+    std::vector<std::string> non_terminators;
+    std::map<std::string, std::vector<std::string>> generators;
 
-    LR0_Generators(const vector<string>& terminators, const vector<string>& non_terminators);
-    void load_text(string name);
+public:
+    LR0_Generators(const std::vector<std::string>& terminators, const std::vector<std::string>& non_terminators);
+    void load_text(std::string name);
 };
 
 

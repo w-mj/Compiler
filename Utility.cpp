@@ -16,3 +16,20 @@ int hex2dec(char c) {
 bool isalnumunder(int c) {
     return isalnum((c)) || (c) == '_';
 }
+
+
+using namespace std;
+
+vector<string> split(const string &str, char sp) {
+    vector<string> result;
+    string::const_iterator iter = str.begin();
+    while (true) {
+        string::const_iterator s_iter = iter;
+        while (iter != str.end() && *iter != sp)
+            iter++;
+        result.emplace_back(s_iter, iter);
+        if (iter == str.end())
+            return result;
+        iter++;
+    }
+}

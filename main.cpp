@@ -4,7 +4,7 @@
 #include "WordAnalysis.h"
 using namespace std;
 
-int main() {
+int main1() {
     string fname = "../test.txt";
     ifstream file;
     file.open(fname);
