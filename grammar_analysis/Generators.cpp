@@ -29,8 +29,13 @@ void Generators::load_text(std::string name) {
     while (getline(fin, buffer)) {
         vector<string> gens = split(buffer, '`');
         string A = gens[0];
+        if (!isVN(A))
+            throw runtime_error(A + " is not a non terminal.");
         for (int i = 1; i < gens.size(); i++) {
             auto B = split(gens[i]);
+            for (const string& s: B)
+                if (!(isVN(s) || isVT(s)))
+                    throw runtime_error(s + " is not in alphabet.");
             add_generator(A, B);
         }
     }

@@ -10,7 +10,7 @@ using namespace std;
 
 int main() {
     Generators generators;
-    generators.load_text("../grammar_analysis/test");
+    generators.load_text("../grammar_analysis/expression_analytic");
     generators.show();
 
     LR1 lr1(generators);

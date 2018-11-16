@@ -146,7 +146,7 @@ std::vector<std::map<std::string, std::pair<char, size_t>>> LR1_DFA::get_table()
                 result[i][t.first].second = t.second->index;
             }
             else
-                throw runtime_error("Conflict when shift in at status I" + to_string(i));
+                throw runtime_error("Conflict when shift in at status I" + to_string(i) + " " + t.first);
         }
     }
     return result;
