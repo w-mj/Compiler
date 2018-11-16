@@ -18,6 +18,7 @@ class Generators {
     std::vector<std::string> terminators;
     std::vector<std::string> non_terminators;
     std::map<generator_A, std::vector<generator>> generators;
+    generator_A start;
 
 public:
     Generators(const std::vector<std::string>& terminators, const std::vector<std::string>& non_terminators);
@@ -30,10 +31,14 @@ public:
     bool isVN(const std::string& s) const;
     bool isVT(const std::string& s) const;
     void show();
+    generator_A get_start() const;
+    std::vector<generator_A> get_terminators();
+    std::vector<generator_A> get_non_terminators();
 };
 
 generator_B make_generator_B(const std::string &s);
 generator make_generator(const std::string &A, const std::string &B);
 
+void show_generator(const generator& g);
 
 #endif //COMPLIE_Generators_H

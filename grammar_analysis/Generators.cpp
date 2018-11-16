@@ -25,6 +25,7 @@ void Generators::load_text(std::string name) {
     non_terminators = split(buffer, '`');
     getline(fin, buffer);
     terminators = split(buffer, '`');
+    getline(fin, start);
     while (getline(fin, buffer)) {
         vector<string> gens = split(buffer, '`');
         string A = gens[0];
@@ -79,22 +80,30 @@ void Generators::add_generator(const generator_A &A, const generator_B& B) {
 
 void Generators::show() {
     cout << "VT = {";
-    for (auto x: terminators)
+    for (const auto &x: terminators)
         cout << x << ", ";
     cout << "}\n";
     cout << "VN = {";
-    for (auto x: non_terminators)
+    for (const auto &x: non_terminators)
         cout << x << ", ";
     cout << "}\n";
-    for (auto x: generators) {
-        for (auto b: x.second) {
-            cout << x.first << "  ->  ";
-            for (const auto &c: b.second)
-                cout <<  c;
-            cout << endl;
-        }
+    for (const auto &x: generators) {
+        for (const auto& g: x.second)
+            show_generator(g);
         cout << endl;
     }
+}
+
+generator_A Generators::get_start() const {
+    return start;
+}
+
+std::vector<generator_A> Generators::get_non_terminators() {
+    return non_terminators;
+}
+
+std::vector<generator_A> Generators::get_terminators() {
+    return terminators;
 }
 
 int main_generators() {
@@ -111,4 +120,11 @@ generator_B make_generator_B(const std::string &s) {
 
 generator make_generator(const std::string &A, const std::string &B) {
     return make_pair(A, make_generator_B(B));
+}
+
+void show_generator(const generator& g) {
+    cout << g.first << "  ->  ";
+    for (const auto &c: g.second)
+        cout <<  c;
+    cout << endl;
 }

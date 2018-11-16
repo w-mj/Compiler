@@ -8,8 +8,10 @@
 #include "Generators.h"
 
 class LR1 {
-    LR1();
-    void generate_table(void);
+    std::vector<std::map<std::string, LR1_DFA::TableStatus>> table;
+public:
+    explicit LR1(Generators& g);
+    void show();
 };
 
 

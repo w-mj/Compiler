@@ -17,10 +17,10 @@ using namespace std;
  * @param generators 产生式集合
  * @param start 开始符号
  */
-void LR1_DFA::build(Generators &generators, const std::string& start) {
+void LR1_DFA::build() {
     root = new Node();
     all_nodes.push_back(root);
-    root->generator_list.emplace_back(make_generator("@Start", start));
+    root->generator_list.emplace_back(make_generator("@Start", generators.get_start()));
 
     queue<LR1_Generator> to_extend;  // 待扩展生成式
 
@@ -81,6 +81,7 @@ void LR1_DFA::build(Generators &generators, const std::string& start) {
                     break;
             }
             if (n == all_nodes.end()) {
+                new_node->index = all_nodes.size();
                 all_nodes.push_back(new_node);
             } else {
                 delete new_node;
@@ -91,8 +92,8 @@ void LR1_DFA::build(Generators &generators, const std::string& start) {
     }
 }
 
-LR1_DFA::LR1_DFA(Generators &generators, const string& start) {
-    build(generators, start);
+LR1_DFA::LR1_DFA(Generators &generators): generators(generators) {
+    build();
 }
 
 LR1_DFA::~LR1_DFA() {
@@ -113,6 +114,35 @@ void LR1_DFA::show() {
         }
         cout << "==========" << endl;
     }
+}
+
+vector<map<string, LR1_DFA::TableStatus>> LR1_DFA::get_table() {
+    map<string, LR1_DFA::TableStatus> init;
+    for (auto x: generators.get_terminators())
+        init.emplace(x, TableStatus('e', 0));
+    init.emplace("#", TableStatus('e', 0));
+    for (auto x: generators.get_non_terminators())
+        init.emplace(x, TableStatus('e', 0));
+
+    vector<map<string, LR1_DFA::TableStatus>> result(all_nodes.size());
+
+    for (size_t i = 0; i < all_nodes.size(); i++) {
+        Node* cn = all_nodes[i];
+        for (const LR1_Generator& gen: cn->generator_list) {
+            if (gen.dot == gen.gen.second.size())
+                if (result[i][gen.outlook].status == 'e')
+                    result[i][gen.outlook] = TableStatus('r', gen.gen);
+                else
+                    throw runtime_error("Conflict when reduction at status I" + to_string(i));
+        }
+        for (const auto& t: cn->transfer) {
+            if (result[i][t.first].status == 'e')
+                result[i][t.first] = TableStatus('s', t.second->index);
+            else
+                throw runtime_error("Conflict when shift in at status I" + to_string(i));
+        }
+    }
+    return result;
 }
 
 
@@ -167,4 +197,14 @@ bool LR1_DFA::Node::equal(const LR1_DFA::Node &another) const {
         return true;
     }
     return false;
+}
+
+LR1_DFA::TableStatus::TableStatus(char s, generator g) {
+    status = s;
+    data.gen = g;
+}
+
+LR1_DFA::TableStatus::TableStatus(char s, size_t j) {
+    status = s;
+    data.jump = j;
 }
