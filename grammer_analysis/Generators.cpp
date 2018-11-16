@@ -58,11 +58,11 @@ std::set<std::string> Generators::first(const std::string& A) {
 }
 
 bool Generators::isVN(const std::string& s) const {
-    return find(non_terminators.begin(), non_terminators.end(), s) == non_terminators.end();
+    return find(non_terminators.begin(), non_terminators.end(), s) != non_terminators.end();
 }
 
 bool Generators::isVT(const std::string& s) const {
-    return find(terminators.begin(), terminators.end(), s) == terminators.end();
+    return find(terminators.begin(), terminators.end(), s) != terminators.end();
 }
 
 Generators::Generators() = default;

@@ -4,10 +4,18 @@
 
 #include "LR1.h"
 
-LR1::LR1() {
+LR1::LR1() = default;
+
+void LR1::generate_table(void) {
 
 }
 
-void LR1::generate_table(void) {
-    LR1_DFA start_dfa;
+int main() {
+    Generators generators;
+    generators.load_text("../grammer_analysis/test");
+    generators.show();
+
+    LR1_DFA dfa(generators, "S");
+    dfa.show();
+
 }

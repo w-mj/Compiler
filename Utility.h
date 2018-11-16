@@ -9,12 +9,16 @@
 #define isoct(c) ((c) >= '0' && (c) <= '7')
 #define isdec(c) ((c) >= '0' && (c) <= '9')
 
+#include <algorithm>
+#define in_vec(v, a) (find(((v).begin()), ((v).end()), a) != ((v).end()))
+
 #include <string>
 #include <vector>
 
 int hex2dec(char c);
 bool isalnumunder(int c);
 std::vector<std::string> split(const std::string &str, char sp=' ');
+
 
 
 
