@@ -37,8 +37,8 @@ void Generators::load_text(std::string name) {
 
 }
 
-std::vector<generator> Generators::get_generators(const generator_A& A) {
-    return generators[A];
+std::vector<size_t> Generators::get_generators_index(const generator_A& A) {
+    return g_map[A];
 }
 
 std::set<std::string> Generators::first(const std::string& A) {
@@ -47,9 +47,9 @@ std::set<std::string> Generators::first(const std::string& A) {
         result.insert(A);
     else {
         // TODO: 优化求first集合的逻辑
-        vector<generator> gens = generators[A];
+        vector<size_t> gens = g_map[A];
         for (auto X : gens) {
-            set<string> to_union = first(X.second[0]);
+            set<string> to_union = first(g_list[X].second[0]);
             for (const string &fxxkcpp: to_union)
                 result.insert(fxxkcpp);
         }
@@ -68,14 +68,17 @@ bool Generators::isVT(const std::string& s) const {
 
 Generators::Generators() = default;
 
-void Generators::add_generator(const generator &g) {
-    add_generator(g.first, g.second);
+size_t Generators::add_generator(const generator &g) {
+    if (g_map.find(g.first) == g_map.end())
+        g_map.emplace(g.first, vector<size_t>());
+    size_t i = g_list.size();
+    g_map[g.first].emplace_back(i);
+    g_list.push_back(g);
+    return i;
 }
 
-void Generators::add_generator(const generator_A &A, const generator_B& B) {
-    if (generators.find(A) == generators.end())
-        generators.emplace(A, vector<generator>());
-    generators[A].emplace_back(A, B);
+size_t Generators::add_generator(const generator_A &A, const generator_B& B) {
+    return add_generator(make_pair(A, B));
 }
 
 void Generators::show() {
@@ -87,9 +90,9 @@ void Generators::show() {
     for (const auto &x: non_terminators)
         cout << x << ", ";
     cout << "}\n";
-    for (const auto &x: generators) {
+    for (const auto &x: g_map) {
         for (const auto& g: x.second)
-            show_generator(g);
+            show_generator(g_list[g]);
         cout << endl;
     }
 }
@@ -104,6 +107,10 @@ std::vector<generator_A> Generators::get_non_terminators() {
 
 std::vector<generator_A> Generators::get_terminators() {
     return terminators;
+}
+
+const generator &Generators::operator[](size_t i) {
+    return g_list[i];
 }
 
 int main_generators() {

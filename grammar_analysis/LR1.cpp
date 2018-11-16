@@ -18,7 +18,7 @@ int main() {
 
 }
 
-LR1::LR1(Generators &g) {
+LR1::LR1(Generators &g): generators(g) {
     LR1_DFA dfa(g);
     dfa.show();
     table = dfa.get_table();
@@ -27,13 +27,13 @@ LR1::LR1(Generators &g) {
 void LR1::show() {
     for (int i = 0; i < table.size(); i++) {
         for (const auto &m: table[i]) {
-            if (m.second.status != 'e') {
+            if (m.second.first != 'e') {
                 cout << i << " " << m.first << "  : ";
-                if (m.second.status == 'r') {
+                if (m.second.first == 'r') {
                     cout << "reduce: ";
-                    show_generator(m.second.data.gen);
-                } else if (m.second.status == 's') {
-                    cout << "shift in: " << m.second.data.jump;
+                    show_generator(generators[m.second.second]);
+                } else if (m.second.first == 's') {
+                    cout << "shift in: " << m.second.second;
                 }
                 cout << endl;
             }

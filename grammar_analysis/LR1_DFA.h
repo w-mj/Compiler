@@ -14,8 +14,8 @@ class LR1_DFA {
         generator gen;
         std::string outlook="#";
         int dot=0;
-        int gen_index;
-        explicit LR1_Generator(const generator& g, const std::string& outlook="#", int dot=0);
+        size_t gen_index;
+        explicit LR1_Generator(const generator& g, size_t index, const std::string& outlook="#", int dot=0);
         std::string get_outlook() const;
         std::string get_after_dot() const;
         bool operator==(const LR1_Generator& another) const;
@@ -35,19 +35,10 @@ class LR1_DFA {
 
     Node* root = nullptr;
     std::vector<Node*> all_nodes;
-    Generators generators;
+    Generators &generators;
     void build();
 public:
-    struct TableStatus {
-        char status = 'e';
-        union {
-            size_t jump;
-            generator gen;
-        } data;
-        TableStatus(char s, generator g);
-        TableStatus(char s, size_t j);
-    };
-    std::vector<std::map<std::string, TableStatus>> get_table();
+    std::vector<std::map<std::string, std::pair<char, size_t>>> get_table();
 
     explicit LR1_DFA(Generators& generators);
     ~LR1_DFA();

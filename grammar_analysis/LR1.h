@@ -8,7 +8,8 @@
 #include "Generators.h"
 
 class LR1 {
-    std::vector<std::map<std::string, LR1_DFA::TableStatus>> table;
+    Generators &generators;
+    std::vector<std::map<std::string, std::pair<char, size_t>>> table;
 public:
     explicit LR1(Generators& g);
     void show();

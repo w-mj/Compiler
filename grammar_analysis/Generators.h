@@ -17,16 +17,17 @@ class Generators {
     
     std::vector<std::string> terminators;
     std::vector<std::string> non_terminators;
-    std::map<generator_A, std::vector<generator>> generators;
+    std::map<generator_A, std::vector<size_t>> g_map;
+    std::vector<generator> g_list;
     generator_A start;
 
 public:
     Generators(const std::vector<std::string>& terminators, const std::vector<std::string>& non_terminators);
     Generators();
     void load_text(std::string name);
-    void add_generator(const generator& g);
-    void add_generator(const generator_A& A, const generator_B& B);
-    std::vector<generator> get_generators(const generator_A& A);
+    size_t add_generator(const generator& g);
+    size_t add_generator(const generator_A& A, const generator_B& B);
+    std::vector<size_t> get_generators_index(const generator_A& A);
     std::set<std::string> first(const std::string& A);
     bool isVN(const std::string& s) const;
     bool isVT(const std::string& s) const;
@@ -34,6 +35,7 @@ public:
     generator_A get_start() const;
     std::vector<generator_A> get_terminators();
     std::vector<generator_A> get_non_terminators();
+    const generator& operator[](size_t i);
 };
 
 generator_B make_generator_B(const std::string &s);

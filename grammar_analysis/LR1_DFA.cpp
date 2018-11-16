@@ -20,7 +20,9 @@ using namespace std;
 void LR1_DFA::build() {
     root = new Node();
     all_nodes.push_back(root);
-    root->generator_list.emplace_back(make_generator("@Start", generators.get_start()));
+    generator expend_generator = make_generator("@Start", generators.get_start());
+    size_t i0 = generators.add_generator(expend_generator);
+    root->generator_list.emplace_back(expend_generator, i0);
 
     queue<LR1_Generator> to_extend;  // 待扩展生成式
 
@@ -36,8 +38,9 @@ void LR1_DFA::build() {
             const string &after_dot = expend.get_after_dot();  // 点后面的第一个符号
             if (generators.isVN(after_dot)) {
                 // 扩展点后面的第一个非终结符
-                vector<generator> extended_generators = generators.get_generators(after_dot);  // 找到点后非终结符的所有产生式
-                for (const generator &gen: extended_generators) {
+                vector<size_t> extended_generators = generators.get_generators_index(after_dot);  // 找到点后非终结符的所有产生式
+                for (size_t i: extended_generators) {
+                    auto gen = generators[i];
                     string outlook_V = expend.get_outlook();
                     set<string> outlook_set;
                     if (outlook_V == "#") {  // 点后面只有一个非终结符，继承展望集
@@ -47,7 +50,7 @@ void LR1_DFA::build() {
                         outlook_set.insert(first_outlook_VN.begin(), first_outlook_VN.end());
                     }
                     for (const string &outlook: outlook_set) {
-                        LR1_Generator new_generator(gen, outlook, 0);
+                        LR1_Generator new_generator(gen, i, outlook, 0);
                         if (!in_vec(current_node->generator_list, new_generator)) {  // 如果该节点未被添加过
                             current_node->generator_list.push_back(new_generator);
                             to_extend.push(new_generator);
@@ -73,7 +76,7 @@ void LR1_DFA::build() {
             auto *new_node = new Node();
             for (const LR1_Generator &gen: suffix_item.second) {
                 // 为后继节点添加主产生式
-                new_node->generator_list.emplace_back(gen.gen, gen.outlook, gen.dot + 1);
+                new_node->generator_list.emplace_back(gen.gen, gen.gen_index, gen.outlook, gen.dot + 1);
             }
             vector<Node *>::const_iterator n;
             for (n = all_nodes.begin(); n != all_nodes.end(); n++) {
@@ -116,28 +119,32 @@ void LR1_DFA::show() {
     }
 }
 
-vector<map<string, LR1_DFA::TableStatus>> LR1_DFA::get_table() {
-    map<string, LR1_DFA::TableStatus> init;
-    for (auto x: generators.get_terminators())
-        init.emplace(x, TableStatus('e', 0));
-    init.emplace("#", TableStatus('e', 0));
+std::vector<std::map<std::string, std::pair<char, size_t>>> LR1_DFA::get_table() {
+    map<std::string, std::pair<char, size_t>> init;
+    for (const auto &x: generators.get_terminators())
+        init.emplace(x, make_pair('e', 0));
+    init.emplace("#", make_pair('e', 0));
     for (auto x: generators.get_non_terminators())
-        init.emplace(x, TableStatus('e', 0));
+        init.emplace(x, make_pair('e', 0));
 
-    vector<map<string, LR1_DFA::TableStatus>> result(all_nodes.size());
+    std::vector<std::map<std::string, std::pair<char, size_t>>> result(all_nodes.size(), init);
 
     for (size_t i = 0; i < all_nodes.size(); i++) {
         Node* cn = all_nodes[i];
         for (const LR1_Generator& gen: cn->generator_list) {
             if (gen.dot == gen.gen.second.size())
-                if (result[i][gen.outlook].status == 'e')
-                    result[i][gen.outlook] = TableStatus('r', gen.gen);
+                if (result[i][gen.outlook].first == 'e') {
+                    result[i][gen.outlook].first = 'r';
+                    result[i][gen.outlook].second = gen.gen_index;
+                }
                 else
                     throw runtime_error("Conflict when reduction at status I" + to_string(i));
         }
         for (const auto& t: cn->transfer) {
-            if (result[i][t.first].status == 'e')
-                result[i][t.first] = TableStatus('s', t.second->index);
+            if (result[i][t.first].first == 'e') {
+                result[i][t.first].first = 's';
+                result[i][t.first].second = t.second->index;
+            }
             else
                 throw runtime_error("Conflict when shift in at status I" + to_string(i));
         }
@@ -160,8 +167,8 @@ std::string LR1_DFA::LR1_Generator::get_outlook() const {
         return outlook;
 }
 
-LR1_DFA::LR1_Generator::LR1_Generator(const generator& g, const string &outlook, int dot)
-        : gen(g), outlook(outlook), dot(dot) {
+LR1_DFA::LR1_Generator::LR1_Generator(const generator &g, size_t index, const string &outlook, int dot)
+        : gen(g), gen_index(index), outlook(outlook), dot(dot) {
 
 }
 
@@ -181,6 +188,8 @@ void LR1_DFA::LR1_Generator::show() const {
     cout << "  ," << outlook << endl;
 }
 
+
+
 bool LR1_DFA::Node::operator==(const LR1_DFA::Node &another) const {
     return generator_list == another.generator_list;
 }
@@ -197,14 +206,4 @@ bool LR1_DFA::Node::equal(const LR1_DFA::Node &another) const {
         return true;
     }
     return false;
-}
-
-LR1_DFA::TableStatus::TableStatus(char s, generator g) {
-    status = s;
-    data.gen = g;
-}
-
-LR1_DFA::TableStatus::TableStatus(char s, size_t j) {
-    status = s;
-    data.jump = j;
 }
