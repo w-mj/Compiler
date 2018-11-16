@@ -14,10 +14,27 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 int hex2dec(char c);
 bool isalnumunder(int c);
 std::vector<std::string> split(const std::string &str, char sp=' ');
+
+
+template<typename T>
+bool union_set(std::set<T> &s1, std::set<T> &s2) {
+    size_t o = s1.size();
+    set_union(s1.begin(), s1.end(), s2.begin(), s2.end(), inserter(s1, s1.begin()));
+    return o != s1.size();
+}
+
+template<typename T>
+bool insert_set(std::set<T> &s1, T s2) {
+    size_t o = s1.size();
+    s1.insert(s2);
+    return o != s1.size();
+}
+
 
 
 

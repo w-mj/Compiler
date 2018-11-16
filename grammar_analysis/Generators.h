@@ -20,9 +20,11 @@ class Generators {
     std::map<generator_A, std::vector<size_t>> g_map;
     std::vector<generator> g_list;
     generator_A start;
+    Generators(const std::vector<std::string>& terminators, const std::vector<std::string>& non_terminators);
+    std::map<generator_A, std::set<std::string>> first_set;
+    void build_first_set();
 
 public:
-    Generators(const std::vector<std::string>& terminators, const std::vector<std::string>& non_terminators);
     Generators();
     void load_text(std::string name);
     size_t add_generator(const generator& g);

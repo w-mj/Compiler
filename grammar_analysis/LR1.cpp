@@ -4,6 +4,7 @@
 
 #include "LR1.h"
 #include "LR1_DFA.h"
+#include "../Utility.h"
 #include <iostream>
 
 using namespace std;

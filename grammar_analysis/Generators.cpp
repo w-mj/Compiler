@@ -40,6 +40,8 @@ void Generators::load_text(std::string name) {
         }
     }
 
+    build_first_set();
+
 }
 
 std::vector<size_t> Generators::get_generators_index(const generator_A& A) {
@@ -47,19 +49,9 @@ std::vector<size_t> Generators::get_generators_index(const generator_A& A) {
 }
 
 std::set<std::string> Generators::first(const std::string& A) {
-    set<string> result;
-    if (find(terminators.begin(), terminators.end(), A) != terminators.end())
-        result.insert(A);
-    else {
-        // TODO: 优化求first集合的逻辑
-        vector<size_t> gens = g_map[A];
-        for (auto X : gens) {
-            set<string> to_union = first(g_list[X].second[0]);
-            for (const string &fxxkcpp: to_union)
-                result.insert(fxxkcpp);
-        }
-    }
-    return result;
+    if (isVT(A))
+        return {A};
+    else first_set[A];
 
 }
 
@@ -118,10 +110,28 @@ const generator &Generators::operator[](size_t i) {
     return g_list[i];
 }
 
-int main_generators() {
-     vector<string> a;
-     Generators g(a, a);
-     g.load_text("../grammer_analysis/expression_analytic");
+void Generators::build_first_set() {
+    first_set.clear();
+    for (const auto& s: non_terminators)
+        first_set.emplace(s, set<string>());
+    bool quit = false;
+    int cnt = 0;
+    while (!quit) {
+        quit = true;
+        for (const auto& s: non_terminators) {
+            vector<size_t> gens = get_generators_index(s);
+            for (size_t i: gens) {
+                const generator &gen = operator[](i);
+                if (isVT(gen.second[0])) {
+                    if (insert_set(first_set[s], gen.second[0]))
+                        quit = false;
+                } else {
+                    if (union_set(first_set[s], first_set[gen.second[0]]))
+                        quit = false;
+                }
+            }
+        }
+    }
 }
 
 generator_B make_generator_B(const std::string &s) {
