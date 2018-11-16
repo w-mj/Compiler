@@ -12,7 +12,7 @@ void LR1::generate_table(void) {
 
 int main() {
     Generators generators;
-    generators.load_text("../grammer_analysis/test");
+    generators.load_text("../grammar_analysis/test");
     generators.show();
 
     LR1_DFA dfa(generators, "S");

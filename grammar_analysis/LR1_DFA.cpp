@@ -139,15 +139,15 @@ bool LR1_DFA::LR1_Generator::operator==(const LR1_DFA::LR1_Generator &another) c
     return gen == another.gen && dot == another.dot && outlook == another.outlook;
 }
 
-void LR1_DFA::LR1_Generator::show(int spaces) const {
-    for (int i = 0; i < spaces; i++)
-        cout << " ";
+void LR1_DFA::LR1_Generator::show() const {
     cout << gen.first << "  ->  ";
     for (size_t i = 0; i < gen.second.size(); i++) {
         if (i == dot)
             cout << '`';
         cout << gen.second[i];
     }
+    if (dot == gen.second.size())
+        cout << '`';
     cout << "  ," << outlook << endl;
 }
 

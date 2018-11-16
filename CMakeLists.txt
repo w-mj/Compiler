@@ -12,9 +12,9 @@ add_executable(Complie main.cpp
         word_analysis/NumericDFA.h
         Utility.cpp
         Utility.h
-        grammer_analysis/LR1_DFA.cpp
-        grammer_analysis/LR1_DFA.h
-        grammer_analysis/Generators.cpp
-        grammer_analysis/Generators.h
-        grammer_analysis/LR1.cpp
-        grammer_analysis/LR1.h)
+        grammar_analysis/LR1_DFA.cpp
+        grammar_analysis/LR1_DFA.h
+        grammar_analysis/Generators.cpp
+        grammar_analysis/Generators.h
+        grammar_analysis/LR1.cpp
+        grammar_analysis/LR1.h)

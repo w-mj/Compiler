@@ -19,7 +19,7 @@ class LR1_DFA {
         std::string get_outlook() const;
         std::string get_after_dot() const;
         bool operator==(const LR1_Generator& another) const;
-        void show(int spaces=4) const;
+        void show() const;
     };
 
     struct Node {
