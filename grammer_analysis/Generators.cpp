@@ -21,6 +21,10 @@ void Generators::load_text(std::string name) {
     ifstream fin;
     fin.open(name);
     string buffer;
+    getline(fin, buffer); // VN
+    non_terminators = split(buffer, '`');
+    getline(fin, buffer);
+    terminators = split(buffer, '`');
     while (getline(fin, buffer)) {
         vector<string> gens = split(buffer, '`');
         string A = gens[0];
@@ -30,15 +34,6 @@ void Generators::load_text(std::string name) {
         }
     }
 
-    for (auto x: generators) {
-        for (auto b: x.second) {
-            cout << x.first << "  ->  ";
-            for (auto c: b.second)
-                cout <<  c;
-            cout << endl;
-        }
-        cout << endl;
-    }
 }
 
 std::vector<generator> Generators::get_generators(const generator_A& A) {
@@ -70,9 +65,7 @@ bool Generators::isVT(const std::string& s) const {
     return find(terminators.begin(), terminators.end(), s) == terminators.end();
 }
 
-Generators::Generators() {
-
-}
+Generators::Generators() = default;
 
 void Generators::add_generator(const generator &g) {
     add_generator(g.first, g.second);
@@ -84,7 +77,27 @@ void Generators::add_generator(const generator_A &A, const generator_B& B) {
     generators[A].emplace_back(A, B);
 }
 
-int main() {
+void Generators::show() {
+    cout << "VT = {";
+    for (auto x: terminators)
+        cout << x << ", ";
+    cout << "}\n";
+    cout << "VN = {";
+    for (auto x: non_terminators)
+        cout << x << ", ";
+    cout << "}\n";
+    for (auto x: generators) {
+        for (auto b: x.second) {
+            cout << x.first << "  ->  ";
+            for (const auto &c: b.second)
+                cout <<  c;
+            cout << endl;
+        }
+        cout << endl;
+    }
+}
+
+int main_generators() {
      vector<string> a;
      Generators g(a, a);
      g.load_text("../grammer_analysis/expression_analytic");

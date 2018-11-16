@@ -29,6 +29,7 @@ public:
     std::set<std::string> first(const std::string& A);
     bool isVN(const std::string& s) const;
     bool isVT(const std::string& s) const;
+    void show();
 };
 
 generator_B make_generator_B(const std::string &s);
