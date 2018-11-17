@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <sstream>
 #include "../Utility.h"
 
 using namespace std;
@@ -79,19 +80,7 @@ size_t Generators::add_generator(const generator_A &A, const generator_B& B) {
 }
 
 void Generators::show() {
-    cout << "VT = {";
-    for (const auto &x: terminators)
-        cout << x << ", ";
-    cout << "}\n";
-    cout << "VN = {";
-    for (const auto &x: non_terminators)
-        cout << x << ", ";
-    cout << "}\n";
-    for (const auto &x: g_map) {
-        for (const auto& g: x.second)
-            show_generator(g_list[g]);
-        cout << endl;
-    }
+    cout << to_str();
 }
 
 generator_A Generators::get_start() const {
@@ -134,6 +123,29 @@ void Generators::build_first_set() {
     }
 }
 
+std::string Generators::to_str() {
+    ostringstream ss;
+    ss << "VT = {";
+    for (const auto &x: terminators)
+        ss << x << ", ";
+    ss << "}\n";
+    ss << "VN = {";
+    for (const auto &x: non_terminators)
+        ss << x << ", ";
+    ss << "}\n";
+    for (size_t i = 0; i < g_list.size(); i++) {
+        ss << i << ": " << g_list[i].first << " --> ";
+        for (const auto& x: g_list[i].second)
+            ss << x;
+        ss << endl;
+    }
+    return ss.str();
+}
+
+size_t Generators::size() const {
+    return g_list.size();
+}
+
 generator_B make_generator_B(const std::string &s) {
     generator_B g;
     g.push_back(s);
@@ -148,5 +160,4 @@ void show_generator(const generator& g) {
     cout << g.first << "  ->  ";
     for (const auto &c: g.second)
         cout <<  c;
-    cout << endl;
 }

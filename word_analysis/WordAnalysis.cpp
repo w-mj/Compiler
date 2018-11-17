@@ -186,3 +186,30 @@ int WordAnalysis::getEscape(string::iterator s, string::iterator e) {
     }
     throw runtime_error("unknown escape sequence: \\" + string(s, e));
 }
+
+std::string WordAnalysis::get_token(const Token& t) {
+    switch (t.first) {
+        case 'i':
+            return id[t.second];
+        case 's':
+            return str[t.second];
+        case 'k':
+            return key[t.second];
+        case 'p':
+            return bound[t.second];
+        default:
+            throw runtime_error("Unrecognized token type." + t.first);
+    }
+}
+
+char WordAnalysis::get_token_char(const Token &t) {
+    if (t.first == 'h')
+        return character[t.second];
+    throw runtime_error(t.first + " is not a char.");
+}
+
+Number WordAnalysis::get_token_num(const Token &t) {
+    if (t.first == 'c')
+        return constants[t.second];
+    throw runtime_error(t.first + " is not a number.");
+}

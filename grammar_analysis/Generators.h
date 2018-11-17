@@ -34,10 +34,12 @@ public:
     bool isVN(const std::string& s) const;
     bool isVT(const std::string& s) const;
     void show();
+    std::string to_str();
     generator_A get_start() const;
     std::vector<generator_A> get_terminators();
     std::vector<generator_A> get_non_terminators();
     const generator& operator[](size_t i);
+    size_t size() const;
 };
 
 generator_B make_generator_B(const std::string &s);

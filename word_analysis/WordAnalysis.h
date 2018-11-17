@@ -10,21 +10,22 @@
 #include <map>
 #include "PrefixTree.h"
 #include "NumericDFA.h"
-
+typedef std::pair<char, int> Token;
+typedef std::vector<Token> TokenList;
 class WordAnalysis {
 private:
-    std::vector<std::string> id;
-    std::vector<char> character;
-    std::vector<std::string> str;
-    std::vector<Number> constants;
-    std::vector<std::string> key;
-    std::vector<std::string> bound;
+    std::vector<std::string> id;  // i
+    std::vector<char> character;  // h
+    std::vector<std::string> str;  // s
+    std::vector<Number> constants;  // c
+    std::vector<std::string> key;  // k
+    std::vector<std::string> bound;  // p
 
     PrefixTree key_tree;
     PrefixTree id_tree;
     PrefixTree bound_tree;
 
-    std::vector<std::pair<char, int>> token;
+    TokenList token;
 
     int getEscape(std::string::iterator s, std::string::iterator e);
 public:
@@ -36,6 +37,11 @@ public:
     bool process_constant(std::string::iterator& iter, const std::string::iterator &end);
     bool process_bound(std::string::iterator& iter, const std::string::iterator &end);
     const std::vector<std::pair<char, int>>& getToken();
+
+    std::string get_token(const Token& t);
+    char get_token_char(const Token& t);
+    Number get_token_num(const Token& t);
+
 
     std::string token2str(long i);
 };

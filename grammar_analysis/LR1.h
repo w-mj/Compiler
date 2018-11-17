@@ -6,6 +6,7 @@
 #define COMPLIE_LR1_H
 #include "LR1_DFA.h"
 #include "Generators.h"
+#include "../word_analysis/WordAnalysis.h"
 
 class LR1 {
     Generators &generators;
@@ -13,6 +14,7 @@ class LR1 {
 public:
     explicit LR1(Generators& g);
     void show();
+    bool process(TokenList::iterator& begin, TokenList::iterator& end);
 };
 
 
