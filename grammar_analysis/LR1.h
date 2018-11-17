@@ -11,10 +11,13 @@
 class LR1 {
     Generators &generators;
     std::vector<std::map<std::string, std::pair<char, size_t>>> table;
+    const WordAnalysis& analyser;
 public:
-    explicit LR1(Generators& g);
+
+    LR1(Generators& g, const WordAnalysis& analyser);
     void show();
-    bool process(TokenList::iterator& begin, TokenList::iterator& end);
+    bool process(TokenList::const_iterator& begin, const TokenList::const_iterator& end);
+    bool process();
 };
 
 

@@ -36,11 +36,13 @@ public:
     bool process_char(std::string::iterator& iter, const std::string::iterator& end);
     bool process_constant(std::string::iterator& iter, const std::string::iterator &end);
     bool process_bound(std::string::iterator& iter, const std::string::iterator &end);
-    const std::vector<std::pair<char, int>>& getToken();
+    const std::vector<std::pair<char, int>>& get_token_list() const;
 
-    std::string get_token(const Token& t);
-    char get_token_char(const Token& t);
-    Number get_token_num(const Token& t);
+    void process_file(std::ifstream &file, bool print=false);
+
+    std::string get_token(const Token& t) const;
+    char get_token_char(const Token& t) const;
+    Number get_token_num(const Token& t) const;
 
 
     std::string token2str(long i);

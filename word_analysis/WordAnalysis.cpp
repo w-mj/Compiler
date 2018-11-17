@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <string>
 #include <cmath>
+#include <iostream>
+#include <fstream>
 #include "../Utility.h"
 
 using namespace std;
@@ -79,7 +81,7 @@ bool WordAnalysis::process_id(std::string::iterator &iter, const std::string::it
     return true;
 }
 
-const std::vector<std::pair<char, int>> &WordAnalysis::getToken() {
+const std::vector<std::pair<char, int>> &WordAnalysis::get_token_list() const {
     return token;
 }
 
@@ -187,7 +189,7 @@ int WordAnalysis::getEscape(string::iterator s, string::iterator e) {
     throw runtime_error("unknown escape sequence: \\" + string(s, e));
 }
 
-std::string WordAnalysis::get_token(const Token& t) {
+std::string WordAnalysis::get_token(const Token& t) const{
     switch (t.first) {
         case 'i':
             return id[t.second];
@@ -202,14 +204,83 @@ std::string WordAnalysis::get_token(const Token& t) {
     }
 }
 
-char WordAnalysis::get_token_char(const Token &t) {
+char WordAnalysis::get_token_char(const Token &t) const {
     if (t.first == 'h')
         return character[t.second];
     throw runtime_error(t.first + " is not a char.");
 }
 
-Number WordAnalysis::get_token_num(const Token &t) {
+Number WordAnalysis::get_token_num(const Token &t) const {
     if (t.first == 'c')
         return constants[t.second];
     throw runtime_error(t.first + " is not a number.");
+}
+
+void WordAnalysis::process_file(std::ifstream &file, bool print) {
+    string::iterator start;
+    string line;
+    bool in_commit = false;
+    while(getline(file, line)) {
+        size_t start_tk = token.size();
+        if (print)
+            cout << endl << "in line: " << line << endl;
+        string::iterator iter = line.begin();
+        while (iter != line.end()) {
+            if (!in_commit && *iter == '/' && *(iter + 1) == '/')  // inline commit
+                break;
+            if ((*iter == '/' && *(iter + 1) == '*'))  // block commit
+                in_commit = true;
+
+            if (in_commit) {
+                while (iter != line.end() && !(*iter == '*' && *(iter + 1) == '/'))
+                    iter++;
+                if (*iter == '*' && *(iter + 1) == '/') {
+                    in_commit = false;
+                    iter += 2;
+                }
+                continue;
+            }
+            if (isspace(*iter)) {
+                iter++;
+                continue;  // skip space characters
+            }
+            try {
+                start = iter;
+                if (isalpha(*iter)) {
+                    if (process_key(iter, line.end())) {
+
+                    } else if (process_id(iter, line.end())) {
+
+                    } else
+                        iter++;
+                } else if (isdigit(*iter) || (*iter == '.' && isdigit(*(iter+1))) ) {
+                    process_constant(iter, line.end());
+                    token2str(-1);
+                } else if (*iter == '"') {
+                    process_str(iter, line.end());
+                } else if (*iter == '\'') {
+                    process_char(iter, line.end());
+                } else {
+                    if (process_bound(iter, line.end()))
+                        ;
+                    else
+                        iter++;
+                }
+            } catch (runtime_error &e) {
+                cout << endl << "ERROR:" << endl << line << endl;
+                for (int i = 0; i < start - line.begin(); i++)
+                    cout << ' ';
+                for (int i = 0; i < iter - start; i++)
+                    cout << '~';
+                cout << "^" << endl;
+                cout << e.what() << endl;
+                exit(100);
+            }
+        }
+        if (print) {
+            for (size_t i = start_tk; i < token.size(); i++)
+                cout << "    " << token2str(i) << endl;
+        }
+    }
+
 }

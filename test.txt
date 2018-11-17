@@ -1,12 +1,14 @@
+12+1*100/(7*6)
+
+
+/*
 int main(void) {
     // 3.4.3
     b = "abc\naa\051"; // \051是括号
     int a = '\x41';
     structure.member
     float c = a + b;
-    /* in block commit
-    hahhaha~~
-    */ exit(-1);
+  exit(-1);
     1e10
     5e-9
     4e5L
@@ -22,3 +24,4 @@ int main(void) {
     int a=1; print("aaa", "bbb", "ccc"); int d = 0x1233P;
 }
 
+*/

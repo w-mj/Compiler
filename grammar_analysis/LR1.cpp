@@ -7,23 +7,14 @@
 #include "../Utility.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <stack>
 
 using namespace std;
 
-int main() {
-    Generators generators;
-    generators.load_text("../grammar_analysis/test");
-    generators.show();
-
-    LR1 lr1(generators);
-    lr1.show();
-
-}
-
-LR1::LR1(Generators &g): generators(g) {
+LR1::LR1(Generators &g, const WordAnalysis& analyser): generators(g), analyser(analyser) {
     LR1_DFA dfa(g);
-    dfa.show();
+    // dfa.show();
     table = dfa.get_table();
 }
 
@@ -88,7 +79,54 @@ void LR1::show() {
     of.close();
 }
 
-bool LR1::process(TokenList::iterator &begin, TokenList::iterator &end) {
-    size_t state = 0;
-    stack<generator_A> st;
+bool LR1::process(TokenList::const_iterator &begin, const TokenList::const_iterator &end) {
+    stack<generator_A> alpha_stack;
+    alpha_stack.push("#");
+    stack<size_t> state_stack;
+    state_stack.push(0);
+    TokenList::const_iterator& cursor = begin;
+    while (true) {
+        size_t state = state_stack.top();
+
+        string alpha;
+        if (cursor == end)
+            alpha = "#";
+        else if (cursor->first == 'c')
+            alpha = "i";  // 常数
+        else if (cursor->first == 'p' && generators.isVT(analyser.get_token(*cursor)))
+            alpha = analyser.get_token(*cursor);
+        else
+            throw runtime_error("Not support " + analyser.get_token(*cursor) + " yet.");
+
+        const auto& action = table[state][alpha];
+        switch (action.first) {
+            case 's': {
+                state_stack.push(action.second);
+                alpha_stack.push(alpha);
+                cursor++;
+                break;
+            }
+            case 'r': {
+                const auto &gen = generators[action.second];
+                if (gen.first == "@Start")  // acc
+                    return true;
+                for (auto i = 0; i < gen.second.size(); i++) {
+                    state_stack.pop();
+                    alpha_stack.pop();
+                }
+                alpha_stack.push(gen.first);
+                state_stack.push(table[state_stack.top()][gen.first].second);
+                break;
+            }
+            default:
+                throw runtime_error("ERROR at LR1 analysis.");
+        }
+    }
+
+}
+
+bool LR1::process() {
+    const TokenList& tk = analyser.get_token_list();
+    auto x = tk.begin();
+    process(x, tk.cend());
 }
