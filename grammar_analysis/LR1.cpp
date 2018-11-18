@@ -5,6 +5,7 @@
 #include "LR1.h"
 #include "LR1_DFA.h"
 #include "../Utility.h"
+#include "GrammarTree.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -47,12 +48,14 @@ void LR1::show() {
     for (const auto &x: temp)
         of << x << ", ";
     of << "}</p>\n";
+    of << "<table>\n";
     for (size_t i = 0; i < generators.size(); i++) {
-        of << "<p>" << i << ": " << generators[i].first << " --> ";
+        of << "<tr><td>" << i << "</td><td>:</td><td>" << generators[i].first << " --> ";
         for (const auto& x: generators[i].second)
             of << x;
-        of << "</p>" << endl;
+        of << "</td></tr>\n";
     }
+    of << "</table>\n";
     alphabet.emplace_back("#");
     alphabet.insert(alphabet.end(), temp.begin(), temp.end());
 
@@ -81,48 +84,67 @@ void LR1::show() {
 
 bool LR1::process(TokenList::const_iterator &begin, const TokenList::const_iterator &end) {
     stack<generator_A> alpha_stack;
+    stack<Node*> tree_node_stack;
     alpha_stack.push("#");
+    tree_node_stack.push(new Node("#"));
     stack<size_t> state_stack;
     state_stack.push(0);
     TokenList::const_iterator& cursor = begin;
-    while (true) {
-        size_t state = state_stack.top();
+    try {
+        while (true) {
+            size_t state = state_stack.top();
 
-        string alpha;
-        if (cursor == end)
-            alpha = "#";
-        else if (cursor->first == 'c')
-            alpha = "i";  // 常数
-        else if (cursor->first == 'p' && generators.isVT(analyser.get_token(*cursor)))
-            alpha = analyser.get_token(*cursor);
-        else
-            throw runtime_error("Not support " + analyser.get_token(*cursor) + " yet.");
+            string alpha;
+            if (cursor == end)
+                alpha = "#";
+            else if (cursor->first == 'c')
+                alpha = "i";  // 常数
+            else if (cursor->first == 'p' && generators.isVT(analyser.get_token(*cursor)))
+                alpha = analyser.get_token(*cursor);
+            else
+                throw runtime_error("Not support " + analyser.get_token(*cursor) + " yet.");
 
-        const auto& action = table[state][alpha];
-        switch (action.first) {
-            case 's': {
-                state_stack.push(action.second);
-                alpha_stack.push(alpha);
-                cursor++;
-                break;
-            }
-            case 'r': {
-                const auto &gen = generators[action.second];
-                if (gen.first == "@Start")  // acc
-                    return true;
-                for (auto i = 0; i < gen.second.size(); i++) {
-                    state_stack.pop();
-                    alpha_stack.pop();
+            const auto &action = table[state][alpha];
+            switch (action.first) {
+                case 's': {
+                    state_stack.push(action.second);
+                    alpha_stack.push(alpha);
+                    tree_node_stack.push(new Node(alpha));
+                    cursor++;
+                    break;
                 }
-                alpha_stack.push(gen.first);
-                state_stack.push(table[state_stack.top()][gen.first].second);
-                break;
+                case 'r': {
+                    const auto &gen = generators[action.second];
+                    if (gen.first == "@Start") {// acc
+                        Node* n = tree_node_stack.top();
+                        tree_node_stack.pop();
+                        n->json();
+                        delete_tree(n);
+                        return true;
+                    }
+                    Node *new_node = new Node(gen.first);
+                    for (auto i = 0; i < gen.second.size(); i++) {
+                        state_stack.pop();
+                        alpha_stack.pop();
+                        new_node->children.insert(new_node->children.begin(), tree_node_stack.top());
+                        tree_node_stack.pop();
+                    }
+                    alpha_stack.push(gen.first);
+                    state_stack.push(table[state_stack.top()][gen.first].second);
+                    tree_node_stack.push(new_node);
+                    break;
+                }
+                default:
+                    throw runtime_error("ERROR at LR1 analysis.");
             }
-            default:
-                throw runtime_error("ERROR at LR1 analysis.");
         }
+    } catch(runtime_error& r) {
+        while (!tree_node_stack.empty()) {
+            delete_tree(tree_node_stack.top());
+            tree_node_stack.pop();
+        }
+        throw;
     }
-
 }
 
 bool LR1::process() {

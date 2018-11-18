@@ -17,4 +17,4 @@ add_executable(Complie main.cpp
         grammar_analysis/Generators.cpp
         grammar_analysis/Generators.h
         grammar_analysis/LR1.cpp
-        grammar_analysis/LR1.h)
+        grammar_analysis/LR1.h grammar_analysis/GrammarTree.cpp grammar_analysis/GrammarTree.h)
