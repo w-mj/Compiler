@@ -95,12 +95,19 @@ bool LR1::process(TokenList::const_iterator &begin, const TokenList::const_itera
             size_t state = state_stack.top();
 
             string alpha;
-            if (cursor == end)
+            string str;
+            if (cursor == end) {
                 alpha = "#";
-            else if (cursor->first == 'c')
+                str = "#";
+            }
+            else if (cursor->first == 'c') {
                 alpha = "i";  // 常数
-            else if (cursor->first == 'p' && generators.isVT(analyser.get_token(*cursor)))
+                str = analyser.get_token_num(*cursor).str();
+            }
+            else if (cursor->first == 'p' && generators.isVT(analyser.get_token(*cursor))) {
                 alpha = analyser.get_token(*cursor);
+                str = alpha;
+            }
             else
                 throw runtime_error("Not support " + analyser.get_token(*cursor) + " yet.");
 
@@ -109,7 +116,7 @@ bool LR1::process(TokenList::const_iterator &begin, const TokenList::const_itera
                 case 's': {
                     state_stack.push(action.second);
                     alpha_stack.push(alpha);
-                    tree_node_stack.push(new Node(alpha));
+                    tree_node_stack.push(new Node(str));
                     cursor++;
                     break;
                 }
