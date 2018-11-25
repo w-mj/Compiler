@@ -14,15 +14,21 @@ typedef std::vector<std::string> generator_B;
 typedef std::pair<generator_A, generator_B> generator;
 
 class Generators {
-    
+    // TODO: replace vector by set
     std::vector<std::string> terminators;
     std::vector<std::string> non_terminators;
     std::map<generator_A, std::vector<size_t>> g_map;
     std::vector<generator> g_list;
     generator_A start;
-    Generators(const std::vector<std::string>& terminators, const std::vector<std::string>& non_terminators);
     std::map<generator_A, std::set<std::string>> first_set;
+    std::map<generator_A, std::set<std::string>> follow_set;
     void build_first_set();
+    void build_follow_set();
+
+    void remove_left_recursive();
+
+    bool built_first = false;
+    bool built_follow = false;
 
 public:
     Generators();
@@ -31,6 +37,7 @@ public:
     size_t add_generator(const generator_A& A, const generator_B& B);
     std::vector<size_t> get_generators_index(const generator_A& A);
     std::set<std::string> first(const std::string& A);
+    std::set<std::string> follow(const std::string& B);
     bool isVN(const std::string& s) const;
     bool isVT(const std::string& s) const;
     void show();

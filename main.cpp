@@ -30,6 +30,7 @@ int main() {
     LR1 lr1(generators, analyzer);
     lr1.show();
     lr1.process();
+    cout << "OK" << endl;
 
     return 0;
 }

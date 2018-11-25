@@ -11,13 +11,6 @@
 
 using namespace std;
 
-Generators::Generators(const std::vector<std::string>& terminators,
-                               const std::vector<std::string>& non_terminators):
-    terminators(terminators), non_terminators(non_terminators)
-{
-
-}
-
 void Generators::load_text(std::string name) {
     ifstream fin;
     fin.open(name);
@@ -41,8 +34,6 @@ void Generators::load_text(std::string name) {
         }
     }
 
-    build_first_set();
-
 }
 
 std::vector<size_t> Generators::get_generators_index(const generator_A& A) {
@@ -50,6 +41,10 @@ std::vector<size_t> Generators::get_generators_index(const generator_A& A) {
 }
 
 std::set<std::string> Generators::first(const std::string& A) {
+    if (!built_first) {
+        build_first_set();
+        built_first = true;
+    }
     if (isVT(A))
         return {A};
     else first_set[A];
@@ -99,30 +94,6 @@ const generator &Generators::operator[](size_t i) {
     return g_list[i];
 }
 
-void Generators::build_first_set() {
-    first_set.clear();
-    for (const auto& s: non_terminators)
-        first_set.emplace(s, set<string>());
-    bool quit = false;
-    int cnt = 0;
-    while (!quit) {
-        quit = true;
-        for (const auto& s: non_terminators) {
-            vector<size_t> gens = get_generators_index(s);
-            for (size_t i: gens) {
-                const generator &gen = operator[](i);
-                if (isVT(gen.second[0])) {
-                    if (insert_set(first_set[s], gen.second[0]))
-                        quit = false;
-                } else {
-                    if (union_set(first_set[s], first_set[gen.second[0]]))
-                        quit = false;
-                }
-            }
-        }
-    }
-}
-
 std::string Generators::to_str() {
     ostringstream ss;
     ss << "VT = {";
@@ -144,6 +115,74 @@ std::string Generators::to_str() {
 
 size_t Generators::size() const {
     return g_list.size();
+}
+
+void Generators::build_first_set() {
+    first_set.clear();
+    for (const auto& s: non_terminators)
+        first_set.emplace(s, set<string>());
+    bool quit = false;
+    while (!quit) {
+        quit = true;
+        for (const auto& s: non_terminators) {
+            vector<size_t> gens = get_generators_index(s);
+            for (size_t i: gens) {
+                const generator &gen = operator[](i);
+                if (isVT(gen.second[0])) {
+                    if (insert_set(first_set[s], gen.second[0]))
+                        quit = false;
+                } else {
+                    if (union_set(first_set[s], first_set[gen.second[0]]))
+                        quit = false;
+                }
+            }
+        }
+    }
+}
+
+void Generators::build_follow_set() {
+    follow_set.clear();
+    for (const auto& s: non_terminators)
+        follow_set.emplace(s, set<string>());
+    follow_set[start].insert("#");
+    for (const generator& gen: g_list) {
+        for (size_t i = 0; i < gen.second.size() - 1; i++) {
+            // A -> Bc
+            if (in_vec(non_terminators, gen.second[i]) && in_vec(terminators, gen.second[i + 1]))
+                follow_set[gen.second[i]].insert(gen.second[i + 1]);
+        }
+    }
+    bool quit = false;
+    while (! quit) {
+        quit = true;
+        for (const generator& gen: g_list) {
+            // A -> B
+            if (in_vec(non_terminators, last_vec(gen.second)) && gen.first != last_vec(gen.second))
+                if (union_set(follow_set[last_vec(gen.second)], follow_set[gen.first]))
+                    quit = false;
+            for (size_t i = 0; i < gen.second.size() - 1; i++) {
+                if (in_vec(non_terminators, gen.second[i]) && in_vec(non_terminators, gen.second[i + 1])) {
+                    follow_set[gen.second[i]].insert(first_set[gen.second[i + 1]].begin(), first_set[gen.second[i + 1]].end());
+                    if (in_set(first_set[gen.second[i + 1]], "epsilon")) {
+                        follow_set[gen.second[i]].erase("epsilon");
+                        if (union_set(follow_set[gen.second[i]], follow_set[gen.second[i + 1]]))
+                            quit = false;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+std::set<std::string> Generators::follow(const std::string &B) {
+    if (!built_follow) {
+        build_follow_set();
+        built_follow = true;
+    }
+    if (in_vec(non_terminators, B))
+        return follow_set[B];
+    throw runtime_error("Non terminators don't have follow set");
 }
 
 generator_B make_generator_B(const std::string &s) {

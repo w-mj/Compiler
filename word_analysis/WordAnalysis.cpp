@@ -284,3 +284,4 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
     }
 
 }
+

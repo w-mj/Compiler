@@ -11,6 +11,8 @@
 
 #include <algorithm>
 #define in_vec(v, a) (find(((v).begin()), ((v).end()), a) != ((v).end()))
+#define in_set(v, a) ((v).find(a) != (v).end())
+#define last_vec(v) ((v)[(v).size() - 1])
 
 #include <string>
 #include <vector>
