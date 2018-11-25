@@ -24,6 +24,10 @@ int main() {
     Generators generators;
     generators.load_text("grammar_analysis/test");
     generators.show();
+    generators.remove_left_recursive();
+    generators.show();
+
+    exit(1);
 
     analyzer.process_file(file, false);
 

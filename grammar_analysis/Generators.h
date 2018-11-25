@@ -9,6 +9,8 @@
 #include <map>
 #include <set>
 
+#define get_gen(A, n) (g_list[g_map[A][n]])
+
 typedef std::string generator_A;
 typedef std::vector<std::string> generator_B;
 typedef std::pair<generator_A, generator_B> generator;
@@ -22,10 +24,10 @@ class Generators {
     generator_A start;
     std::map<generator_A, std::set<std::string>> first_set;
     std::map<generator_A, std::set<std::string>> follow_set;
+
     void build_first_set();
     void build_follow_set();
 
-    void remove_left_recursive();
 
     bool built_first = false;
     bool built_follow = false;
@@ -35,6 +37,7 @@ public:
     void load_text(std::string name);
     size_t add_generator(const generator& g);
     size_t add_generator(const generator_A& A, const generator_B& B);
+    void remove_generator(const generator_A& A, size_t n);
     std::vector<size_t> get_generators_index(const generator_A& A);
     std::set<std::string> first(const std::string& A);
     std::set<std::string> follow(const std::string& B);
@@ -47,6 +50,8 @@ public:
     std::vector<generator_A> get_non_terminators();
     const generator& operator[](size_t i);
     size_t size() const;
+    void remove_left_recursive();
+
 };
 
 generator_B make_generator_B(const std::string &s);
