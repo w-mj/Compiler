@@ -20,6 +20,7 @@ struct Number {
         double db;
     } value;
     std::string str();
+    friend std::ostream& operator<<(std::ostream& out, const Number& s);
 };
 
 class NumericDFA {
@@ -28,6 +29,9 @@ private:
 public:
     Number match(std::string::iterator &iter, const std::string::iterator &end);
 };
+
+std::ostream& operator<<(std::ostream& out, const Number& s);
+
 
 
 #endif //COMPLIE_NUMERICDFA_H

@@ -10,43 +10,36 @@
 #include <map>
 #include "PrefixTree.h"
 #include "NumericDFA.h"
-typedef std::pair<char, int> Token;
-typedef std::vector<Token> TokenList;
+#include "TokenList.h"
+
 class WordAnalysis {
 private:
-    std::vector<std::string> id;  // i
-    std::vector<char> character;  // h
-    std::vector<std::string> str;  // s
-    std::vector<Number> constants;  // c
-    std::vector<std::string> key;  // k
-    std::vector<std::string> bound;  // p
+
+    std::vector<std::string> key;
+    std::vector<std::string> bound;
 
     PrefixTree key_tree;
     PrefixTree id_tree;
     PrefixTree bound_tree;
 
-    TokenList token;
+    TokenList tokenList;
 
     int getEscape(std::string::iterator s, std::string::iterator e);
 public:
-    WordAnalysis();
+    explicit WordAnalysis();
     bool process_key(std::string::iterator& iter, const std::string::iterator& end);
     bool process_id(std::string::iterator& iter, const std::string::iterator& end);
     bool process_str(std::string::iterator& iter, const std::string::iterator& end);
     bool process_char(std::string::iterator& iter, const std::string::iterator& end);
     bool process_constant(std::string::iterator& iter, const std::string::iterator &end);
     bool process_bound(std::string::iterator& iter, const std::string::iterator &end);
-    const std::vector<std::pair<char, int>>& get_token_list() const;
 
     void process_file(std::ifstream &file, bool print=false);
+    TokenList get_tokenList() const;
 
-    std::string get_token(const Token& t) const;
-    char get_token_char(const Token& t) const;
-    Number get_token_num(const Token& t) const;
-
-
-    std::string token2str(long i);
 };
+
+std::ostream& print_token(std::ostream& out, const TokenList& tk, long s, long e);
 
 
 #endif //COMPLIE_WORDANALYSIS_H

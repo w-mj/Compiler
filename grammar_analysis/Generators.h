@@ -22,7 +22,10 @@ class Generators {
     std::map<generator_A, std::vector<size_t>> g_map;
     std::vector<generator> g_list;
     generator_A start;
-    generator_A epsilon = "\\epsilon";
+    const generator_A epsilon = "Ɛ";
+    const generator_A end = "#";
+    const generator_A deleted = "deleted";
+
     std::map<generator_A, std::set<std::string>> first_set;
     std::map<generator_A, std::set<std::string>> follow_set;
 
@@ -47,11 +50,19 @@ public:
     void show();
     std::string to_str();
     generator_A get_start() const;
+    generator_A get_end() const;
+    generator_A get_epsilon() const;
+
     std::vector<generator_A> get_terminators();
     std::vector<generator_A> get_non_terminators();
     const generator& operator[](size_t i);
     size_t size() const;
     void remove_left_recursive();
+    bool exists(size_t t);
+
+    size_t non_terminator_size() const;
+    size_t terminator_size() const;
+
 
     void _print_first();
     void _print_follow();

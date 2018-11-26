@@ -90,6 +90,8 @@ std::vector<generator_A> Generators::get_terminators() {
 }
 
 const generator &Generators::operator[](size_t i) {
+    if (g_list[i].first == deleted)
+        throw runtime_error(to_string(i) + "th generator has been deleted.");
     return g_list[i];
 }
 
@@ -213,7 +215,7 @@ void Generators::remove_left_recursive() {
                         // g_map[i].emplace_back(g_list.size());
                         g_list.emplace_back(g_list[cur_gen_id].first, new_genB);
                     }
-                    g_list[cur_gen_id].first = "deleted";
+                    g_list[cur_gen_id].first = deleted;
                     it = g_map[i].erase(it);
                 } else
                     it++;  // 循环中删除
@@ -256,7 +258,7 @@ void Generators::remove_left_recursive() {
 }
 
 void Generators::remove_generator(const generator_A &A, size_t n) {
-    get_gen(A, n).first = "deleted";
+    get_gen(A, n).first = deleted;
     g_map[A].erase(g_map[A].begin() + n);
 }
 
@@ -282,6 +284,26 @@ void Generators::_print_follow() {
             cout << M << ", ";
         cout << "}"<<endl;
     }
+}
+
+bool Generators::exists(size_t t) {
+    return t < size() && g_list[t].first != deleted;
+}
+
+generator_A Generators::get_end() const {
+    return end;
+}
+
+generator_A Generators::get_epsilon() const {
+    return epsilon;
+}
+
+size_t Generators::non_terminator_size() const {
+    return non_terminators.size();
+}
+
+size_t Generators::terminator_size() const {
+    return terminators.size();
 }
 
 generator_B make_generator_B(const std::string &s) {

@@ -1,276 +1,275 @@
-{
-  "name": "E",
-  "children": [
-    {
-      "name": "E",
-      "children": [
-        {
-          "name": "T",
-          "children": [
-            {
-              "name": "F",
-              "children": [
-                {
-                  "name": "12 short"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "+"
-    },
-    {
-      "name": "T",
-      "children": [
-        {
-          "name": "T",
-          "children": [
-            {
-              "name": "F",
-              "children": [
-                {
-                  "name": "1 short"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "*"
-        },
-        {
-          "name": "F",
-          "children": [
-            {
-              "name": "("
-            },
-            {
-              "name": "E",
-              "children": [
-                {
-                  "name": "E",
-                  "children": [
-                    {
-                      "name": "T",
-                      "children": [
-                        {
-                          "name": "F",
-                          "children": [
-                            {
-                              "name": "("
-                            },
-                            {
-                              "name": "E",
-                              "children": [
-                                {
-                                  "name": "T",
-                                  "children": [
-                                    {
-                                      "name": "F",
-                                      "children": [
-                                        {
-                                          "name": "1 short"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "name": ")"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "+"
-                },
-                {
-                  "name": "T",
-                  "children": [
-                    {
-                      "name": "T",
-                      "children": [
-                        {
-                          "name": "F",
-                          "children": [
-                            {
-                              "name": "0 short"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "name": "/"
-                    },
-                    {
-                      "name": "F",
-                      "children": [
-                        {
-                          "name": "("
-                        },
-                        {
-                          "name": "E",
-                          "children": [
-                            {
-                              "name": "E",
-                              "children": [
-                                {
-                                  "name": "E",
-                                  "children": [
-                                    {
-                                      "name": "E",
-                                      "children": [
-                                        {
-                                          "name": "E",
-                                          "children": [
-                                            {
-                                              "name": "T",
-                                              "children": [
-                                                {
-                                                  "name": "F",
-                                                  "children": [
-                                                    {
-                                                      "name": "1 short"
-                                                    }
-                                                  ]
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "name": "+"
-                                        },
-                                        {
-                                          "name": "T",
-                                          "children": [
-                                            {
-                                              "name": "F",
-                                              "children": [
-                                                {
-                                                  "name": "7.560000 double"
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "name": "+"
-                                    },
-                                    {
-                                      "name": "T",
-                                      "children": [
-                                        {
-                                          "name": "F",
-                                          "children": [
-                                            {
-                                              "name": "1 short"
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "name": "+"
-                                },
-                                {
-                                  "name": "T",
-                                  "children": [
-                                    {
-                                      "name": "F",
-                                      "children": [
-                                        {
-                                          "name": "1 short"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "name": "-"
-                            },
-                            {
-                              "name": "T",
-                              "children": [
-                                {
-                                  "name": "F",
-                                  "children": [
-                                    {
-                                      "name": "("
-                                    },
-                                    {
-                                      "name": "E",
-                                      "children": [
-                                        {
-                                          "name": "T",
-                                          "children": [
-                                            {
-                                              "name": "T",
-                                              "children": [
-                                                {
-                                                  "name": "F",
-                                                  "children": [
-                                                    {
-                                                      "name": "7 short"
-                                                    }
-                                                  ]
-                                                }
-                                              ]
-                                            },
-                                            {
-                                              "name": "*"
-                                            },
-                                            {
-                                              "name": "F",
-                                              "children": [
-                                                {
-                                                  "name": "6 short"
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "name": ")"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "name": ")"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": ")"
-            }
-          ]
-        }
-      ]
-    }
-  ]
+{"name":"E"
+,
+"children": [
+{"name":"E"
+,
+"children": [
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"12 short"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"+"
+}
+,
+{"name":"T"
+,
+"children": [
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"1 short"
+}
+]
+}
+]
+}
+,
+{"name":"*"
+}
+,
+{"name":"F"
+,
+"children": [
+{"name":"("
+}
+,
+{"name":"E"
+,
+"children": [
+{"name":"E"
+,
+"children": [
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"("
+}
+,
+{"name":"E"
+,
+"children": [
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"1 short"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":")"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"+"
+}
+,
+{"name":"T"
+,
+"children": [
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"0 short"
+}
+]
+}
+]
+}
+,
+{"name":"/"
+}
+,
+{"name":"F"
+,
+"children": [
+{"name":"("
+}
+,
+{"name":"E"
+,
+"children": [
+{"name":"E"
+,
+"children": [
+{"name":"E"
+,
+"children": [
+{"name":"E"
+,
+"children": [
+{"name":"E"
+,
+"children": [
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"1 short"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"+"
+}
+,
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"7.560000 double"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"+"
+}
+,
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"1 short"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"+"
+}
+,
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"1 short"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"-"
+}
+,
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"("
+}
+,
+{"name":"E"
+,
+"children": [
+{"name":"T"
+,
+"children": [
+{"name":"T"
+,
+"children": [
+{"name":"F"
+,
+"children": [
+{"name":"7 short"
+}
+]
+}
+]
+}
+,
+{"name":"*"
+}
+,
+{"name":"F"
+,
+"children": [
+{"name":"6 short"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":")"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":")"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":")"
+}
+]
+}
+]
+}
+]
 }

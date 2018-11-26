@@ -6,17 +6,17 @@
 #define COMPLIE_LR1_H
 #include "LR1_DFA.h"
 #include "Generators.h"
-#include "../word_analysis/WordAnalysis.h"
+#include "../word_analysis/TokenList.h"
 
 class LR1 {
     Generators &generators;
     std::vector<std::map<std::string, std::pair<char, size_t>>> table;
-    const WordAnalysis& analyser;
+    TokenList& tokenList;
 public:
 
-    LR1(Generators& g, const WordAnalysis& analyser);
+    LR1(Generators& g, TokenList& tokenList);
     void show();
-    bool process(TokenList::const_iterator& begin, const TokenList::const_iterator& end);
+    bool process(TokenList::iterator& begin, const TokenList::iterator& end);
     bool process();
 };
 

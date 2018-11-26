@@ -13,7 +13,7 @@
 
 using namespace std;
 
-LR1::LR1(Generators &g, const WordAnalysis& analyser): generators(g), analyser(analyser) {
+LR1::LR1(Generators &g, TokenList& tokenList): generators(g), tokenList(tokenList) {
     LR1_DFA dfa(g);
     // dfa.show();
     table = dfa.get_table();
@@ -82,14 +82,14 @@ void LR1::show() {
     of.close();
 }
 
-bool LR1::process(TokenList::const_iterator &begin, const TokenList::const_iterator &end) {
+bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
     stack<generator_A> alpha_stack;
     stack<Node*> tree_node_stack;
     alpha_stack.push("#");
     tree_node_stack.push(new Node("#"));
     stack<size_t> state_stack;
     state_stack.push(0);
-    TokenList::const_iterator& cursor = begin;
+    TokenList::iterator& cursor = begin;
     try {
         while (true) {
             size_t state = state_stack.top();
@@ -102,14 +102,14 @@ bool LR1::process(TokenList::const_iterator &begin, const TokenList::const_itera
             }
             else if (cursor->first == 'c') {
                 alpha = "i";  // 常数
-                str = analyser.get_token_num(*cursor).str();
+                str = tokenList.get_token_num(*cursor).str();
             }
-            else if (cursor->first == 'p' && generators.isVT(analyser.get_token(*cursor))) {
-                alpha = analyser.get_token(*cursor);
+            else if (cursor->first == 'p' && generators.isVT(tokenList.get_token(*cursor))) {
+                alpha = tokenList.get_token(*cursor);
                 str = alpha;
             }
             else
-                throw runtime_error("Not support " + analyser.get_token(*cursor) + " yet.");
+                throw runtime_error("Not support " + tokenList.get_token(*cursor) + " yet.");
 
             const auto &action = table[state][alpha];
             switch (action.first) {
@@ -155,7 +155,6 @@ bool LR1::process(TokenList::const_iterator &begin, const TokenList::const_itera
 }
 
 bool LR1::process() {
-    const TokenList& tk = analyser.get_token_list();
-    auto x = tk.begin();
-    process(x, tk.cend());
+    auto x = tokenList.begin();
+    return process(x, tokenList.end());
 }
