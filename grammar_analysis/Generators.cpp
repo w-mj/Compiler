@@ -43,7 +43,6 @@ std::vector<size_t> Generators::get_generators_index(const generator_A &A) {
 std::set<std::string> Generators::first(const std::string &A) {
     if (!built_first) {
         build_first_set();
-        built_first = true;
     }
     if (isVT(A))
         return {A};
@@ -128,7 +127,7 @@ void Generators::build_first_set() {
             vector<size_t> gens = get_generators_index(s);
             for (size_t i: gens) {
                 const generator &gen = operator[](i);
-                if (isVT(gen.second[0])) {
+                if (isVT(gen.second[0]) || gen.second[0] == epsilon) {
                     if (insert_set(first_set[s], gen.second[0]))
                         quit = false;
                 } else {
@@ -138,6 +137,7 @@ void Generators::build_first_set() {
             }
         }
     }
+    built_first = true;
 }
 
 void Generators::build_follow_set() {
@@ -165,8 +165,8 @@ void Generators::build_follow_set() {
                 if (in_vec(non_terminators, gen.second[i]) && in_vec(non_terminators, gen.second[i + 1])) {
                     follow_set[gen.second[i]].insert(first_set[gen.second[i + 1]].begin(),
                                                      first_set[gen.second[i + 1]].end());
-                    if (in_set(first_set[gen.second[i + 1]], "epsilon")) {
-                        follow_set[gen.second[i]].erase("epsilon");
+                    if (in_set(first_set[gen.second[i + 1]], epsilon)) {
+                        follow_set[gen.second[i]].erase(epsilon);
                         if (union_set(follow_set[gen.second[i]], follow_set[gen.second[i + 1]]))
                             quit = false;
                     }
@@ -174,13 +174,12 @@ void Generators::build_follow_set() {
             }
         }
     }
-
+    built_follow = true;
 }
 
 std::set<std::string> Generators::follow(const std::string &B) {
     if (!built_follow) {
         build_follow_set();
-        built_follow = true;
     }
     if (in_vec(non_terminators, B))
         return follow_set[B];
@@ -211,6 +210,7 @@ void Generators::remove_left_recursive() {
                                         g_list[cur_gen_id].second.end());
                         // add_generator(g_list[cur_gen_id].first, new_genB);
                         new_index.emplace_back(g_list.size());
+                        // g_map[i].emplace_back(g_list.size());
                         g_list.emplace_back(g_list[cur_gen_id].first, new_genB);
                     }
                     g_list[cur_gen_id].first = "deleted";
@@ -227,26 +227,61 @@ void Generators::remove_left_recursive() {
         // 消除直接左递归
         bool left_recursive = false;
         for (size_t cur_gen = 0; cur_gen < g_map[i].size() && !left_recursive; cur_gen++)
-            if (g_list[cur_gen].first == g_list[cur_gen].second[0])
+            if (g_list[g_map[i][cur_gen]].first == g_list[g_map[i][cur_gen]].second[0])
                 left_recursive = true;
         if (left_recursive) {
             generator_A new_A = i + "'";
+            vector<size_t> remove_list;
             for (unsigned long cur_gen_id : g_map[i]) {
                 if (g_list[cur_gen_id].first == g_list[cur_gen_id].second[0]) {
                     g_list[cur_gen_id].first = new_A;
                     g_list[cur_gen_id].second.erase(g_list[cur_gen_id].second.begin());
+
+                    remove_list.push_back(cur_gen_id);
                 }
                 g_list[cur_gen_id].second.push_back(new_A);
-
             }
-            add_generator(make_generator(new_A, "epsilon"));
+            non_terminators.push_back(new_A);
+            add_generator(make_generator(new_A, epsilon));
+            for (auto cur_gen_id: remove_list) {
+                g_map[i].erase(find(g_map[i].begin(), g_map[i].end(), cur_gen_id));
+                if (g_map.find(new_A) == g_map.end())
+                    g_map.emplace(new_A, vector<size_t>());
+                g_map[new_A].push_back(cur_gen_id);
+            }
         }
     }
+
+    built_follow = built_first = false;
 }
 
 void Generators::remove_generator(const generator_A &A, size_t n) {
     get_gen(A, n).first = "deleted";
     g_map[A].erase(g_map[A].begin() + n);
+}
+
+void Generators::_print_first() {
+    if (!built_first) {
+        build_first_set();
+    }
+    for (const auto& E: non_terminators) {
+        cout << "First("<<E<<") = {";
+        for (const auto& M: first_set[E])
+            cout << M << ", ";
+        cout << "}"<<endl;
+    }
+}
+
+void Generators::_print_follow() {
+    if (!built_follow) {
+        build_follow_set();
+    }
+    for (const auto& E: non_terminators) {
+        cout << "Follow("<<E<<") = {";
+        for (const auto& M: follow_set[E])
+            cout << M << ", ";
+        cout << "}"<<endl;
+    }
 }
 
 generator_B make_generator_B(const std::string &s) {

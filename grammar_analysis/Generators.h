@@ -22,6 +22,7 @@ class Generators {
     std::map<generator_A, std::vector<size_t>> g_map;
     std::vector<generator> g_list;
     generator_A start;
+    generator_A epsilon = "\\epsilon";
     std::map<generator_A, std::set<std::string>> first_set;
     std::map<generator_A, std::set<std::string>> follow_set;
 
@@ -51,6 +52,9 @@ public:
     const generator& operator[](size_t i);
     size_t size() const;
     void remove_left_recursive();
+
+    void _print_first();
+    void _print_follow();
 
 };
 
