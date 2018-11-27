@@ -14,7 +14,7 @@
 using namespace std;
 
 LR1::LR1(Generators &g, TokenList& tokenList): generators(g), tokenList(tokenList) {
-    LR1_DFA dfa(g);
+    LR1_DFA dfa(generators);
     // dfa.show();
     table = dfa.get_table();
 }

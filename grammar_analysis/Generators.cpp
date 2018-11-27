@@ -44,10 +44,9 @@ std::set<std::string> Generators::first(const std::string &A) {
     if (!built_first) {
         build_first_set();
     }
-    if (isVT(A))
+    if (isVT(A) || A == epsilon)
         return {A};
-    else first_set[A];
-
+    else return first_set[A];
 }
 
 bool Generators::isVN(const std::string &s) const {
@@ -183,7 +182,7 @@ std::set<std::string> Generators::follow(const std::string &B) {
     if (!built_follow) {
         build_follow_set();
     }
-    if (in_vec(non_terminators, B))
+    if (isVN(B))
         return follow_set[B];
     throw runtime_error("Non terminators don't have follow set");
 }
@@ -317,7 +316,12 @@ generator make_generator(const std::string &A, const std::string &B) {
 }
 
 void show_generator(const generator &g) {
-    cout << g.first << "  ->  ";
+    cout << g;
+}
+
+std::ostream& operator<<(std::ostream& out, const generator &g) {
+    out << g.first << "  ->  ";
     for (const auto &c: g.second)
-        cout << c;
+        out << c;
+    return out;
 }

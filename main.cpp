@@ -46,6 +46,7 @@ int main() {
     generators._print_follow();
     LL1 ll1(generators, tkl);
     ll1.build();
+    ll1.show();
     ll1.process();
     cout << "LL1 OK" << endl;
 

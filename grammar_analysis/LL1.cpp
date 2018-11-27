@@ -7,6 +7,9 @@
 #include <map>
 #include <set>
 #include <stack>
+#include <fstream>
+#include <iostream>
+
 #include "../Utility.h"
 
 using namespace std;
@@ -85,26 +88,89 @@ bool LL1::process(TokenList::iterator &begin, const TokenList::iterator &end, co
     st.push(gens.get_end());
     st.push(start);
     auto cursor = begin;
+
     while (!st.empty()) {
         generator_A top = st.top();
         st.pop();
+        cout << "st size:" << st.size() << " top: " << top << endl;
+
+        string grammar_token = tokenList.get_grammar_token(cursor, end);
+        if (grammar_token == gens.get_end() && top == gens.get_end())
+            break;
 
         if (gens.isVT(top)) {
-            if (top == tokenList.get_grammar_token(cursor, end))
-                cursor++;
+            cout << "   token:" << grammar_token << endl;
+            if (top == grammar_token)
+                if (cursor != end)
+                    cursor++;
+                else
+                    throw runtime_error("input sequence finished but stack not empty");
             else
                 throw runtime_error("Error in LL1 analysis (terminator not match).");
         } else if (gens.isVN(top)) {
-            if (gens.exists(table[nonter_map[top]][ter_map[tokenList.get_grammar_token(cursor, end)]])) {
-                generator gen = gens[table[nonter_map[top]][ter_map[tokenList.get_grammar_token(cursor, end)]]];
+            if (gens.exists(table[nonter_map[top]][ter_map[grammar_token]])) {
+                generator gen = gens[table[nonter_map[top]][ter_map[grammar_token]]];
+                cout << "   input:" << grammar_token << "      use:" << gen << endl;
                 for (auto it = gen.second.rbegin(); it != gen.second.rend(); it++) {
-                    st.push(*it);
+                    if (*it != gens.get_epsilon())
+                        st.push(*it);
                 }
             } else {
                 throw runtime_error("Error in LL1 analysis (error in table)");
             }
         }
+        else
+            throw runtime_error("Internal Error. (neither VT nor VN)");
     }
-    return true;
+    if (st.empty() && cursor == end)
+        return true;
+    throw runtime_error("process LL1 finish but stack is not empty or input not empty.");
+}
+
+void LL1::show() {
+    auto alphabet = gens.get_terminators();
+    auto temp = gens.get_non_terminators();
+    ofstream of;
+    of.open("LL1_table.html");
+    of << "<html>\n";
+    of << "<h1> LL1 Analysis Table.</h1>\n";
+    of << "<p>VT = {";
+    for (const auto &x: alphabet)
+        of << x << ", ";
+    of << "}</p>\n";
+    of << "<p>VN = {";
+    for (const auto &x: temp)
+        of << x << ", ";
+    of << "}</p>\n";
+    of << "<table>\n";
+    for (size_t i = 0; i < gens.size(); i++) {
+        of << "<tr><td>" << i << "</td><td>:</td><td>" << gens[i].first << " --> ";
+        for (const auto& x: gens[i].second)
+            of << x;
+        of << "</td></tr>\n";
+    }
+    of << "</table>\n";
+    alphabet.emplace_back("#");
+
+    of << "<table border='1'>\n";
+    of << "<tr><td>&nbsp;</td>\n";
+    for (const auto& alpha: alphabet)
+        of << "<td>" << alpha << "</td>";
+    of << "</tr>\n";
+
+    for (size_t i = 0; i < temp.size(); i++) {
+        of << "<tr><td>" << temp[i] << "</td>";
+        for (size_t j = 0; j < ter_map.size(); j++) {
+            const auto& m = table[i][j];
+            if (table[i][j] == gens.size())
+                of << "<td>&nbsp;</td>";
+            else
+                of << "<td>" << gens[table[i][j]] << "</td>";
+        }
+        of << "</tr>\n";
+    }
+    of << "</table>\n";
+    of << "</html>\n";
+    of.close();
 }
 

@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <iostream>
 
 #define get_gen(A, n) (g_list[g_map[A][n]])
 
@@ -22,7 +23,7 @@ class Generators {
     std::map<generator_A, std::vector<size_t>> g_map;
     std::vector<generator> g_list;
     generator_A start;
-    const generator_A epsilon = "Ɛ";
+    const generator_A epsilon = "\\e";
     const generator_A end = "#";
     const generator_A deleted = "deleted";
 
@@ -73,5 +74,8 @@ generator_B make_generator_B(const std::string &s);
 generator make_generator(const std::string &A, const std::string &B);
 
 void show_generator(const generator& g);
+
+
+std::ostream& operator<<(std::ostream& out, const generator &g);
 
 #endif //COMPLIE_Generators_H

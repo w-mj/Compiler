@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <iostream>
 
 int hex2dec(char c);
 bool isalnumunder(int c);
@@ -35,6 +36,20 @@ bool insert_set(std::set<T> &s1, T s2) {
     size_t o = s1.size();
     s1.insert(s2);
     return o != s1.size();
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, std::set<T>& s) {
+    out << "{";
+    size_t cnt = 0, last = s.size() - 1;
+    for (auto &x: s) {
+        if (cnt != last)
+            out << x << ", ";
+        else
+            out << x;
+    }
+    out << "}";
+    return out;
 }
 
 

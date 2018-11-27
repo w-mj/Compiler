@@ -8,7 +8,7 @@
 #include "../word_analysis/TokenList.h"
 
 class LL1 {
-    Generators &gens;
+    Generators gens;
     size_t **table;
     TokenList& tokenList;
     std::map<generator_A, size_t> nonter_map, ter_map;
@@ -16,6 +16,8 @@ public:
     LL1(Generators& generators, TokenList& tokenList);
     ~LL1();
     void build();
+
+    void show();
 
     bool process(TokenList::iterator& begin, const TokenList::iterator& end, const generator_A& start);
     bool process();

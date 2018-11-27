@@ -9,7 +9,7 @@
 #include "../word_analysis/TokenList.h"
 
 class LR1 {
-    Generators &generators;
+    Generators generators;
     std::vector<std::map<std::string, std::pair<char, size_t>>> table;
     TokenList& tokenList;
 public:
