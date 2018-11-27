@@ -20,20 +20,20 @@ LR1::LR1(Generators &g, TokenList& tokenList): generators(g), tokenList(tokenLis
 }
 
 void LR1::show() {
-    for (int i = 0; i < table.size(); i++) {
-        for (const auto &m: table[i]) {
-            if (m.second.first != 'e') {
-                cout << i << " " << m.first << "  : ";
-                if (m.second.first == 'r') {
-                    cout << "reduce: ";
-                    show_generator(generators[m.second.second]);
-                } else if (m.second.first == 's') {
-                    cout << "shift in: " << m.second.second;
-                }
-                cout << endl;
-            }
-        }
-    }
+//    for (int i = 0; i < table.size(); i++) {
+//        for (const auto &m: table[i]) {
+//            if (m.second.first != 'e') {
+//                cout << i << " " << m.first << "  : ";
+//                if (m.second.first == 'r') {
+//                    cout << "reduce: ";
+//                    show_generator(generators[m.second.second]);
+//                } else if (m.second.first == 's') {
+//                    cout << "shift in: " << m.second.second;
+//                }
+//                cout << endl;
+//            }
+//        }
+//    }
     auto alphabet = generators.get_terminators();
     auto temp = generators.get_non_terminators();
     ofstream of;
@@ -94,22 +94,8 @@ bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
         while (true) {
             size_t state = state_stack.top();
 
-            string alpha;
-            string str;
-            if (cursor == end) {
-                alpha = "#";
-                str = "#";
-            }
-            else if (cursor->first == 'c') {
-                alpha = "i";  // 常数
-                str = tokenList.get_token_num(*cursor).str();
-            }
-            else if (cursor->first == 'p' && generators.isVT(tokenList.get_token(*cursor))) {
-                alpha = tokenList.get_token(*cursor);
-                str = alpha;
-            }
-            else
-                throw runtime_error("Not support " + tokenList.get_token(*cursor) + " yet.");
+            string alpha = tokenList.get_grammar_token(cursor, end);
+            string str = tokenList.get_token_str(*cursor);
 
             const auto &action = table[state][alpha];
             switch (action.first) {

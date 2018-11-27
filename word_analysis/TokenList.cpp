@@ -142,10 +142,34 @@ std::string TokenList::get_grammar_token(const TokenList::iterator &it) {
 std::string TokenList::get_grammar_token(const TokenList::iterator &it, const TokenList::iterator &end) {
     if (it == end)
         return "#";
-    if (it->first == 'k')
-        return key[it->second];
+    if (it->first == 'k') {
+        static auto anyone = [](auto&& k, auto&&... args) ->bool { return ((args == k) || ...); };
+        if (anyone(key[it->second], "int", "float", "short", "double", "long", "char"))
+            return "t";
+        else
+            return key[it->second];
+    }
     if (it->first == 'p')
         return bound[it->second];
     return "i";
+}
+
+std::string TokenList::get_token_str(const Token &t) const {
+    switch (t.first) {
+        case 'i':
+            return id[t.second];
+        case 'h':
+            return to_string(character[t.second]);
+        case 's':
+            return str[t.second];
+        case 'c':
+            return constants[t.second].str();
+        case 'k':
+            return key[t.second];
+        case 'p':
+            return bound[t.second];
+        default:break;
+    }
+    return "";
 }
 

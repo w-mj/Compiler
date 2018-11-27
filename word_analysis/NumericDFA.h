@@ -19,7 +19,7 @@ struct Number {
         float ft;
         double db;
     } value;
-    std::string str();
+    std::string str() const;
     friend std::ostream& operator<<(std::ostream& out, const Number& s);
 };
 

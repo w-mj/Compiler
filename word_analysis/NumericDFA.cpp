@@ -188,7 +188,7 @@ std::ostream &operator<<(std::ostream &out, const Number &s) {
 }
 
 
-std::string Number::str() {
+std::string Number::str() const{
     switch (type) {
         case Number::NumberType::UShort: return to_string(value.us) + " unsigned short";
         case Number::NumberType::Short: return to_string(value.ss) + " short";

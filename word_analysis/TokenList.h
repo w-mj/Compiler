@@ -52,6 +52,7 @@ public:
     char get_token_char(const Token &t) const;
     Number get_token_num(const Token &t) const;
     std::string get_token(const Token& t) const;
+    std::string get_token_str(const Token& t) const;
 
     size_t size() const;
 

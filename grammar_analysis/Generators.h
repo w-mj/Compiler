@@ -74,6 +74,8 @@ public:
 
     void set_terminators(const std::set<generator_A>& s);
     void set_non_terminators(const std::set<generator_A>& s);
+    void set_terminators(const std::string& s);
+    void set_non_terminators(const std::string& s);
     void insert_nonterminators(const generator_A& n);
 
     struct GeneratorAdder {

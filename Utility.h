@@ -22,7 +22,7 @@
 int hex2dec(char c);
 bool isalnumunder(int c);
 std::vector<std::string> split(const std::string &str, char sp=' ');
-
+std::set<std::string> v2s(std::vector<std::string>& s);
 
 template<typename T>
 bool union_set(std::set<T> &s1, std::set<T> &s2) {

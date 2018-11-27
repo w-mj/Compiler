@@ -34,3 +34,6 @@ vector<string> split(const string &str, char sp) {
     }
 }
 
+set<string> v2s(vector<string>& s){
+    return set<string>(s.begin(), s.end());
+}

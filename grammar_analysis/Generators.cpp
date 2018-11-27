@@ -373,3 +373,13 @@ void Generators::insert_nonterminators(const generator_A& n) {
 void Generators::set_start(const generator_A& s) {
     start = s;
 }
+
+void Generators::set_terminators(const std::string &s) {
+    auto v = split(s);
+    set_terminators(set<string>(v.begin(), v.end()));
+}
+
+void Generators::set_non_terminators(const std::string &s) {
+    auto v = split(s);
+    set_non_terminators(set<string>(v.begin(), v.end()));
+}
