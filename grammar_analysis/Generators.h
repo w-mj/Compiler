@@ -88,6 +88,7 @@ public:
 
     };
     GeneratorAdder& add(const generator_A& A);
+    GeneratorAdder& operator<<(const generator_A& A);
 private:
     GeneratorAdder adder;
 

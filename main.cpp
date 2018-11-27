@@ -40,7 +40,7 @@ int main() {
     lr1.process();
     cout << endl << " LR1 OK" << endl << endl;
 
-    exit(1);
+    //exit(1);
 
     generators.remove_left_recursive();
     generators.show();

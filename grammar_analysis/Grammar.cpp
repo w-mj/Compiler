@@ -52,3 +52,68 @@ Generators Grammar::C_Exp() {
 
     return gen;
 }
+
+Generators Grammar::C_Grammar() {
+    Generators gen;
+
+    gen.set_terminators("int_const float_const id ; , > < >= <= == != + - * / && || . ! "
+                        "int float ( ) [ ] { } struct return if else while");
+    gen.set_non_terminators("SEMI COMMA ASSIGNOP RELOP MINUS PLUS STAR DIV AND OR NOT"
+                            "DOT TYPE LP RP LB RB LC RC STRUCT RETURN IF ELSE WHILE");
+    gen.set_start("Program");
+
+    // TOKENS
+    gen << "SEMI" >> ";";
+    gen << "COMMA" >> ",";
+    gen << "ASSIGNOP" >> "=";
+    gen << "RELOP" >> ">"| "<"| ">="| "<="| "=="| "!=";
+    gen << "PLUS" >> "+";
+    gen << "MINUS" >> "-";
+    gen << "STAR" >> "*";
+    gen << "DIV" >> "/";
+    gen << "AND" >> "&&";
+    gen << "OR" >> "||";
+    gen << "DOT" >> ".";
+    gen << "NOT" >> "!";
+    gen << "TYPE" >> "int"| "float";
+    gen << "LP" >> "(";
+    gen << "RP" >> ")";
+    gen << "LB" >> "[";
+    gen << "RB" >> "]";
+    gen << "LC" >> "{";
+    gen << "RC" >> "}";
+    gen << "STRUCT" >> "struct";
+    gen << "RETURN" >> "return";
+    gen << "IF" >> "if";
+    gen << "ELSE" >> "else";
+    gen << "WHILE" >> "while";
+
+    // High-level Definitions
+    gen << "Program" >> "ExtDefList";
+    gen << "ExtDefList" >> "ExtDef ExtDefList"| gen.get_epsilon();
+    gen << "ExtDef" >> "Specifier ExtDecList ;"| "Specifier ;"| "Specifier FunDec CompSt";
+    gen << "ExtDecList" >> "VarDec"| "VarDec , ExtDecList";
+
+    // Sepcifiers
+    gen << "Specifier" >> "TYPE"| "StructSpecifier";
+    gen << "StructSpecifier" >> "struct OptTag { DefList }"| "struct id";
+    gen << "OptTag" >> "ID"| gen.get_epsilon();
+    // gen << "Tag" >> "ID";
+
+    //Declarators
+    gen << "VarDec" >> "id"| "VarDec [ int_const ]";
+    gen << "FunDec" >> "id ( VarList )"| "ID ( )";
+    gen << "VarList" >> "ParamDec , VarList"| "ParamDec";
+    gen << "ParamDec" >> "Specifier VarDec";
+
+    // Local Definitions
+    gen << "DefList" >> "Def DefList"| gen.get_epsilon();
+    gen << "Def" >> "Specifier DecList ;";
+    gen << "DecList" >> "Dec"| "Dec , DecList";
+    gen << "Dec" >> "VarDec"| "VarDec ASSIGNOP Exp";
+
+    // Expressions
+    gen << "EXP" >> "id + id";
+    
+    return gen;
+}

@@ -11,7 +11,7 @@ class Grammar {
 public:
     static Generators Basic_Exp();
     static Generators C_Exp();
-    static Generators C_Grammar(){};
+    static Generators C_Grammar();
 };
 
 

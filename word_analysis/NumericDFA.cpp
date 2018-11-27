@@ -190,13 +190,13 @@ std::ostream &operator<<(std::ostream &out, const Number &s) {
 
 std::string Number::str() const{
     switch (type) {
-        case Number::NumberType::UShort: return to_string(value.us) + " unsigned short";
-        case Number::NumberType::Short: return to_string(value.ss) + " short";
-        case Number::NumberType::UInt: return to_string(value.ui) + " unsigned int";
-        case Number::NumberType::Int: return to_string(value.si) + " int";
-        case Number::NumberType::ULong: return to_string(value.ul) + " unsigned long";
-        case Number::NumberType::Long: return to_string(value.sl) + " long";
-        case Number::NumberType::Float: return to_string(value.ft) + " float";
-        case Number::NumberType::Double: return to_string(value.db) + " double";
+        case Number::NumberType::UShort: return to_string(value.us);
+        case Number::NumberType::Short: return to_string(value.ss);
+        case Number::NumberType::UInt: return to_string(value.ui);
+        case Number::NumberType::Int: return to_string(value.si);
+        case Number::NumberType::ULong: return to_string(value.ul);
+        case Number::NumberType::Long: return to_string(value.sl);
+        case Number::NumberType::Float: return to_string(value.ft);
+        case Number::NumberType::Double: return to_string(value.db);
     }
 }

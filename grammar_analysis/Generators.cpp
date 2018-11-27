@@ -383,3 +383,8 @@ void Generators::set_non_terminators(const std::string &s) {
     auto v = split(s);
     set_non_terminators(set<string>(v.begin(), v.end()));
 }
+
+Generators::GeneratorAdder &Generators::operator<<(const generator_A &A) {
+    adder.A = A;
+    return adder;
+}
