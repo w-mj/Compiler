@@ -79,7 +79,11 @@ public:
     struct GeneratorAdder {
         generator_A A;
         Generators* gens;
-        friend GeneratorAdder& operator<<(GeneratorAdder& adder, const generator_B& B);
+        GeneratorAdder& operator<<(const generator_B& B);
+        GeneratorAdder& operator<<(const std::string& B);
+        GeneratorAdder& operator>>(const std::string& B);
+        GeneratorAdder& operator|(const std::string& B);
+
     };
     GeneratorAdder& add(const generator_A& A);
 private:
@@ -93,9 +97,6 @@ generator make_generator(const std::string &A, const std::string &B);
 void show_generator(const generator& g);
 
 std::ostream& operator<<(std::ostream& out, const generator &g);
-Generators::GeneratorAdder& operator<<(Generators::GeneratorAdder& adder, const generator_B& B);
-Generators::GeneratorAdder& operator<<(Generators::GeneratorAdder& adder, const std::string& B);
-Generators::GeneratorAdder& operator|(Generators::GeneratorAdder& adder, const std::string& B);
 
 
 #endif //COMPLIE_Generators_H

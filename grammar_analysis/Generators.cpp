@@ -334,17 +334,21 @@ std::ostream& operator<<(std::ostream& out, const generator &g) {
     return out;
 }
 
-Generators::GeneratorAdder &operator<<(Generators::GeneratorAdder &adder, const generator_B &B) {
-    adder.gens->add_generator(adder.A, B);
-    return adder;
+Generators::GeneratorAdder &Generators::GeneratorAdder::operator<<(const generator_B &B) {
+    gens->add_generator(A, B);
+    return *this;
 }
 
-Generators::GeneratorAdder &operator<<(Generators::GeneratorAdder &adder, const std::string &B) {
-    return adder << split(B);
+Generators::GeneratorAdder &Generators::GeneratorAdder::operator<<(const std::string &B) {
+    return operator<<(split(B));
 }
 
-Generators::GeneratorAdder &operator|(Generators::GeneratorAdder &adder, const std::string &B) {
-    return adder << split(B);
+Generators::GeneratorAdder &Generators::GeneratorAdder::operator|(const std::string &B) {
+    return operator<<(split(B));
+}
+
+Generators::GeneratorAdder &Generators::GeneratorAdder::operator>>(const std::string &B) {
+    return operator<<(split(B));
 }
 
 Generators::GeneratorAdder &Generators::add(const generator_A &A) {
