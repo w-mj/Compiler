@@ -38,6 +38,8 @@ class Generators {
     bool built_first = false;
     bool built_follow = false;
 
+
+
 public:
     Generators();
     void load_text(std::string name);
@@ -51,6 +53,7 @@ public:
     bool isVT(const std::string& s) const;
     void show();
     std::string to_str();
+    void set_start(const generator_A& s);
     generator_A get_start() const;
     generator_A get_end() const;
     generator_A get_epsilon() const;
@@ -69,12 +72,18 @@ public:
     void _print_first();
     void _print_follow();
 
+    void set_terminators(const std::set<generator_A>& s);
+    void set_non_terminators(const std::set<generator_A>& s);
+    void insert_nonterminators(const generator_A& n);
 
     struct GeneratorAdder {
         generator_A A;
-        Generators& gens;
+        Generators* gens;
         friend GeneratorAdder& operator<<(GeneratorAdder& adder, const generator_B& B);
     };
+    GeneratorAdder& add(const generator_A& A);
+private:
+    GeneratorAdder adder;
 
 };
 
@@ -85,6 +94,8 @@ void show_generator(const generator& g);
 
 std::ostream& operator<<(std::ostream& out, const generator &g);
 Generators::GeneratorAdder& operator<<(Generators::GeneratorAdder& adder, const generator_B& B);
+Generators::GeneratorAdder& operator<<(Generators::GeneratorAdder& adder, const std::string& B);
+Generators::GeneratorAdder& operator|(Generators::GeneratorAdder& adder, const std::string& B);
 
 
 #endif //COMPLIE_Generators_H

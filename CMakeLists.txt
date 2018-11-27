@@ -23,4 +23,4 @@ add_executable(Complie main.cpp
         grammar_analysis/LL1.cpp
         grammar_analysis/LL1.h
         word_analysis/TokenList.cpp
-        word_analysis/TokenList.h)
+        word_analysis/TokenList.h grammar_analysis/Grammar.cpp grammar_analysis/Grammar.h)

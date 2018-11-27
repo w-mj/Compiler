@@ -20,6 +20,7 @@ using namespace std;
 void LR1_DFA::build() {
     root = new Node();
     all_nodes.push_back(root);
+    generators.insert_nonterminators("@Start");
     generator expend_generator = make_generator("@Start", generators.get_start());
     size_t i0 = generators.add_generator(expend_generator);
     root->generator_list.emplace_back(expend_generator, i0);

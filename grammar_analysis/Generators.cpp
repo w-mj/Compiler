@@ -58,9 +58,16 @@ bool Generators::isVT(const std::string &s) const {
     return find(terminators.begin(), terminators.end(), s) != terminators.end();
 }
 
-Generators::Generators() = default;
+Generators::Generators() {
+    adder.gens = this;
+}
 
 size_t Generators::add_generator(const generator &g) {
+    if (!in_vec(non_terminators, g.first))
+        throw runtime_error(g.first + " is not a non-terminator.");
+    for (const auto&x : g.second)
+        if (!(in_vec(non_terminators, x) || in_vec(terminators, x) || x == epsilon))
+            throw runtime_error(x + " is neither a terminator nor a non-terminator.");
     if (g_map.find(g.first) == g_map.end())
         g_map.emplace(g.first, vector<size_t>());
     size_t i = g_list.size();
@@ -328,6 +335,37 @@ std::ostream& operator<<(std::ostream& out, const generator &g) {
 }
 
 Generators::GeneratorAdder &operator<<(Generators::GeneratorAdder &adder, const generator_B &B) {
-    adder.gens.add_generator(adder.A, B);
+    adder.gens->add_generator(adder.A, B);
     return adder;
+}
+
+Generators::GeneratorAdder &operator<<(Generators::GeneratorAdder &adder, const std::string &B) {
+    return adder << split(B);
+}
+
+Generators::GeneratorAdder &operator|(Generators::GeneratorAdder &adder, const std::string &B) {
+    return adder << split(B);
+}
+
+Generators::GeneratorAdder &Generators::add(const generator_A &A) {
+    adder.A = A;
+    return adder;
+}
+
+void Generators::set_terminators(const std::set<generator_A> &s) {
+    terminators.clear();
+    terminators.insert(s.begin(), s.end());
+}
+
+void Generators::set_non_terminators(const set<generator_A>& s) {
+    non_terminators.clear();
+    non_terminators.insert(s.begin(), s.end());
+}
+
+void Generators::insert_nonterminators(const generator_A& n) {
+    non_terminators.insert(n);
+}
+
+void Generators::set_start(const generator_A& s) {
+    start = s;
 }

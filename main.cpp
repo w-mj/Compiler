@@ -6,6 +6,7 @@
 #include "grammar_analysis/Generators.h"
 #include "grammar_analysis/LR1.h"
 #include "grammar_analysis/LL1.h"
+#include "grammar_analysis/Grammar.h"
 
 using namespace std;
 
@@ -22,8 +23,7 @@ int main() {
     file.open(fname);
     string line;
     WordAnalysis analyzer;
-    Generators generators;
-    generators.load_text("grammar_analysis/test");
+    Generators generators = Grammar::Basic_Exp();
     generators.show();
 
     generators._print_first();

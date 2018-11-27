@@ -1,7 +1,7 @@
 <html>
 <h1> LR1 Analysis Table.</h1>
 <p>VT = {(, ), *, +, -, /, i, }</p>
-<p>VN = {E, F, T, }</p>
+<p>VN = {@Start, E, F, T, }</p>
 <table>
 <tr><td>0</td><td>:</td><td>E --> E+T</td></tr>
 <tr><td>1</td><td>:</td><td>E --> E-T</td></tr>
@@ -15,36 +15,36 @@
 </table>
 <table border='1'>
 <tr><td>&nbsp;</td>
-<td>(</td><td>)</td><td>*</td><td>+</td><td>-</td><td>/</td><td>i</td><td>#</td><td>E</td><td>F</td><td>T</td></tr>
-<tr><td>0</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>s2</td><td>s3</td><td>s4</td></tr>
-<tr><td>1</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>s7</td><td>s8</td><td>s9</td></tr>
-<tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s11</td><td>s12</td><td>&nbsp;</td><td>&nbsp;</td><td>r8</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td><td>r5</td><td>r5</td><td>r5</td><td>r5</td><td>&nbsp;</td><td>r5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>4</td><td>&nbsp;</td><td>&nbsp;</td><td>s13</td><td>r2</td><td>r2</td><td>s14</td><td>&nbsp;</td><td>r2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>5</td><td>&nbsp;</td><td>&nbsp;</td><td>r7</td><td>r7</td><td>r7</td><td>r7</td><td>&nbsp;</td><td>r7</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>6</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>s15</td><td>s8</td><td>s9</td></tr>
-<tr><td>7</td><td>&nbsp;</td><td>s16</td><td>&nbsp;</td><td>s17</td><td>s18</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>8</td><td>&nbsp;</td><td>r5</td><td>r5</td><td>r5</td><td>r5</td><td>r5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>9</td><td>&nbsp;</td><td>r2</td><td>s19</td><td>r2</td><td>r2</td><td>s20</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>10</td><td>&nbsp;</td><td>r7</td><td>r7</td><td>r7</td><td>r7</td><td>r7</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>11</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>s3</td><td>s21</td></tr>
-<tr><td>12</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>s3</td><td>s22</td></tr>
-<tr><td>13</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>s23</td><td>&nbsp;</td></tr>
-<tr><td>14</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>s24</td><td>&nbsp;</td></tr>
-<tr><td>15</td><td>&nbsp;</td><td>s25</td><td>&nbsp;</td><td>s17</td><td>s18</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>16</td><td>&nbsp;</td><td>&nbsp;</td><td>r6</td><td>r6</td><td>r6</td><td>r6</td><td>&nbsp;</td><td>r6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>17</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>s8</td><td>s26</td></tr>
-<tr><td>18</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>s8</td><td>s27</td></tr>
-<tr><td>19</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>s28</td><td>&nbsp;</td></tr>
-<tr><td>20</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>s29</td><td>&nbsp;</td></tr>
-<tr><td>21</td><td>&nbsp;</td><td>&nbsp;</td><td>s13</td><td>r0</td><td>r0</td><td>s14</td><td>&nbsp;</td><td>r0</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>22</td><td>&nbsp;</td><td>&nbsp;</td><td>s13</td><td>r1</td><td>r1</td><td>s14</td><td>&nbsp;</td><td>r1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>23</td><td>&nbsp;</td><td>&nbsp;</td><td>r3</td><td>r3</td><td>r3</td><td>r3</td><td>&nbsp;</td><td>r3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>24</td><td>&nbsp;</td><td>&nbsp;</td><td>r4</td><td>r4</td><td>r4</td><td>r4</td><td>&nbsp;</td><td>r4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>25</td><td>&nbsp;</td><td>r6</td><td>r6</td><td>r6</td><td>r6</td><td>r6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>26</td><td>&nbsp;</td><td>r0</td><td>s19</td><td>r0</td><td>r0</td><td>s20</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>27</td><td>&nbsp;</td><td>r1</td><td>s19</td><td>r1</td><td>r1</td><td>s20</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>28</td><td>&nbsp;</td><td>r3</td><td>r3</td><td>r3</td><td>r3</td><td>r3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>29</td><td>&nbsp;</td><td>r4</td><td>r4</td><td>r4</td><td>r4</td><td>r4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<td>(</td><td>)</td><td>*</td><td>+</td><td>-</td><td>/</td><td>i</td><td>#</td><td>@Start</td><td>E</td><td>F</td><td>T</td></tr>
+<tr><td>0</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>s2</td><td>s3</td><td>s4</td></tr>
+<tr><td>1</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>s7</td><td>s8</td><td>s9</td></tr>
+<tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s11</td><td>s12</td><td>&nbsp;</td><td>&nbsp;</td><td>r8</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td><td>r5</td><td>r5</td><td>r5</td><td>r5</td><td>&nbsp;</td><td>r5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>4</td><td>&nbsp;</td><td>&nbsp;</td><td>s13</td><td>r2</td><td>r2</td><td>s14</td><td>&nbsp;</td><td>r2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>5</td><td>&nbsp;</td><td>&nbsp;</td><td>r7</td><td>r7</td><td>r7</td><td>r7</td><td>&nbsp;</td><td>r7</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>6</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>s15</td><td>s8</td><td>s9</td></tr>
+<tr><td>7</td><td>&nbsp;</td><td>s16</td><td>&nbsp;</td><td>s17</td><td>s18</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>8</td><td>&nbsp;</td><td>r5</td><td>r5</td><td>r5</td><td>r5</td><td>r5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>9</td><td>&nbsp;</td><td>r2</td><td>s19</td><td>r2</td><td>r2</td><td>s20</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>10</td><td>&nbsp;</td><td>r7</td><td>r7</td><td>r7</td><td>r7</td><td>r7</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>11</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s3</td><td>s21</td></tr>
+<tr><td>12</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s3</td><td>s22</td></tr>
+<tr><td>13</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s23</td><td>&nbsp;</td></tr>
+<tr><td>14</td><td>s1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s5</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s24</td><td>&nbsp;</td></tr>
+<tr><td>15</td><td>&nbsp;</td><td>s25</td><td>&nbsp;</td><td>s17</td><td>s18</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>16</td><td>&nbsp;</td><td>&nbsp;</td><td>r6</td><td>r6</td><td>r6</td><td>r6</td><td>&nbsp;</td><td>r6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>17</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s8</td><td>s26</td></tr>
+<tr><td>18</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s8</td><td>s27</td></tr>
+<tr><td>19</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s28</td><td>&nbsp;</td></tr>
+<tr><td>20</td><td>s6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s10</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>s29</td><td>&nbsp;</td></tr>
+<tr><td>21</td><td>&nbsp;</td><td>&nbsp;</td><td>s13</td><td>r0</td><td>r0</td><td>s14</td><td>&nbsp;</td><td>r0</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>22</td><td>&nbsp;</td><td>&nbsp;</td><td>s13</td><td>r1</td><td>r1</td><td>s14</td><td>&nbsp;</td><td>r1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>23</td><td>&nbsp;</td><td>&nbsp;</td><td>r3</td><td>r3</td><td>r3</td><td>r3</td><td>&nbsp;</td><td>r3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>24</td><td>&nbsp;</td><td>&nbsp;</td><td>r4</td><td>r4</td><td>r4</td><td>r4</td><td>&nbsp;</td><td>r4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>25</td><td>&nbsp;</td><td>r6</td><td>r6</td><td>r6</td><td>r6</td><td>r6</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>26</td><td>&nbsp;</td><td>r0</td><td>s19</td><td>r0</td><td>r0</td><td>s20</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>27</td><td>&nbsp;</td><td>r1</td><td>s19</td><td>r1</td><td>r1</td><td>s20</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>28</td><td>&nbsp;</td><td>r3</td><td>r3</td><td>r3</td><td>r3</td><td>r3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>29</td><td>&nbsp;</td><td>r4</td><td>r4</td><td>r4</td><td>r4</td><td>r4</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
 </table>
 </html>
