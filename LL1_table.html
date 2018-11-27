@@ -1,7 +1,7 @@
 <html>
 <h1> LL1 Analysis Table.</h1>
-<p>VT = {+, -, *, /, (, ), i, }</p>
-<p>VN = {E, T, F, E', T', }</p>
+<p>VT = {(, ), *, +, -, /, i, }</p>
+<p>VN = {E, E', F, T, T', }</p>
 <table>
 <tr><td>0</td><td>:</td><td>E' --> +TE'</td></tr>
 <tr><td>1</td><td>:</td><td>E' --> -TE'</td></tr>
@@ -16,11 +16,11 @@
 </table>
 <table border='1'>
 <tr><td>&nbsp;</td>
-<td>+</td><td>-</td><td>*</td><td>/</td><td>(</td><td>)</td><td>i</td><td>#</td></tr>
-<tr><td>E</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>E  ->  TE'</td><td>&nbsp;</td><td>E  ->  TE'</td><td>&nbsp;</td></tr>
-<tr><td>T</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>T  ->  FT'</td><td>&nbsp;</td><td>T  ->  FT'</td><td>&nbsp;</td></tr>
-<tr><td>F</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>F  ->  (E)</td><td>&nbsp;</td><td>F  ->  i</td><td>&nbsp;</td></tr>
-<tr><td>E'</td><td>E'  ->  +TE'</td><td>E'  ->  -TE'</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>E'  ->  \e</td><td>&nbsp;</td><td>E'  ->  \e</td></tr>
-<tr><td>T'</td><td>T'  ->  \e</td><td>T'  ->  \e</td><td>T'  ->  *FT'</td><td>T'  ->  /FT'</td><td>&nbsp;</td><td>T'  ->  \e</td><td>&nbsp;</td><td>T'  ->  \e</td></tr>
+<td>(</td><td>)</td><td>*</td><td>+</td><td>-</td><td>/</td><td>i</td><td>#</td></tr>
+<tr><td>E</td><td>E  ->  TE'</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>E  ->  TE'</td><td>&nbsp;</td></tr>
+<tr><td>E'</td><td>&nbsp;</td><td>E'  ->  \e</td><td>&nbsp;</td><td>E'  ->  +TE'</td><td>E'  ->  -TE'</td><td>&nbsp;</td><td>&nbsp;</td><td>E'  ->  \e</td></tr>
+<tr><td>F</td><td>F  ->  (E)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>F  ->  i</td><td>&nbsp;</td></tr>
+<tr><td>T</td><td>T  ->  FT'</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>T  ->  FT'</td><td>&nbsp;</td></tr>
+<tr><td>T'</td><td>&nbsp;</td><td>T'  ->  \e</td><td>T'  ->  *FT'</td><td>T'  ->  \e</td><td>T'  ->  \e</td><td>T'  ->  /FT'</td><td>&nbsp;</td><td>T'  ->  \e</td></tr>
 </table>
 </html>

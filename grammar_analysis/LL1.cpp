@@ -73,7 +73,7 @@ void LL1::build() {
 }
 
 LL1::~LL1() {
-    for (size_t i = 0; i < gens.terminator_size(); i++)
+    for (size_t i = 0; i < gens.non_terminator_size(); i++)
         delete[] table[i];
     delete[] table;
 }

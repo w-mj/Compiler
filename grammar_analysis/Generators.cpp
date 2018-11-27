@@ -16,9 +16,11 @@ void Generators::load_text(std::string name) {
     fin.open(name);
     string buffer;
     getline(fin, buffer); // VN
-    non_terminators = split(buffer, '`');
+    auto non_ter = split(buffer, '`');
+    non_terminators.insert(non_ter.begin(), non_ter.end());
     getline(fin, buffer);
-    terminators = split(buffer, '`');
+    auto ter = split(buffer, '`');
+    terminators.insert(ter.begin(), ter.end());
     getline(fin, start);
     while (getline(fin, buffer)) {
         vector<string> gens = split(buffer, '`');
@@ -33,7 +35,6 @@ void Generators::load_text(std::string name) {
             add_generator(A, B);
         }
     }
-
 }
 
 std::vector<size_t> Generators::get_generators_index(const generator_A &A) {
@@ -80,12 +81,12 @@ generator_A Generators::get_start() const {
     return start;
 }
 
-std::vector<generator_A> Generators::get_non_terminators() {
-    return non_terminators;
+vector<string> Generators::get_non_terminators() {
+    return vector<string>(non_terminators.begin(), non_terminators.end());
 }
 
-std::vector<generator_A> Generators::get_terminators() {
-    return terminators;
+vector<generator_A> Generators::get_terminators() {
+    return vector<string>(terminators.begin(), terminators.end());
 }
 
 const generator &Generators::operator[](size_t i) {
@@ -242,7 +243,7 @@ void Generators::remove_left_recursive() {
                 }
                 g_list[cur_gen_id].second.push_back(new_A);
             }
-            non_terminators.push_back(new_A);
+            non_terminators.insert(new_A);
             add_generator(make_generator(new_A, epsilon));
             for (auto cur_gen_id: remove_list) {
                 g_map[i].erase(find(g_map[i].begin(), g_map[i].end(), cur_gen_id));
@@ -324,4 +325,9 @@ std::ostream& operator<<(std::ostream& out, const generator &g) {
     for (const auto &c: g.second)
         out << c;
     return out;
+}
+
+Generators::GeneratorAdder &operator<<(Generators::GeneratorAdder &adder, const generator_B &B) {
+    adder.gens.add_generator(adder.A, B);
+    return adder;
 }

@@ -16,10 +16,11 @@ typedef std::string generator_A;
 typedef std::vector<std::string> generator_B;
 typedef std::pair<generator_A, generator_B> generator;
 
+
 class Generators {
-    // TODO: replace vector by set
-    std::vector<std::string> terminators;
-    std::vector<std::string> non_terminators;
+
+    std::set<generator_A> terminators;
+    std::set<std::string> non_terminators;
     std::map<generator_A, std::vector<size_t>> g_map;
     std::vector<generator> g_list;
     generator_A start;
@@ -55,7 +56,7 @@ public:
     generator_A get_epsilon() const;
 
     std::vector<generator_A> get_terminators();
-    std::vector<generator_A> get_non_terminators();
+    std::vector<std::string> get_non_terminators();
     const generator& operator[](size_t i);
     size_t size() const;
     void remove_left_recursive();
@@ -68,6 +69,13 @@ public:
     void _print_first();
     void _print_follow();
 
+
+    struct GeneratorAdder {
+        generator_A A;
+        Generators& gens;
+        friend GeneratorAdder& operator<<(GeneratorAdder& adder, const generator_B& B);
+    };
+
 };
 
 generator_B make_generator_B(const std::string &s);
@@ -75,7 +83,8 @@ generator make_generator(const std::string &A, const std::string &B);
 
 void show_generator(const generator& g);
 
-
 std::ostream& operator<<(std::ostream& out, const generator &g);
+Generators::GeneratorAdder& operator<<(Generators::GeneratorAdder& adder, const generator_B& B);
+
 
 #endif //COMPLIE_Generators_H
