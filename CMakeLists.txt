@@ -23,4 +23,10 @@ add_executable(Complie main.cpp
         grammar_analysis/LL1.cpp
         grammar_analysis/LL1.h
         word_analysis/TokenList.cpp
-        word_analysis/TokenList.h grammar_analysis/Grammar.cpp grammar_analysis/Grammar.h)
+        word_analysis/TokenList.h
+        grammar_analysis/Grammar.cpp
+        grammar_analysis/Grammar.h
+        grammar_analysis/Attribute/Attribute.cpp
+        grammar_analysis/Attribute/Attribute.h
+        grammar_analysis/Attribute/Attr_ExpQuat_2_LR.cpp
+        grammar_analysis/Attribute/Attr_ExpQuat_2_LR.h)

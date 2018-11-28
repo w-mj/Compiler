@@ -19,7 +19,7 @@ struct Token {
 
 std::ostream& operator<<(std::ostream& out, const Token& s);
 
-
+// TODO: build independent alphabet
 
 class TokenList {
 

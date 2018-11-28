@@ -73,6 +73,7 @@ size_t Generators::add_generator(const generator &g) {
     size_t i = g_list.size();
     g_map[g.first].emplace_back(i);
     g_list.push_back(g);
+    attr_list.push_back(nullptr);
     return i;
 }
 
@@ -335,6 +336,7 @@ std::ostream& operator<<(std::ostream& out, const generator &g) {
 }
 
 Generators::GeneratorAdder &Generators::GeneratorAdder::operator<<(const generator_B &B) {
+    last_index = gens->size();
     gens->add_generator(A, B);
     return *this;
 }
@@ -349,6 +351,11 @@ Generators::GeneratorAdder &Generators::GeneratorAdder::operator|(const std::str
 
 Generators::GeneratorAdder &Generators::GeneratorAdder::operator>>(const std::string &B) {
     return operator<<(split(B));
+}
+
+Generators::GeneratorAdder &Generators::GeneratorAdder::operator|(Attribute *attr) {
+    gens->set_attr(last_index, attr);
+    return *this;
 }
 
 Generators::GeneratorAdder &Generators::add(const generator_A &A) {
@@ -387,4 +394,28 @@ void Generators::set_non_terminators(const std::string &s) {
 Generators::GeneratorAdder &Generators::operator<<(const generator_A &A) {
     adder.A = A;
     return adder;
+}
+
+Generators::~Generators() {
+    for (auto attr: attr_list)
+        delete attr;
+    delete do_nothing;
+}
+
+void Generators::set_attr(size_t i, Attribute *attr) {
+    attr_list[i] = attr;
+}
+
+Attribute &Generators::get_attr(size_t i) {
+    if (attr_list[i] != nullptr)
+        return *attr_list[i];
+    return *do_nothing;
+}
+
+void Generators::set_attr_builder(Attribute *attr) {
+    attr_builder = attr;
+}
+
+Attribute *Generators::get_attr_builder() {
+    return attr_builder;
 }

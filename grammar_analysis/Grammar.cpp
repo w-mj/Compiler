@@ -4,6 +4,7 @@
 
 #include "Grammar.h"
 #include "../Utility.h"
+#include "Attribute/Attr_ExpQuat_2_LR.h"
 
 
 Generators Grammar::Basic_Exp() {
@@ -23,8 +24,8 @@ Generators Grammar::C_Exp() {
     Generators gen;
 
     gen.set_terminators("= += -= *= /= %= <<= >>= &= ^= |= ? : "
-                            "|| && | ^ & == != <= >= > < << >> + - *"
-                            " / % ++ -- ! ~ ( ) sizeof [ ] . -> i t ,");
+                        "|| && | ^ & == != <= >= > < << >> + - *"
+                        " / % ++ -- ! ~ ( ) sizeof [ ] . -> i t ,");
     gen.set_non_terminators("Y Z A B C D E F G H I J K L M N O");
     gen.set_start("Z");
     gen.add("Z") >> "Z , A" | "A";
@@ -44,7 +45,7 @@ Generators Grammar::C_Exp() {
     gen.add("L") >> "L * M" | "L / M" | "L % M" | "M";
 //    gen.add("M") >> "N";
     gen.add("M") >> "++ M" | "-- M" | "+ M" | "- M" | "! M" | "~ M" | "( t ) M" |
-                     "* M" | "& M" | "sizeof ( t )" | "N";
+    "* M" | "& M" | "sizeof ( t )" | "N";
     gen.add("N") >> "O";
 //    gen.add("N") >> "O ++" | "O --" | "O ( Y )" | "O [ Z ]" | "O . i" | "O -> i" | "O";
     gen.add("O") >> "( Z )" | "i";
@@ -66,7 +67,7 @@ Generators Grammar::C_Grammar() {
     gen << "SEMI" >> ";";
     gen << "COMMA" >> ",";
     gen << "ASSIGNOP" >> "=";
-    gen << "RELOP" >> ">"| "<"| ">="| "<="| "=="| "!=";
+    gen << "RELOP" >> ">" | "<" | ">=" | "<=" | "==" | "!=";
     gen << "PLUS" >> "+";
     gen << "MINUS" >> "-";
     gen << "STAR" >> "*";
@@ -75,7 +76,7 @@ Generators Grammar::C_Grammar() {
     gen << "OR" >> "||";
     gen << "DOT" >> ".";
     gen << "NOT" >> "!";
-    gen << "TYPE" >> "int"| "float";
+    gen << "TYPE" >> "int" | "float";
     gen << "LP" >> "(";
     gen << "RP" >> ")";
     gen << "LB" >> "[";
@@ -90,30 +91,48 @@ Generators Grammar::C_Grammar() {
 
     // High-level Definitions
     gen << "Program" >> "ExtDefList";
-    gen << "ExtDefList" >> "ExtDef ExtDefList"| gen.get_epsilon();
-    gen << "ExtDef" >> "Specifier ExtDecList ;"| "Specifier ;"| "Specifier FunDec CompSt";
-    gen << "ExtDecList" >> "VarDec"| "VarDec , ExtDecList";
+    gen << "ExtDefList" >> "ExtDef ExtDefList" | gen.get_epsilon();
+    gen << "ExtDef" >> "Specifier ExtDecList ;" | "Specifier ;" | "Specifier FunDec CompSt";
+    gen << "ExtDecList" >> "VarDec" | "VarDec , ExtDecList";
 
     // Sepcifiers
-    gen << "Specifier" >> "TYPE"| "StructSpecifier";
-    gen << "StructSpecifier" >> "struct OptTag { DefList }"| "struct id";
-    gen << "OptTag" >> "ID"| gen.get_epsilon();
+    gen << "Specifier" >> "TYPE" | "StructSpecifier";
+    gen << "StructSpecifier" >> "struct OptTag { DefList }" | "struct id";
+    gen << "OptTag" >> "ID" | gen.get_epsilon();
     // gen << "Tag" >> "ID";
 
     //Declarators
-    gen << "VarDec" >> "id"| "VarDec [ int_const ]";
-    gen << "FunDec" >> "id ( VarList )"| "ID ( )";
-    gen << "VarList" >> "ParamDec , VarList"| "ParamDec";
+    gen << "VarDec" >> "id" | "VarDec [ int_const ]";
+    gen << "FunDec" >> "id ( VarList )" | "ID ( )";
+    gen << "VarList" >> "ParamDec , VarList" | "ParamDec";
     gen << "ParamDec" >> "Specifier VarDec";
 
     // Local Definitions
-    gen << "DefList" >> "Def DefList"| gen.get_epsilon();
+    gen << "DefList" >> "Def DefList" | gen.get_epsilon();
     gen << "Def" >> "Specifier DecList ;";
-    gen << "DecList" >> "Dec"| "Dec , DecList";
-    gen << "Dec" >> "VarDec"| "VarDec ASSIGNOP Exp";
+    gen << "DecList" >> "Dec" | "Dec , DecList";
+    gen << "Dec" >> "VarDec" | "VarDec ASSIGNOP Exp";
 
     // Expressions
     gen << "EXP" >> "id + id";
-    
+
+    return gen;
+}
+
+Generators Grammar::Basic_Exp_Quat(TokenList &tokenList) {
+    Generators gen;
+
+    Attribute *attr = new Attr_ExpQuat_2_LR(tokenList);
+    gen.set_attr_builder(attr);
+
+    gen.set_terminators({"+", "-", "*", "/", "(", ")", "i"});
+    gen.set_non_terminators({"E", "T", "F"});
+    gen.set_start("E");
+    gen.add("E") >> "E + T" | attr |
+    "E - T" | attr | "T";
+    gen.add("T") >> "T * F" | attr |
+    "T / F" | attr | "F";
+    gen.add("F") >> "( E )" | new process_B | "i";
+
     return gen;
 }

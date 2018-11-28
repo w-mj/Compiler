@@ -23,8 +23,7 @@ int main() {
     file.open(fname);
     string line;
     WordAnalysis analyzer;
-    Generators generators = Grammar::C_Exp();
-    generators.show();
+
 
    // generators._print_first();
    // generators._print_follow();
@@ -34,13 +33,15 @@ int main() {
 
     TokenList tkl = analyzer.get_tokenList();
 
+    Generators generators = Grammar::Basic_Exp_Quat(tkl);
+    generators.show();
     LR1 lr1(generators, tkl);
     cout << "finish building LR1 table" << endl;
     lr1.show();
     lr1.process();
     cout << endl << " LR1 OK" << endl << endl;
 
-    //exit(1);
+    exit(1);
 
     generators.remove_left_recursive();
     generators.show();

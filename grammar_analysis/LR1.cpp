@@ -85,10 +85,14 @@ void LR1::show() {
 bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
     stack<generator_A> alpha_stack;
     stack<Node*> tree_node_stack;
+    stack<size_t> state_stack;
+    stack<void*> attr_stack;
+
     alpha_stack.push("#");
     tree_node_stack.push(new Node("#"));
-    stack<size_t> state_stack;
     state_stack.push(0);
+    // attr_stack.push(nullptr);
+
     TokenList::iterator& cursor = begin;
     try {
         while (true) {
@@ -103,6 +107,9 @@ bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
                     state_stack.push(action.second);
                     alpha_stack.push(alpha);
                     tree_node_stack.push(new Node(str));
+                    void * v = generators.get_attr_builder()->get_data(cursor);
+                    if (v != nullptr)
+                        attr_stack.push(v);
                     cursor++;
                     break;
                 }
@@ -115,16 +122,25 @@ bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
                         delete_tree(n);
                         return true;
                     }
+                    // generators.get_attr(action.second)(nullptr);
+                    bool attribute = !generators.get_attr(action.second).nothing;
                     Node *new_node = new Node(gen.first);
+                    vector<void*> attr_vec;
                     for (auto i = 0; i < gen.second.size(); i++) {
                         state_stack.pop();
                         alpha_stack.pop();
                         new_node->children.insert(new_node->children.begin(), tree_node_stack.top());
                         tree_node_stack.pop();
+                        if (attribute) {
+                            attr_vec.insert(attr_vec.begin(), attr_stack.top());
+                            attr_stack.pop();
+                        }
                     }
                     alpha_stack.push(gen.first);
                     state_stack.push(table[state_stack.top()][gen.first].second);
                     tree_node_stack.push(new_node);
+                    if (attribute)
+                        attr_stack.push(generators.get_attr(action.second)(attr_vec));
                     break;
                 }
                 default:
