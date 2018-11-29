@@ -28,7 +28,7 @@ int main() {
    // generators._print_first();
    // generators._print_follow();
 
-    analyzer.process_file(file, false);
+    analyzer.process_file(file, true);
     file.close();
 
     TokenList tkl = analyzer.get_tokenList();

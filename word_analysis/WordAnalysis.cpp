@@ -42,12 +42,8 @@ bool WordAnalysis::process_key(std::string::iterator &iter, const std::string::i
 bool WordAnalysis::process_id(std::string::iterator &iter, const std::string::iterator &end) {
     string::iterator start = iter;
     bool m = id_tree.insert(iter, end, isalnumunder);
-    if (m) {
-        tokenList.add_id(string(start, iter));
-        // id.emplace_back(start, iter);
-    }
-    // token.emplace_back('i', find(id.begin(), id.end(), string(start, iter)) - id.begin());
-    return true;
+    tokenList.add_id(string(start, iter));
+    return m;
 }
 
 
