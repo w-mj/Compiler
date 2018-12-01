@@ -4,6 +4,7 @@
 
 #include "TokenList.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -66,13 +67,11 @@ void TokenList::add_num(const Number &a) {
 }
 
 void TokenList::add_key(const std::string &a) {
-    list.emplace_back('k', key.size());
-    key.push_back(a);
+    list.emplace_back('k', find(key.begin(), key.end(), a) - key.begin());
 }
 
 void TokenList::add_bound(const std::string &a) {
-    list.emplace_back('p', bound.size());
-    bound.push_back(a);
+    list.emplace_back('p', find(bound.begin(), bound.end(), a) - bound.begin());
 }
 
 void TokenList::set_bound_list(const std::vector<std::string> &l) {

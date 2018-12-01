@@ -128,11 +128,15 @@ Generators Grammar::Basic_Exp_Quat(TokenList &tokenList) {
     gen.set_terminators({"+", "-", "*", "/", "(", ")", "i"});
     gen.set_non_terminators({"E", "T", "F"});
     gen.set_start("E");
+
     gen.add("E") >> "E + T" | attr |
-    "E - T" | attr | "T";
+                    "E - T" | attr |
+                    "T";
     gen.add("T") >> "T * F" | attr |
-    "T / F" | attr | "F";
-    gen.add("F") >> "( E )" | new process_B | "i";
+                    "T / F" | attr |
+                    "F";
+    gen.add("F") >> "( E )" | new process_B |
+                    "i";
 
     return gen;
 }

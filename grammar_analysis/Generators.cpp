@@ -397,8 +397,13 @@ Generators::GeneratorAdder &Generators::operator<<(const generator_A &A) {
 }
 
 Generators::~Generators() {
-    for (auto attr: attr_list)
+    set<Attribute*> sett;
+    for (auto attr: attr_list) {
+        if (in_set(sett, attr))
+            continue;
+        sett.insert(attr);
         delete attr;
+    }
     delete do_nothing;
 }
 

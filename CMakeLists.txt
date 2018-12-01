@@ -29,4 +29,4 @@ add_executable(Complie main.cpp
         grammar_analysis/Attribute/Attribute.cpp
         grammar_analysis/Attribute/Attribute.h
         grammar_analysis/Attribute/Attr_ExpQuat_2_LR.cpp
-        grammar_analysis/Attribute/Attr_ExpQuat_2_LR.h)
+        grammar_analysis/Attribute/Attr_ExpQuat_2_LR.h symbol_table/SymbolTable.cpp symbol_table/SymbolTable.h)

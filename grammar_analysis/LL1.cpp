@@ -92,14 +92,14 @@ bool LL1::process(TokenList::iterator &begin, const TokenList::iterator &end, co
     while (!st.empty()) {
         generator_A top = st.top();
         st.pop();
-        cout << "st size:" << st.size() << " top: " << top << endl;
+        // cout << "st size:" << st.size() << " top: " << top << endl;
 
         string grammar_token = tokenList.get_grammar_token(cursor, end);
         if (grammar_token == gens.get_end() && top == gens.get_end())
             break;
 
         if (gens.isVT(top)) {
-            cout << "   token:" << grammar_token << endl;
+            // cout << "   token:" << grammar_token << endl;
             if (top == grammar_token)
                 if (cursor != end)
                     cursor++;
@@ -110,7 +110,7 @@ bool LL1::process(TokenList::iterator &begin, const TokenList::iterator &end, co
         } else if (gens.isVN(top)) {
             if (gens.exists(table[nonter_map[top]][ter_map[grammar_token]])) {
                 generator gen = gens[table[nonter_map[top]][ter_map[grammar_token]]];
-                cout << "   input:" << grammar_token << "      use:" << gen << endl;
+                // cout << "   input:" << grammar_token << "      use:" << gen << endl;
                 for (auto it = gen.second.rbegin(); it != gen.second.rend(); it++) {
                     if (*it != gens.get_epsilon())
                         st.push(*it);

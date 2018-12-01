@@ -24,14 +24,22 @@ int main() {
     string line;
     WordAnalysis analyzer;
 
-
-   // generators._print_first();
-   // generators._print_follow();
-
     analyzer.process_file(file, true);
     file.close();
 
+    Generators basic_Exp = Grammar::Basic_Exp();
     TokenList tkl = analyzer.get_tokenList();
+
+    basic_Exp.remove_left_recursive();
+    basic_Exp.show();
+
+    basic_Exp._print_first();
+    basic_Exp._print_follow();
+    LL1 ll1(basic_Exp, tkl);
+    ll1.build();
+    ll1.show();
+    ll1.process();
+    cout << "LL1 OK" << endl << endl;
 
     Generators generators = Grammar::Basic_Exp_Quat(tkl);
     generators.show();
@@ -41,18 +49,6 @@ int main() {
     lr1.process();
     cout << endl << " LR1 OK" << endl << endl;
 
-    exit(1);
-
-    generators.remove_left_recursive();
-    generators.show();
-
-    generators._print_first();
-    generators._print_follow();
-    LL1 ll1(generators, tkl);
-    ll1.build();
-    ll1.show();
-    ll1.process();
-    cout << "LL1 OK" << endl;
 
     return 0;
 }
