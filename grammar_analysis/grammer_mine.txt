@@ -1,0 +1,420 @@
+Generators gen;
+gen.set_terminators(
+
+"IDENTIFIER CONSTANT STRING_LITERAL SIZEOF "
+"PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP "
+"AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN "
+"SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN "
+"XOR_ASSIGN OR_ASSIGN TYPE_NAME "
+
+"TYPEDEF EXTERN STATIC AUTO REGISTER "
+"CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID "
+"STRUCT UNION ENUM ELLIPSIS "
+
+"CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN "
+
+);
+
+gen.set_start("translation_unit");
+
+
+gen.add_or_insert("primary_expression")
+	| "IDENTIFIER"
+	| "CONSTANT"
+	| "STRING_LITERAL"
+	| "( expression )"
+	;
+
+gen.add_or_insert("postfix_expression")
+	| "primary_expression"
+	| "postfix_expression [ expression ]"
+	| "postfix_expression ( )"
+	| "postfix_expression ( argument_expression_list )"
+	| "postfix_expression . IDENTIFIER"
+	| "postfix_expression PTR_OP IDENTIFIER"
+	| "postfix_expression INC_OP"
+	| "postfix_expression DEC_OP"
+	;
+
+gen.add_or_insert("argument_expression_list")
+	| "assignment_expression"
+	| "argument_expression_list , assignment_expression"
+	;
+
+gen.add_or_insert("unary_expression")
+	| "postfix_expression"
+	| "INC_OP unary_expression"
+	| "DEC_OP unary_expression"
+	| "unary_operator cast_expression"
+	| "SIZEOF unary_expression"
+	| "SIZEOF ( type_name )"
+	;
+
+gen.add_or_insert("unary_operator")
+	| "&"
+	| "*"
+	| "+"
+	| "-"
+	| "~"
+	| "!"
+	;
+
+gen.add_or_insert("cast_expression")
+	| "unary_expression"
+	| "( type_name ) cast_expression"
+	;
+
+gen.add_or_insert("multiplicative_expression")
+	| "cast_expression"
+	| "multiplicative_expression * cast_expression"
+	| "multiplicative_expression / cast_expression"
+	| "multiplicative_expression % cast_expression"
+	;
+
+gen.add_or_insert("additive_expression")
+	| "multiplicative_expression"
+	| "additive_expression + multiplicative_expression"
+	| "additive_expression - multiplicative_expression"
+	;
+
+gen.add_or_insert("shift_expression")
+	| "additive_expression"
+	| "shift_expression LEFT_OP additive_expression"
+	| "shift_expression RIGHT_OP additive_expression"
+	;
+
+gen.add_or_insert("relational_expression")
+	| "shift_expression"
+	| "relational_expression < shift_expression"
+	| "relational_expression > shift_expression"
+	| "relational_expression LE_OP shift_expression"
+	| "relational_expression GE_OP shift_expression"
+	;
+
+gen.add_or_insert("equality_expression")
+	| "relational_expression"
+	| "equality_expression EQ_OP relational_expression"
+	| "equality_expression NE_OP relational_expression"
+	;
+
+gen.add_or_insert("and_expression")
+	| "equality_expression"
+	| "and_expression & equality_expression"
+	;
+
+gen.add_or_insert("exclusive_or_expression")
+	| "and_expression"
+	| "exclusive_or_expression ^ and_expression"
+	;
+
+gen.add_or_insert("inclusive_or_expression")
+	| "exclusive_or_expression"
+	| "inclusive_or_expression | exclusive_or_expression"
+	;
+
+gen.add_or_insert("logical_and_expression")
+	| "inclusive_or_expression"
+	| "logical_and_expression AND_OP inclusive_or_expression"
+	;
+
+gen.add_or_insert("logical_or_expression")
+	| "logical_and_expression"
+	| "logical_or_expression OR_OP logical_and_expression"
+	;
+
+gen.add_or_insert("conditional_expression")
+	| "logical_or_expression"
+	| "logical_or_expression ? expression : conditional_expression"
+	;
+
+gen.add_or_insert("assignment_expression")
+	| "conditional_expression"
+	| "unary_expression assignment_operator assignment_expression"
+	;
+
+gen.add_or_insert("assignment_operator")
+	| "="
+	| "MUL_ASSIGN"
+	| "DIV_ASSIGN"
+	| "MOD_ASSIGN"
+	| "ADD_ASSIGN"
+	| "SUB_ASSIGN"
+	| "LEFT_ASSIGN"
+	| "RIGHT_ASSIGN"
+	| "AND_ASSIGN"
+	| "XOR_ASSIGN"
+	| "OR_ASSIGN"
+	;
+
+gen.add_or_insert("expression")
+	| "assignment_expression"
+	| "expression , assignment_expression"
+	;
+
+gen.add_or_insert("constant_expression")
+	| "conditional_expression"
+	;
+
+gen.add_or_insert("declaration")
+	| "declaration_specifiers ;"
+	| "declaration_specifiers init_declarator_list ;"
+	;
+
+gen.add_or_insert("declaration_specifiers")
+	| "storage_class_specifier"
+	| "storage_class_specifier declaration_specifiers"
+	| "type_specifier"
+	| "type_specifier declaration_specifiers"
+	| "type_qualifier"
+	| "type_qualifier declaration_specifiers"
+	;
+
+gen.add_or_insert("init_declarator_list")
+	| "init_declarator"
+	| "init_declarator_list , init_declarator"
+	;
+
+gen.add_or_insert("init_declarator")
+	| "declarator"
+	| "declarator = initializer"
+	;
+
+gen.add_or_insert("storage_class_specifier")
+	| "TYPEDEF"
+	| "EXTERN"
+	| "STATIC"
+	| "AUTO"
+	| "REGISTER"
+	;
+
+gen.add_or_insert("type_specifier")
+	| "VOID"
+	| "CHAR"
+	| "SHORT"
+	| "INT"
+	| "LONG"
+	| "FLOAT"
+	| "DOUBLE"
+	| "SIGNED"
+	| "UNSIGNED"
+	| "struct_or_union_specifier"
+	| "enum_specifier"
+	| "TYPE_NAME"
+	;
+
+gen.add_or_insert("struct_or_union_specifier")
+	| "struct_or_union IDENTIFIER { struct_declaration_list }"
+	| "struct_or_union { struct_declaration_list }"
+	| "struct_or_union IDENTIFIER"
+	;
+
+gen.add_or_insert("struct_or_union")
+	| "STRUCT"
+	| "UNION"
+	;
+
+gen.add_or_insert("struct_declaration_list")
+	| "struct_declaration"
+	| "struct_declaration_list struct_declaration"
+	;
+
+gen.add_or_insert("struct_declaration")
+	| "specifier_qualifier_list struct_declarator_list ;"
+	;
+
+gen.add_or_insert("specifier_qualifier_list")
+	| "type_specifier specifier_qualifier_list"
+	| "type_specifier"
+	| "type_qualifier specifier_qualifier_list"
+	| "type_qualifier"
+	;
+
+gen.add_or_insert("struct_declarator_list")
+	| "struct_declarator"
+	| "struct_declarator_list , struct_declarator"
+	;
+
+gen.add_or_insert("struct_declarator")
+	| "declarator"
+	| ": constant_expression"
+	| "declarator : constant_expression"
+	;
+
+gen.add_or_insert("enum_specifier")
+	| "ENUM { enumerator_list }"
+	| "ENUM IDENTIFIER { enumerator_list }"
+	| "ENUM IDENTIFIER"
+	;
+
+gen.add_or_insert("enumerator_list")
+	| "enumerator"
+	| "enumerator_list , enumerator"
+	;
+
+gen.add_or_insert("enumerator")
+	| "IDENTIFIER"
+	| "IDENTIFIER = constant_expression"
+	;
+
+gen.add_or_insert("type_qualifier")
+	| "CONST"
+	| "VOLATILE"
+	;
+
+gen.add_or_insert("declarator")
+	| "pointer direct_declarator"
+	| "direct_declarator"
+	;
+
+gen.add_or_insert("direct_declarator")
+	| "IDENTIFIER"
+	| "( declarator )"
+	| "direct_declarator [ constant_expression ]"
+	| "direct_declarator [ ]"
+	| "direct_declarator ( parameter_type_list )"
+	| "direct_declarator ( identifier_list )"
+	| "direct_declarator ( )"
+	;
+
+gen.add_or_insert("pointer")
+	| "*"
+	| "* type_qualifier_list"
+	| "* pointer"
+	| "* type_qualifier_list pointer"
+	;
+
+gen.add_or_insert("type_qualifier_list")
+	| "type_qualifier"
+	| "type_qualifier_list type_qualifier"
+	;
+
+
+gen.add_or_insert("parameter_type_list")
+	| "parameter_list"
+	| "parameter_list , ELLIPSIS"
+	;
+
+gen.add_or_insert("parameter_list")
+	| "parameter_declaration"
+	| "parameter_list , parameter_declaration"
+	;
+
+gen.add_or_insert("parameter_declaration")
+	| "declaration_specifiers declarator"
+	| "declaration_specifiers abstract_declarator"
+	| "declaration_specifiers"
+	;
+
+gen.add_or_insert("identifier_list")
+	| "IDENTIFIER"
+	| "identifier_list , IDENTIFIER"
+	;
+
+gen.add_or_insert("type_name")
+	| "specifier_qualifier_list"
+	| "specifier_qualifier_list abstract_declarator"
+	;
+
+gen.add_or_insert("abstract_declarator")
+	| "pointer"
+	| "direct_abstract_declarator"
+	| "pointer direct_abstract_declarator"
+	;
+
+gen.add_or_insert("direct_abstract_declarator")
+	| "( abstract_declarator )"
+	| "[ ]"
+	| "[ constant_expression ]"
+	| "direct_abstract_declarator [ ]"
+	| "direct_abstract_declarator [ constant_expression ]"
+	| "( )"
+	| "( parameter_type_list )"
+	| "direct_abstract_declarator ( )"
+	| "direct_abstract_declarator ( parameter_type_list )"
+	;
+
+gen.add_or_insert("initializer")
+	| "assignment_expression"
+	| "{ initializer_list }"
+	| "{ initializer_list , }"
+	;
+
+gen.add_or_insert("initializer_list")
+	| "initializer"
+	| "initializer_list , initializer"
+	;
+
+gen.add_or_insert("statement")
+	| "labeled_statement"
+	| "compound_statement"
+	| "expression_statement"
+	| "selection_statement"
+	| "iteration_statement"
+	| "jump_statement"
+	;
+
+gen.add_or_insert("labeled_statement")
+	| "IDENTIFIER : statement"
+	| "CASE constant_expression : statement"
+	| "DEFAULT : statement"
+	;
+
+gen.add_or_insert("compound_statement")
+	| "{ }"
+	| "{ statement_list }"
+	| "{ declaration_list }"
+	| "{ declaration_list statement_list }"
+	;
+
+gen.add_or_insert("declaration_list")
+	| "declaration"
+	| "declaration_list declaration"
+	;
+
+gen.add_or_insert("statement_list")
+	| "statement"
+	| "statement_list statement"
+	;
+
+gen.add_or_insert("expression_statement")
+	| ";"
+	| "expression ;"
+	;
+
+gen.add_or_insert("selection_statement")
+	| "IF ( expression ) statement"
+	| "IF ( expression ) statement ELSE statement"
+	| "SWITCH ( expression ) statement"
+	;
+
+gen.add_or_insert("iteration_statement")
+	| "WHILE ( expression ) statement"
+	| "DO statement WHILE ( expression ) ;"
+	| "FOR ( expression_statement expression_statement ) statement"
+	| "FOR ( expression_statement expression_statement expression ) statement"
+	;
+
+gen.add_or_insert("jump_statement")
+	| "GOTO IDENTIFIER ;"
+	| "CONTINUE ;"
+	| "BREAK ;"
+	| "RETURN ;"
+	| "RETURN expression ;"
+	;
+
+gen.add_or_insert("translation_unit")
+	| "external_declaration"
+	| "translation_unit external_declaration"
+	;
+
+gen.add_or_insert("external_declaration")
+	| "function_definition"
+	| "declaration"
+	;
+
+gen.add_or_insert("function_definition")
+	| "declaration_specifiers declarator declaration_list compound_statement"
+	| "declaration_specifiers declarator compound_statement"
+	| "declarator declaration_list compound_statement"
+	| "declarator compound_statement"
+	;

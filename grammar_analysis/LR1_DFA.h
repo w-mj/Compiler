@@ -38,7 +38,7 @@ class LR1_DFA {
     Generators &generators;
     void build();
 public:
-    std::vector<std::map<std::string, std::pair<char, size_t>>> get_table();
+    std::vector<std::vector<std::pair<char, size_t>>> get_table(std::map<std::string, size_t>& index);
 
     explicit LR1_DFA(Generators& generators);
     ~LR1_DFA();

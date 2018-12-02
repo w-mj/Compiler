@@ -57,10 +57,11 @@ Generators Grammar::C_Bin_Exp() {
 Generators Grammar::C_Grammar() {
     Generators gen;
 
-    gen.set_terminators("int_const float_const id ; , > < >= <= == != + - * / && || . ! "
+    gen.set_terminators("int_const float_const id ; , > < >= <= == != + - * / && || . ! = "
                         "int float ( ) [ ] { } struct return if else while");
-    gen.set_non_terminators("SEMI COMMA ASSIGNOP RELOP MINUS PLUS STAR DIV AND OR NOT"
-                            "DOT TYPE LP RP LB RB LC RC STRUCT RETURN IF ELSE WHILE");
+    gen.set_non_terminators("SEMI COMMA ASSIGNOP RELOP MINUS PLUS STAR DIV AND OR NOT "
+                            "doT TYPE LP RP LB RB LC RC struct return if else while Program ExtDefList ExtDef "
+                            "ExtDecList Specifier StructSpecifier OptTag VarDec FunDec VarList ParamDec DefList Def DecList Dec");
     gen.set_start("Program");
 
     // TOKENS
@@ -74,7 +75,7 @@ Generators Grammar::C_Grammar() {
     gen << "DIV" >> "/";
     gen << "AND" >> "&&";
     gen << "OR" >> "||";
-    gen << "DOT" >> ".";
+    gen << "doT" >> ".";
     gen << "NOT" >> "!";
     gen << "TYPE" >> "int" | "float";
     gen << "LP" >> "(";
@@ -83,11 +84,11 @@ Generators Grammar::C_Grammar() {
     gen << "RB" >> "]";
     gen << "LC" >> "{";
     gen << "RC" >> "}";
-    gen << "STRUCT" >> "struct";
-    gen << "RETURN" >> "return";
-    gen << "IF" >> "if";
-    gen << "ELSE" >> "else";
-    gen << "WHILE" >> "while";
+    gen << "struct" >> "struct";
+    gen << "return" >> "return";
+    gen << "if" >> "if";
+    gen << "else" >> "else";
+    gen << "while" >> "while";
 
     // High-level Definitions
     gen << "Program" >> "ExtDefList";
@@ -130,13 +131,13 @@ Generators Grammar::Basic_Exp_Quat(TokenList &tokenList) {
     gen.set_start("E");
 
     gen.add("E") >> "E + T" | attr |
-                    "E - T" | attr |
-                    "T";
+    "E - T" | attr |
+    "T";
     gen.add("T") >> "T * F" | attr |
-                    "T / F" | attr |
-                    "F";
+    "T / F" | attr |
+    "F";
     gen.add("F") >> "( E )" | new process_B |
-                    "i";
+    "i";
 
     return gen;
 }
@@ -150,33 +151,429 @@ Generators Grammar::C_Exp() {
     gen.set_non_terminators("Exp AssignExp ConditionalExp UnaryExp AssignOperator BinaryExp PostfixExp UnaryExp "
                             "PostfixOperator PriExp BinaryOperator UnaryOperator Exp_A Cond_A Bin_A Post_A PostOP_A PostOP_B");
 
+    gen.set_start("Exp");
+
     gen << "Exp" >> "AssignExp Exp_A";
     gen << "Exp_A" >> ", AssignExp Exp_A" | gen.get_epsilon();
 
-    gen << "AssignExp" >> "ConditionalExp"|
-                            "UnaryExp AssignOperator AssignExp";
-    gen << "AssignOperator" >> "="| "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | "&=" | "^=" | "|=";
+    gen << "AssignExp" >> "ConditionalExp" |
+    "UnaryExp AssignOperator AssignExp";
+    gen << "AssignOperator" >> "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | "&=" | "^=" | "|=";
 
     gen << "ConditionalExp" >> "BinaryExp Cond_A";
-    gen << "Cond_A" >> "? Exp : ConditionalExp"| gen.get_epsilon();
+    gen << "Cond_A" >> "? Exp : ConditionalExp" | gen.get_epsilon();
 
     gen << "BinaryExp" >> "UnaryExp Bin_A";
-    gen << "Bin_A" >> "BinaryOperator UnaryExp Bin_A"| gen.get_epsilon();
+    gen << "Bin_A" >> "BinaryOperator UnaryExp Bin_A" | gen.get_epsilon();
 
-    gen << "BinaryOperator" >> "||"| "&&"| "|" | "^"| "&"| "==" | "!=" | "<" | ">" | "<=" | ">=" | "<<"| ">>"| "+" |"-" | "*"| "/" |"%";
+    gen << "BinaryOperator" >> "||" | "&&" | "|" | "^" | "&" | "==" | "!=" | "<" | ">" | "<=" | ">=" | "<<" | ">>" |
+    "+" | "-" | "*" | "/" | "%";
 
-    gen << "UnaryExp" >> "PostfixExp"| "UnaryOperator UnaryExp"| "( t ) UnaryExp" | "sizeof UnaryExp" | "sizeof ( t )";
+    gen << "UnaryExp" >> "PostfixExp" | "UnaryOperator UnaryExp" | "( t ) UnaryExp" | "sizeof UnaryExp" |
+    "sizeof ( t )";
 
-    gen << "UnaryOperator" >> "++"| "--"| "&" | "*" | "+" | "-" | "~" | "!";
+    gen << "UnaryOperator" >> "++" | "--" | "&" | "*" | "+" | "-" | "~" | "!";
 
     gen << "PostfixExp" >> "PriExp Post_A";
-    gen << "Post_A" >> "PostfixOperator Post_A"| gen.get_epsilon();
+    gen << "Post_A" >> "PostfixOperator Post_A" | gen.get_epsilon();
 
-    gen << "PostfixOperator" >> "[ Exp ]"| "( PostOP_A )"| ". i"| "-> i"| "++" | "--";
-    gen << "PostOP_A" >> "AssignExp PostOP_B"| gen.get_epsilon();
-    gen << "PostOP_B" >> ", AssignExp PostOP_B"| gen.get_epsilon();
+    gen << "PostfixOperator" >> "[ Exp ]" | "( PostOP_A )" | ". i" | "-> i" | "++" | "--";
+    gen << "PostOP_A" >> "AssignExp PostOP_B" | gen.get_epsilon();
+    gen << "PostOP_B" >> ", AssignExp PostOP_B" | gen.get_epsilon();
 
-    gen << "PriExp" >> "i"| "c"| "s" | "( Exp )";
+    gen << "PriExp" >> "i" | "c" | "s" | "( Exp )";
 
+    return gen;
+}
+
+Generators Grammar::YACC_C_Grammar() {
+    Generators gen;
+    gen.set_terminators(
+
+            "i c s sizeof "
+            "-> ++ -- << >> <= >= == != "
+            "&& || *= /= %= += "
+            "-= <<= >>= &= "
+            "^= |= t "
+
+            "typedef extern static auto register "
+            "char short int long signed unsigned float double const volatile void "
+            "struct union enum ... "
+
+            "case default if else switch while do for goto continue break return "
+
+            "= += -= *= /= %= <<= >>= &= ^= |= ? : "
+            "|| && | ^ & == != <= >= > < << >> + - *"
+            " / % ++ -- ! ~ ( ) sizeof [ ] . -> , ; { }"
+
+    );
+
+    gen.set_non_terminators(
+            "primary_expression postfix_expression argument_expression_list unary_expression unary_operator "
+            "cast_expression multiplicative_expression additive_expression shift_expression relational_expression "
+            "equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression "
+            "logical_or_expression conditional_expression assignment_expression assignment_operator expression "
+            "constant_expression declaration declaration_specifiers init_declarator_list init_declarator "
+            "storage_class_specifier type_specifier struct_or_union_specifier struct_or_union struct_declaration_list "
+            "struct_declaration specifier_qualifier_list struct_declarator_list struct_declarator "
+            "enum_specifier enumerator_list enumerator type_qualifier declarator direct_declarator pointer "
+            "type_qualifier_list parameter_type_list parameter_list parameter_declaration identifier_list "
+            "type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement "
+            "labeled_statement compound_statement declaration_list statement_list expression_statement "
+            "selection_statement iteration_statement jump_statement translation_unit external_declaration "
+            "function_definition");
+
+
+    gen.set_start("translation_unit");
+
+
+    gen.add("primary_expression")
+    | "i"
+    | "c"
+    | "s"
+    | "( expression )";
+
+    gen.add("postfix_expression")
+    | "primary_expression"
+    | "postfix_expression [ expression ]"
+    | "postfix_expression ( )"
+    | "postfix_expression ( argument_expression_list )"
+    | "postfix_expression . i"
+    | "postfix_expression -> i"
+    | "postfix_expression ++"
+    | "postfix_expression --";
+
+    gen.add("argument_expression_list")
+    | "assignment_expression"
+    | "argument_expression_list , assignment_expression";
+
+    gen.add("unary_expression")
+    | "postfix_expression"
+    | "++ unary_expression"
+    | "-- unary_expression"
+    | "unary_operator cast_expression"
+    | "sizeof unary_expression"
+    | "sizeof ( type_name )";
+
+    gen.add("unary_operator")
+    | "&"
+    | "*"
+    | "+"
+    | "-"
+    | "~"
+    | "!";
+
+    gen.add("cast_expression")
+    | "unary_expression"
+    | "( type_name ) cast_expression";
+
+    gen.add("multiplicative_expression")
+    | "cast_expression"
+    | "multiplicative_expression * cast_expression"
+    | "multiplicative_expression / cast_expression"
+    | "multiplicative_expression % cast_expression";
+
+    gen.add("additive_expression")
+    | "multiplicative_expression"
+    | "additive_expression + multiplicative_expression"
+    | "additive_expression - multiplicative_expression";
+
+    gen.add("shift_expression")
+    | "additive_expression"
+    | "shift_expression << additive_expression"
+    | "shift_expression >> additive_expression";
+
+    gen.add("relational_expression")
+    | "shift_expression"
+    | "relational_expression < shift_expression"
+    | "relational_expression > shift_expression"
+    | "relational_expression <= shift_expression"
+    | "relational_expression >= shift_expression";
+
+    gen.add("equality_expression")
+    | "relational_expression"
+    | "equality_expression == relational_expression"
+    | "equality_expression != relational_expression";
+
+    gen.add("and_expression")
+    | "equality_expression"
+    | "and_expression & equality_expression";
+
+    gen.add("exclusive_or_expression")
+    | "and_expression"
+    | "exclusive_or_expression ^ and_expression";
+
+    gen.add("inclusive_or_expression")
+    | "exclusive_or_expression"
+    | "inclusive_or_expression | exclusive_or_expression";
+
+    gen.add("logical_and_expression")
+    | "inclusive_or_expression"
+    | "logical_and_expression && inclusive_or_expression";
+
+    gen.add("logical_or_expression")
+    | "logical_and_expression"
+    | "logical_or_expression || logical_and_expression";
+
+    gen.add("conditional_expression")
+    | "logical_or_expression"
+    | "logical_or_expression ? expression : conditional_expression";
+
+    gen.add("assignment_expression")
+    | "conditional_expression"
+    | "unary_expression assignment_operator assignment_expression";
+
+    gen.add("assignment_operator")
+    | "="
+    | "*="
+    | "/="
+    | "%="
+    | "+="
+    | "-="
+    | "<<="
+    | ">>="
+    | "&="
+    | "^="
+    | "|=";
+
+    gen.add("expression")
+    | "assignment_expression"
+    | "expression , assignment_expression";
+
+    gen.add("constant_expression")
+    | "conditional_expression";
+
+    gen.add("declaration")
+    | "declaration_specifiers ;"
+    | "declaration_specifiers init_declarator_list ;";
+
+    gen.add("declaration_specifiers")
+    | "storage_class_specifier"
+    | "storage_class_specifier declaration_specifiers"
+    | "type_specifier"
+    | "type_specifier declaration_specifiers"
+    | "type_qualifier"
+    | "type_qualifier declaration_specifiers";
+
+    gen.add("init_declarator_list")
+    | "init_declarator"
+    | "init_declarator_list , init_declarator";
+
+    gen.add("init_declarator")
+    | "declarator"
+    | "declarator = initializer";
+
+    gen.add("storage_class_specifier")
+    | "typedef"
+    | "extern"
+    | "static"
+    | "auto"
+    | "register";
+
+    gen.add("type_specifier")
+    | "void"
+    | "char"
+    | "short"
+    | "int"
+    | "long"
+    | "float"
+    | "double"
+    | "signed"
+    | "unsigned"
+    | "struct_or_union_specifier"
+    | "enum_specifier"
+    | "t";
+
+    gen.add("struct_or_union_specifier")
+    | "struct_or_union i { struct_declaration_list }"
+    | "struct_or_union { struct_declaration_list }"
+    | "struct_or_union i";
+
+    gen.add("struct_or_union")
+    | "struct"
+    | "union";
+
+    gen.add("struct_declaration_list")
+    | "struct_declaration"
+    | "struct_declaration_list struct_declaration";
+
+    gen.add("struct_declaration")
+    | "specifier_qualifier_list struct_declarator_list ;";
+
+    gen.add("specifier_qualifier_list")
+    | "type_specifier specifier_qualifier_list"
+    | "type_specifier"
+    | "type_qualifier specifier_qualifier_list"
+    | "type_qualifier";
+
+    gen.add("struct_declarator_list")
+    | "struct_declarator"
+    | "struct_declarator_list , struct_declarator";
+
+    gen.add("struct_declarator")
+    | "declarator"
+    | ": constant_expression"
+    | "declarator : constant_expression";
+
+    gen.add("enum_specifier")
+    | "enum { enumerator_list }"
+    | "enum i { enumerator_list }"
+    | "enum i";
+
+    gen.add("enumerator_list")
+    | "enumerator"
+    | "enumerator_list , enumerator";
+
+    gen.add("enumerator")
+    | "i"
+    | "i = constant_expression";
+
+    gen.add("type_qualifier")
+    | "const"
+    | "volatile";
+
+    gen.add("declarator")
+    | "pointer direct_declarator"
+    | "direct_declarator";
+
+    gen.add("direct_declarator")
+    | "i"
+    | "( declarator )"
+    | "direct_declarator [ constant_expression ]"
+    | "direct_declarator [ ]"
+    | "direct_declarator ( parameter_type_list )"
+    | "direct_declarator ( identifier_list )"
+    | "direct_declarator ( )";
+
+    gen.add("pointer")
+    | "*"
+    | "* type_qualifier_list"
+    | "* pointer"
+    | "* type_qualifier_list pointer";
+
+    gen.add("type_qualifier_list")
+    | "type_qualifier"
+    | "type_qualifier_list type_qualifier";
+
+
+    gen.add("parameter_type_list")
+    | "parameter_list"
+    | "parameter_list , ...";
+
+    gen.add("parameter_list")
+    | "parameter_declaration"
+    | "parameter_list , parameter_declaration";
+
+    gen.add("parameter_declaration")
+    | "declaration_specifiers declarator"
+    | "declaration_specifiers abstract_declarator"
+    | "declaration_specifiers";
+
+    gen.add("identifier_list")
+    | "i"
+    | "identifier_list , i";
+
+    gen.add("type_name")
+    | "specifier_qualifier_list"
+    | "specifier_qualifier_list abstract_declarator";
+
+    gen.add("abstract_declarator")
+    | "pointer"
+    | "direct_abstract_declarator"
+    | "pointer direct_abstract_declarator";
+
+    gen.add("direct_abstract_declarator")
+    | "( abstract_declarator )"
+    | "[ ]"
+    | "[ constant_expression ]"
+    | "direct_abstract_declarator [ ]"
+    | "direct_abstract_declarator [ constant_expression ]"
+    | "( )"
+    | "( parameter_type_list )"
+    | "direct_abstract_declarator ( )"
+    | "direct_abstract_declarator ( parameter_type_list )";
+
+    gen.add("initializer")
+    | "assignment_expression"
+    | "{ initializer_list }"
+    | "{ initializer_list , }";
+
+    gen.add("initializer_list")
+    | "initializer"
+    | "initializer_list , initializer";
+
+    gen.add("statement")
+    | "labeled_statement"
+    | "compound_statement"
+    | "expression_statement"
+    | "selection_statement"
+    | "iteration_statement"
+    | "jump_statement";
+
+    gen.add("labeled_statement")
+    | "i : statement"
+    | "case constant_expression : statement"
+    | "default : statement";
+
+    gen.add("compound_statement")
+    | "{ }"
+    | "{ statement_list }"
+    | "{ declaration_list }"
+    | "{ declaration_list statement_list }";
+
+    gen.add("declaration_list")
+    | "declaration"
+    | "declaration_list declaration";
+
+    gen.add("statement_list")
+    | "statement"
+    | "statement_list statement";
+
+    gen.add("expression_statement")
+    | ";"
+    | "expression ;";
+
+    gen.add("selection_statement")
+    | "if ( expression ) statement"
+    | "if ( expression ) statement else statement"
+    | "switch ( expression ) statement";
+
+    gen.add("iteration_statement")
+    | "while ( expression ) statement"
+    | "do statement while ( expression ) ;"
+    | "for ( expression_statement expression_statement ) statement"
+    | "for ( expression_statement expression_statement expression ) statement";
+
+    gen.add("jump_statement")
+    | "goto i ;"
+    | "continue ;"
+    | "break ;"
+    | "return ;"
+    | "return expression ;";
+
+    gen.add("translation_unit")
+    | "external_declaration"
+    | "translation_unit external_declaration";
+
+    gen.add("external_declaration")
+    | "function_definition"
+    | "declaration";
+
+    gen.add("function_definition")
+    | "declaration_specifiers declarator declaration_list compound_statement"
+    | "declaration_specifiers declarator compound_statement"
+    | "declarator declaration_list compound_statement"
+    | "declarator compound_statement";
+
+    return gen;
+}
+
+Generators Grammar::TestLR1() {
+    Generators gen;
+    gen.set_non_terminators("S B");
+    gen.set_terminators("a b");
+    gen.set_start("S");
+    gen << "S" >> "B B";
+    gen << "B" >> "a B"| "b";
     return gen;
 }

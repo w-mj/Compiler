@@ -29,23 +29,25 @@ int main() {
 
     Generators basic_Exp = Grammar::Basic_Exp();
     TokenList tkl = analyzer.get_tokenList();
+
+//    basic_Exp.remove_left_recursive();
+//    basic_Exp.show();
 //
-     basic_Exp.remove_left_recursive();
-    basic_Exp.show();
-
-    basic_Exp._print_first();
-    basic_Exp._print_follow();
-    LL1 ll1(basic_Exp, tkl);
-    ll1.build();
-    ll1.show();
-    TokenGetter getter1(tkl);
-    ll1.process(getter1);
-    cout << "LL1 OK" << endl << endl;
+//    basic_Exp._print_first();
+//    basic_Exp._print_follow();
+//    LL1 ll1(basic_Exp, tkl);
+//    ll1.build();
+//    ll1.show();
+//    TokenGetter getter1(tkl);
+//    ll1.process(getter1);
+//    cout << "LL1 OK" << endl << endl;
 
 
-    Generators generators = Grammar::Basic_Exp_Quat(tkl);
+    Generators generators = Grammar::YACC_C_Grammar();
     generators.show();
-    LR1 lr1(generators, tkl);
+    // LR1 lr1(generators, tkl);
+    LR1 lr1(generators, tkl, "lr1_table");
+    // lr1.save("lr1_table");
     cout << "finish building LR1 table" << endl;
     lr1.show();
     TokenGetter getter(tkl);

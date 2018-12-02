@@ -37,6 +37,7 @@ LL1::LL1(Generators &generators, TokenList &tokenList): gens(generators), tokenL
 void LL1::build() {
     vector<set<generator_A>> selects;
     selects.resize(gens.size());
+    cout << "SELECTS: " << endl;
 
     for (size_t i = 0; i < gens.size(); i++) {
         if (gens.exists(i)) {
@@ -48,6 +49,8 @@ void LL1::build() {
                 selects[i].insert(follow.begin(), follow.end());
             }
             selects[i].insert(first.begin(), first.end());
+
+            cout << i << "  " << gen << "         SELECT = " << selects[i] << endl;
         }
     }
 

@@ -138,14 +138,16 @@ std::string TokenList::get_grammar_token(Token&& it) {
     if (it.first == '#')
         return "#";
     if (it.first == 'k') {
-        static auto anyone = [](auto&& k, auto&&... args) ->bool { return ((args == k) || ...); };
-        if (anyone(key[it.second], "int", "float", "short", "double", "long", "char"))
-            return "t";
-        else
+//        static auto anyone = [](auto&& k, auto&&... args) ->bool { return ((args == k) || ...); };
+//        if (anyone(key[it.second], "int", "float", "short", "double", "long", "char"))
+//            return "t";
+//        else
             return key[it.second];
     }
     if (it.first == 'p')
         return bound[it.second];
+    if (it.first == 'c')
+        return "c";
     return "i";
 }
 

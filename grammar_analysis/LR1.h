@@ -10,13 +10,16 @@
 
 class LR1 {
     Generators generators;
-    std::vector<std::map<std::string, std::pair<char, size_t>>> table;
+    std::vector<std::vector<std::pair<char, size_t>>> table;
+    std::map<std::string, size_t> index;
     TokenList& tokenList;
 public:
 
     LR1(Generators& g, TokenList& tokenList);
+    LR1(Generators& g, TokenList& tokenList, std::string fname);
     void show();
     bool process(TokenGetter& getter);
+    void save(std::string fname);
 };
 
 

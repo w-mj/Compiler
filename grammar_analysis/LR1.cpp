@@ -15,8 +15,32 @@ using namespace std;
 
 LR1::LR1(Generators &g, TokenList& tokenList): generators(g), tokenList(tokenList) {
     LR1_DFA dfa(generators);
-    // dfa.show();
-    table = dfa.get_table();
+    dfa.show();
+    table = dfa.get_table(index);
+}
+
+LR1::LR1(Generators &g, TokenList &tokenList, std::string fname): generators(g), tokenList(tokenList) {
+    generators.insert_nonterminators("@Start");
+    generator expend_generator = make_generator("@Start", generators.get_start());
+    size_t i0 = generators.add_generator(expend_generator);
+
+    ifstream f(fname);
+    string buffer;
+    getline(f, buffer);
+    auto index_vec = split(buffer);
+    for (size_t i = 0; i < index_vec.size(); i += 2) {
+        index.emplace(index_vec[i], stoi(index_vec[i + 1]));
+    }
+    int cnt = 0;
+    while (getline(f, buffer)) {
+        table.emplace_back();
+        auto line_vec = split(buffer);
+        for (auto &x: line_vec) {
+            string num(x.begin() + 1, x.end());
+            table[cnt].emplace_back(x[0], stoi(num));
+        }
+        cnt += 1;
+    }
 }
 
 void LR1::show() {
@@ -61,13 +85,13 @@ void LR1::show() {
 
     of << "<table border='1'>\n";
     of << "<tr><td>&nbsp;</td>\n";
-    for (const auto& alpha: alphabet)
-        of << "<td>" << alpha << "</td>";
+    for (const auto& alpha: index)
+        of << "<td>" << alpha.first << "</td>";
     of << "</tr>\n";
     for (size_t i = 0; i < table.size(); i++) {
         of << "<tr><td>" << i << "</td>";
-        for (const auto& alpha: alphabet) {
-            const auto& m = table[i][alpha];
+        for (const auto& alpha: index) {
+            const auto& m = table[i][index[alpha.first]];
             if (m.first == 'e')
                 of << "<td>&nbsp;</td>";
             else if (m.first == 'r')
@@ -100,13 +124,15 @@ bool LR1::process(TokenGetter& getter) {
             string alpha = tokenList.get_grammar_token(getter.get());
             string str = tokenList.get_token_str(getter.get());
 
-            const auto &action = table[state][alpha];
+            const auto &action = table[state][index[alpha]];
             switch (action.first) {
                 case 's': {
                     state_stack.push(action.second);
                     alpha_stack.push(alpha);
                     tree_node_stack.push(new Node(str));
-                    void * v = generators.get_attr_builder()->get_data(getter.get());
+                    void *v = nullptr;
+                    if (generators.get_attr_builder() != nullptr)
+                        v = generators.get_attr_builder()->get_data(getter.get());
                     if (v != nullptr)
                         attr_stack.push(v);
                     getter.next();
@@ -136,7 +162,7 @@ bool LR1::process(TokenGetter& getter) {
                         }
                     }
                     alpha_stack.push(gen.first);
-                    state_stack.push(table[state_stack.top()][gen.first].second);
+                    state_stack.push(table[state_stack.top()][index[gen.first]].second);
                     tree_node_stack.push(new_node);
                     if (attribute)
                         attr_stack.push(generators.get_attr(action.second)(attr_vec));
@@ -154,3 +180,20 @@ bool LR1::process(TokenGetter& getter) {
         throw;
     }
 }
+
+void LR1::save(std::string fname) {
+    ofstream of(fname);
+    for (auto &x: index) {
+        of << x.first << " " << x.second << " ";
+    }
+    of << endl;
+    for (auto &x: table) {
+        for (auto &i: x) {
+            of << i.first << i.second << " ";
+        }
+        of << endl;
+    }
+    of.close();
+}
+
+

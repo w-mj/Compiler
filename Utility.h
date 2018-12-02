@@ -47,6 +47,7 @@ std::ostream& operator<<(std::ostream& out, std::set<T>& s) {
             out << x << ", ";
         else
             out << x;
+        cnt++;
     }
     out << "}";
     return out;

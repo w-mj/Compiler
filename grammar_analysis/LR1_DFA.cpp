@@ -69,7 +69,7 @@ void LR1_DFA::build() {
                 if (after_dot_set.find(after_dot) == after_dot_set.end())
                     after_dot_set.emplace(after_dot, vector<LR1_Generator>());
                 after_dot_set[after_dot].push_back(gen);
-        }
+            }
         }
 
         // 对每一个状态转换构建后继节点
@@ -120,37 +120,43 @@ void LR1_DFA::show() {
     }
 }
 
-std::vector<std::map<std::string, std::pair<char, size_t>>> LR1_DFA::get_table() {
-    map<std::string, std::pair<char, size_t>> init;
-    for (const auto &x: generators.get_terminators())
-        init.emplace(x, make_pair('e', 0));
-    init.emplace("#", make_pair('e', 0));
-    for (auto x: generators.get_non_terminators())
-        init.emplace(x, make_pair('e', 0));
+vector<vector<pair<char, size_t>>> LR1_DFA::get_table(map<string, size_t>& index) {
 
-    std::vector<std::map<std::string, std::pair<char, size_t>>> result(all_nodes.size(), init);
+    size_t cnt = 0;
+    for (const auto &x: generators.get_terminators()) {
+        index.emplace(x, cnt++);
+    }
+    index.emplace("#", cnt++);
+
+    for (auto x: generators.get_non_terminators()) {
+        index.emplace(x, cnt++);
+    }
+
+
+    vector<vector<pair<char, size_t>>> new_table(all_nodes.size(), vector<pair<char, size_t>>(cnt, {'e', 0}));
+
 
     for (size_t i = 0; i < all_nodes.size(); i++) {
         Node* cn = all_nodes[i];
         for (const LR1_Generator& gen: cn->generator_list) {
             if (gen.dot == gen.gen.second.size())
-                if (result[i][gen.outlook].first == 'e') {
-                    result[i][gen.outlook].first = 'r';
-                    result[i][gen.outlook].second = gen.gen_index;
+                if (new_table[i][index[gen.outlook]].first == 'e') {
+                    new_table[i][index[gen.outlook]].first = 'r';
+                    new_table[i][index[gen.outlook]].second = gen.gen_index;
                 }
                 else
                     throw runtime_error("Conflict when reduction at status I" + to_string(i));
         }
         for (const auto& t: cn->transfer) {
-            if (result[i][t.first].first == 'e') {
-                result[i][t.first].first = 's';
-                result[i][t.first].second = t.second->index;
+            if (new_table[i][index[t.first]].first == 'e') {
+                new_table[i][index[t.first]].first = 's';
+                new_table[i][index[t.first]].second = t.second->index;
             }
             else
                 throw runtime_error("Conflict when shift in at status I" + to_string(i) + " " + t.first);
         }
     }
-    return result;
+    return new_table;
 }
 
 

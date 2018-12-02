@@ -116,7 +116,7 @@ std::string Generators::to_str() {
     for (size_t i = 0; i < g_list.size(); i++) {
         ss << i << ": " << g_list[i].first << " --> ";
         for (const auto &x: g_list[i].second)
-            ss << x;
+            ss << x << " ";
         ss << endl;
     }
     return ss.str();

@@ -1,29 +1,14 @@
-12+1*((b+x)+07/(1+7.56+1+1-(7*x)))
-
-// 12+1*((++x)+07/(1+7.56+1+1-(7*sizeof(int))))
-// 1+1
-
+int a;
 /*
 int main(void) {
-    // 3.4.3
-    b = "abc\naa\051"; // \051是括号
-    int a = '\x41';
-    structure.member
-    float c = a + b;
-  exit(-1);
-    1e10
-    5e-9
-    4e5L
-    9.3e7
-    .5
-    7.3f
-    0.4
-    1
-    100L
-    -100
-    0x13ABC
-    077
-    int a=1; print("aaa", "bbb", "ccc"); int d = 0x1233P;
+    int i = 0;
+    for(; i < a;) {
+        i++;
+    }
+    if (i = 0)
+        a = 10;
+    else
+        a = 100;
+    return a;
 }
-
 */

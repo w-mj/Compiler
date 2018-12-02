@@ -5,6 +5,8 @@
 #include "Utility.h"
 #include <cctype>
 #include <stdexcept>
+#include <iostream>
+#include <sstream>
 
 int hex2dec(char c) {
     if (isdigit(c)) return c - '0';
@@ -20,20 +22,18 @@ bool isalnumunder(int c) {
 
 using namespace std;
 
-vector<string> split(const string &str, char sp) {
-    vector<string> result;
-    string::const_iterator iter = str.begin();
-    while (true) {
-        string::const_iterator s_iter = iter;
-        while (iter != str.end() && *iter != sp)
-            iter++;
-        result.emplace_back(s_iter, iter);
-        if (iter == str.end())
-            return result;
-        iter++;
+static void _split(const std::string &s, char delim,
+                   std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
     }
 }
 
-set<string> v2s(vector<string>& s){
-    return set<string>(s.begin(), s.end());
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    _split(s, delim, elems);
+    return elems;
 }
