@@ -82,7 +82,7 @@ void LR1::show() {
     of.close();
 }
 
-bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
+bool LR1::process(TokenGetter& getter) {
     stack<generator_A> alpha_stack;
     stack<Node*> tree_node_stack;
     stack<size_t> state_stack;
@@ -93,13 +93,12 @@ bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
     state_stack.push(0);
     // attr_stack.push(nullptr);
 
-    TokenList::iterator& cursor = begin;
     try {
         while (true) {
             size_t state = state_stack.top();
 
-            string alpha = tokenList.get_grammar_token(cursor, end);
-            string str = tokenList.get_token_str(*cursor);
+            string alpha = tokenList.get_grammar_token(getter.get());
+            string str = tokenList.get_token_str(getter.get());
 
             const auto &action = table[state][alpha];
             switch (action.first) {
@@ -107,10 +106,10 @@ bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
                     state_stack.push(action.second);
                     alpha_stack.push(alpha);
                     tree_node_stack.push(new Node(str));
-                    void * v = generators.get_attr_builder()->get_data(cursor);
+                    void * v = generators.get_attr_builder()->get_data(getter.get());
                     if (v != nullptr)
                         attr_stack.push(v);
-                    cursor++;
+                    getter.next();
                     break;
                 }
                 case 'r': {
@@ -154,9 +153,4 @@ bool LR1::process(TokenList::iterator &begin, const TokenList::iterator &end) {
         }
         throw;
     }
-}
-
-bool LR1::process() {
-    auto x = tokenList.begin();
-    return process(x, tokenList.end());
 }

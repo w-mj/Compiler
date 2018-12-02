@@ -47,10 +47,10 @@ Attr_ExpQuat_2_LR::Attr_ExpQuat_2_LR(TokenList &tokenList): tokenList(tokenList)
 
 }
 
-void *Attr_ExpQuat_2_LR::get_data(TokenList::iterator &it) {
+void *Attr_ExpQuat_2_LR::get_data(Token &&it) {
 //    if (it->first == 'p' && !(it->second == '+' || it->second == '-' || it->second == '*' || it->second == '/'))
 //        return nullptr;
-    return new Token(it->first, it->second);
+    return new Token(it.first, it.second);
 }
 
 void *process_B::operator()(const std::vector<void *> &sub_tokens) {

@@ -16,8 +16,7 @@ public:
 
     LR1(Generators& g, TokenList& tokenList);
     void show();
-    bool process(TokenList::iterator& begin, const TokenList::iterator& end);
-    bool process();
+    bool process(TokenGetter& getter);
 };
 
 

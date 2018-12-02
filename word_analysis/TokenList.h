@@ -52,15 +52,24 @@ public:
     char get_token_char(const Token &t) const;
     Number get_token_num(const Token &t) const;
     std::string get_token(const Token& t) const;
-    std::string get_token_str(const Token& t) const;
+    std::string get_token_str(Token t) const;
 
     size_t size() const;
 
     void print_token(long s, long e) const;
 
-    std::string get_grammar_token(const iterator& it);
-    std::string get_grammar_token(const iterator& it, const iterator& end);
+    std::string get_grammar_token(Token&&);
 
+};
+
+class TokenGetter {
+    TokenList& tkl;
+    TokenList::iterator it;
+    TokenList::iterator end;
+public:
+    explicit TokenGetter(TokenList& tkl);
+    Token next();
+    Token get();
 };
 
 

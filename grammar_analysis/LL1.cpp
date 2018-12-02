@@ -78,31 +78,28 @@ LL1::~LL1() {
     delete[] table;
 }
 
-bool LL1::process() {
-    auto x = tokenList.begin();
-    return process(x, tokenList.end(), gens.get_start());
-}
-
-bool LL1::process(TokenList::iterator &begin, const TokenList::iterator &end, const generator_A &start) {
+bool LL1::process(TokenGetter& getter) {
     stack<generator_A> st;
     st.push(gens.get_end());
+    generator_A start = gens.get_start();
+
     st.push(start);
-    auto cursor = begin;
+
 
     while (!st.empty()) {
         generator_A top = st.top();
         st.pop();
         // cout << "st size:" << st.size() << " top: " << top << endl;
 
-        string grammar_token = tokenList.get_grammar_token(cursor, end);
+        string grammar_token = tokenList.get_grammar_token(getter.get());
         if (grammar_token == gens.get_end() && top == gens.get_end())
             break;
 
         if (gens.isVT(top)) {
             // cout << "   token:" << grammar_token << endl;
             if (top == grammar_token)
-                if (cursor != end)
-                    cursor++;
+                if (getter.get().first != '#')
+                    getter.next();
                 else
                     throw runtime_error("input sequence finished but stack not empty");
             else
@@ -122,7 +119,7 @@ bool LL1::process(TokenList::iterator &begin, const TokenList::iterator &end, co
         else
             throw runtime_error("Internal Error. (neither VT nor VN)");
     }
-    if (st.empty() && cursor == end)
+    if (st.empty() && getter.get().first == '#')
         return true;
     throw runtime_error("process LL1 finish but stack is not empty or input not empty.");
 }

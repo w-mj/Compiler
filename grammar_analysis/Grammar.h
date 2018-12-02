@@ -13,6 +13,8 @@ public:
     static Generators Basic_Exp();
     static Generators Basic_Exp_Quat(TokenList& tokenList);
     static Generators C_Exp();
+    static Generators C_Bin_Exp();
+
     static Generators C_Grammar();
 };
 

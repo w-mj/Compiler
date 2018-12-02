@@ -11,14 +11,14 @@
 class Attribute {
 public:
     virtual void* operator()(const std::vector<void*>&) = 0;
-    virtual void* get_data(TokenList::iterator &) = 0;
+    virtual void* get_data(Token &&) = 0;
     bool nothing = false;
 };
 
 struct Attr_Nothing: public Attribute {
     Attr_Nothing();
     void* operator()(const std::vector<void*>& v) override {return v[0];}
-    void* get_data(TokenList::iterator &) override {return nullptr;}
+    void* get_data(Token &&) override {return nullptr;}
 };
 
 

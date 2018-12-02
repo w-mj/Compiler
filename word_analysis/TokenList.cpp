@@ -134,26 +134,22 @@ TokenList::iterator TokenList::end() {
     return list.end();
 }
 
-std::string TokenList::get_grammar_token(const TokenList::iterator &it) {
-    return get_grammar_token(it, end());
-}
-
-std::string TokenList::get_grammar_token(const TokenList::iterator &it, const TokenList::iterator &end) {
-    if (it == end)
+std::string TokenList::get_grammar_token(Token&& it) {
+    if (it.first == '#')
         return "#";
-    if (it->first == 'k') {
+    if (it.first == 'k') {
         static auto anyone = [](auto&& k, auto&&... args) ->bool { return ((args == k) || ...); };
-        if (anyone(key[it->second], "int", "float", "short", "double", "long", "char"))
+        if (anyone(key[it.second], "int", "float", "short", "double", "long", "char"))
             return "t";
         else
-            return key[it->second];
+            return key[it.second];
     }
-    if (it->first == 'p')
-        return bound[it->second];
+    if (it.first == 'p')
+        return bound[it.second];
     return "i";
 }
 
-std::string TokenList::get_token_str(const Token &t) const {
+std::string TokenList::get_token_str(Token t) const {
     switch (t.first) {
         case 'i':
             return id[t.second];
@@ -172,3 +168,21 @@ std::string TokenList::get_token_str(const Token &t) const {
     return "";
 }
 
+TokenGetter::TokenGetter(TokenList &tkl): tkl(tkl) {
+    it = tkl.begin();
+    end = tkl.end();
+}
+
+Token TokenGetter::get() {
+    if (it != end)
+        return *it;
+    return {'#', 0};
+}
+
+Token TokenGetter::next() {
+    if (it != end) {
+        it++;
+        return *it;
+    }
+    return {'#', 0};
+}

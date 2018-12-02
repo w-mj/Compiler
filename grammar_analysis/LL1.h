@@ -19,8 +19,7 @@ public:
 
     void show();
 
-    bool process(TokenList::iterator& begin, const TokenList::iterator& end, const generator_A& start);
-    bool process();
+    bool process(TokenGetter& getter);
 };
 
 

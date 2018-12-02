@@ -20,7 +20,7 @@ Generators Grammar::Basic_Exp() {
     return gen;
 }
 
-Generators Grammar::C_Exp() {
+Generators Grammar::C_Bin_Exp() {
     Generators gen;
 
     gen.set_terminators("= += -= *= /= %= <<= >>= &= ^= |= ? : "
@@ -137,6 +137,46 @@ Generators Grammar::Basic_Exp_Quat(TokenList &tokenList) {
                     "F";
     gen.add("F") >> "( E )" | new process_B |
                     "i";
+
+    return gen;
+}
+
+Generators Grammar::C_Exp() {
+    Generators gen;
+
+    gen.set_terminators("= += -= *= /= %= <<= >>= &= ^= |= ? : "
+                        "|| && | ^ & == != <= >= > < << >> + - *"
+                        " / % ++ -- ! ~ ( ) sizeof [ ] . -> i t c s ,");
+    gen.set_non_terminators("Exp AssignExp ConditionalExp UnaryExp AssignOperator BinaryExp PostfixExp UnaryExp "
+                            "PostfixOperator PriExp BinaryOperator UnaryOperator Exp_A Cond_A Bin_A Post_A PostOP_A PostOP_B");
+
+    gen << "Exp" >> "AssignExp Exp_A";
+    gen << "Exp_A" >> ", AssignExp Exp_A" | gen.get_epsilon();
+
+    gen << "AssignExp" >> "ConditionalExp"|
+                            "UnaryExp AssignOperator AssignExp";
+    gen << "AssignOperator" >> "="| "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | "&=" | "^=" | "|=";
+
+    gen << "ConditionalExp" >> "BinaryExp Cond_A";
+    gen << "Cond_A" >> "? Exp : ConditionalExp"| gen.get_epsilon();
+
+    gen << "BinaryExp" >> "UnaryExp Bin_A";
+    gen << "Bin_A" >> "BinaryOperator UnaryExp Bin_A"| gen.get_epsilon();
+
+    gen << "BinaryOperator" >> "||"| "&&"| "|" | "^"| "&"| "==" | "!=" | "<" | ">" | "<=" | ">=" | "<<"| ">>"| "+" |"-" | "*"| "/" |"%";
+
+    gen << "UnaryExp" >> "PostfixExp"| "UnaryOperator UnaryExp"| "( t ) UnaryExp" | "sizeof UnaryExp" | "sizeof ( t )";
+
+    gen << "UnaryOperator" >> "++"| "--"| "&" | "*" | "+" | "-" | "~" | "!";
+
+    gen << "PostfixExp" >> "PriExp Post_A";
+    gen << "Post_A" >> "PostfixOperator Post_A"| gen.get_epsilon();
+
+    gen << "PostfixOperator" >> "[ Exp ]"| "( PostOP_A )"| ". i"| "-> i"| "++" | "--";
+    gen << "PostOP_A" >> "AssignExp PostOP_B"| gen.get_epsilon();
+    gen << "PostOP_B" >> ", AssignExp PostOP_B"| gen.get_epsilon();
+
+    gen << "PriExp" >> "i"| "c"| "s" | "( Exp )";
 
     return gen;
 }

@@ -27,13 +27,13 @@ class Attr_ExpQuat_2_LR : public Attribute {
 public:
     explicit Attr_ExpQuat_2_LR(TokenList& tokenList);
     void *operator()(const std::vector<void*>& sub_tokens) override;
-    void *get_data(TokenList::iterator& it) override;
+    void *get_data(Token&& it) override;
 };
 
 class process_B: public Attribute {
 public:
     void *operator()(const std::vector<void*>& sub_tokens) override;
-    void *get_data(TokenList::iterator&it) override {return nullptr;}
+    void *get_data(Token &&it) override {return nullptr;}
 };
 
 
