@@ -18,13 +18,13 @@ int main() {
     if (ps.find("cmake-build-debug"))
         chdir("../");
 
-    string fname = "test.txt";
+    string fname = "test.src";
     ifstream file;
     file.open(fname);
     string line;
     WordAnalysis analyzer;
 
-    analyzer.process_file(file, true);
+    analyzer.process_file(file, false);
     file.close();
 
     // Generators basic_Exp = Grammar::Basic_Exp();
@@ -46,8 +46,8 @@ int main() {
     Generators generators = Grammar::YACC_C_Grammar();
     // generators._print_first();
     //generators.show();
-    // LR1 lr1(generators, tkl);
-    LR1 lr1(generators, tkl, "lr1_table");
+    LR1 lr1(generators, tkl);
+    // LR1 lr1(generators, tkl, "lr1_table");
     lr1.save("lr1_table");
     lr1.show();
     TokenGetter getter(tkl);

@@ -12,6 +12,10 @@
 
 class LR1_DFA {
     struct LR1_Generator {
+        /******************************************************\
+        |* 用在LR1 DFA项目集中的产生式                             |
+        |* 由于此类的对象会被添加到set中，务必保证初始化完成后不再改变!   |
+        \******************************************************/
         const generator* gen;
         const size_t gen_index;
         std::string outlook="#";
@@ -28,20 +32,18 @@ class LR1_DFA {
 
     struct Node {
         std::set<LR1_DFA::LR1_Generator> generator_list;
+        std::set<LR1_DFA::LR1_Generator> main_generator_list;
         std::map<std::string, Node*> transfer;
         // 等号运算符判断两个节点内部产生式是否完全一样
         bool operator==(const Node& another) const;
         // 计算闭包
         void closure(Generators& generators);
         size_t index = 0;
-        std::string hash_key;
-        std::string str();
     };
 
     Node* root = nullptr;
     std::vector<Node*> all_nodes;
     std::map<std::string, std::vector<Node*>> hash_table;
-    void add_table(Node* );
     Generators &generators;
     void build();
 public:

@@ -24,15 +24,15 @@ void LR1_DFA::build() {
     generators.insert_nonterminators("@Start");
     generator expend_generator = make_generator("@Start", generators.get_start());
     size_t i0 = generators.add_generator(expend_generator);
-    root->generator_list.emplace(generators.get_addr(i0), i0);
+    // root->generator_list.emplace(generators.get_addr(i0), i0);
+    root->main_generator_list.emplace(generators.get_addr(i0), i0);
 
     root->closure(generators);
     all_nodes.push_back(root);
-    add_table(root);
 
     for (size_t i = 0; i < all_nodes.size(); i++) {
         double percent = ((i + 1.0) / all_nodes.size()) * 100;
-        cout << "building LR1 DFA node " << i + 1 << "/" << all_nodes.size() << percent << "%\r";
+        cout << "building LR1 DFA node " << i + 1 << "/" << all_nodes.size() << "  " << percent << "%\r" << flush;
         Node *current_node = all_nodes[i];
 
         // 开始生成后继节点
@@ -54,38 +54,27 @@ void LR1_DFA::build() {
 
             for (const LR1_Generator &gen: suffix_item.second) {
                 // 为后继节点添加主产生式
-                new_node->generator_list.emplace(gen.gen, gen.gen_index, gen.outlook, gen.dot + 1);
+                // new_node->generator_list.emplace(gen.gen, gen.gen_index, gen.outlook, gen.dot + 1);
+                new_node->main_generator_list.emplace(gen.gen, gen.gen_index, gen.outlook, gen.dot + 1);
             }
 
-            new_node->closure(generators); // 为新节点计算闭包
-
-            Node* existed = nullptr;
-            if (hash_table.find(new_node->hash_key) != hash_table.end()) {
-                vector<Node*>::const_iterator n, end = hash_table[new_node->hash_key].end();
-                for (auto it = hash_table[new_node->hash_key].begin(); it != end; it++) {
-                    if ((*it)->operator==(*new_node)) {
-                        existed = *it;
-                        break;
-                    }
-                }
+            vector<Node *>::const_iterator n;
+            for (n = all_nodes.begin(); n != all_nodes.end(); n++) {
+                if ((*n)->operator==(*new_node))
+                    break;
             }
-//            vector<Node *>::const_iterator n;
-//            for (n = all_nodes.begin(); n != all_nodes.end(); n++) {
-//                if ((*n)->operator==(*new_node))
-//                    break;
-//            }
-            if (existed == nullptr) {
+            if (n == all_nodes.end()) {
+                new_node->closure(generators); // 为新节点计算闭包
                 new_node->index = all_nodes.size();
                 all_nodes.push_back(new_node);
-                add_table(new_node);
             } else {
                 delete new_node;
-                new_node = existed;
+                new_node = *n;
             }
             current_node->transfer.emplace(suffix_item.first, new_node);
         }
     }
-    cout << "LR1 table " << all_nodes.size() << " states." << endl;
+    cout << endl << "LR1 table " << all_nodes.size() << " states." << endl;
 }
 
 LR1_DFA::LR1_DFA(Generators &generators): generators(generators) {
@@ -151,13 +140,6 @@ vector<vector<pair<char, size_t>>> LR1_DFA::get_table(map<string, size_t>& index
     return new_table;
 }
 
-void LR1_DFA::add_table(LR1_DFA::Node * node) {
-    string& str = node->hash_key;
-    if (hash_table.find(str) == hash_table.end())
-        hash_table.emplace(str, vector<Node*>());
-    hash_table[str].push_back(node);
-}
-
 
 std::string LR1_DFA::LR1_Generator::get_after_dot() const {
     if (dot < gen->second.size())
@@ -215,14 +197,16 @@ std::string LR1_DFA::LR1_Generator::str() const {
 
 
 bool LR1_DFA::Node::operator==(const LR1_DFA::Node &another) const {
-    return generator_list == another.generator_list;
+    return main_generator_list == another.main_generator_list;
 }
 
 void LR1_DFA::Node::closure(Generators &generators) {
     queue<LR1_Generator> to_extend;  // 待扩展生成式
     // 扩展当前节点的主产生式
-    for (const LR1_Generator& main_gen: generator_list)
+    for (const LR1_Generator& main_gen: main_generator_list) {
         to_extend.push(main_gen);
+        generator_list.emplace(main_gen);
+    }
 
 
     while (!to_extend.empty()) {
@@ -255,13 +239,4 @@ void LR1_DFA::Node::closure(Generators &generators) {
             }
         }
     }
-    str();
-}
-
-std::string LR1_DFA::Node::str() {
-    stringstream ss;
-    for (auto& x: generator_list)
-        ss << x.str();
-    hash_key = ss.str();
-    return hash_key;
 }
