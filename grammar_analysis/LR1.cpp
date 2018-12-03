@@ -10,12 +10,17 @@
 #include <fstream>
 #include <string>
 #include <stack>
+#include <memory>
+#include <time.h>
 
 using namespace std;
 
 LR1::LR1(Generators &g, TokenList& tokenList): generators(g), tokenList(tokenList) {
+    time_t timer = time(NULL);
     LR1_DFA dfa(generators);
-    dfa.show();
+    timer = time(NULL) - timer;
+    cout << "build lr1 table finish " << timer << " second costs." << endl;
+    // dfa.show();
     table = dfa.get_table(index);
 }
 
@@ -44,20 +49,6 @@ LR1::LR1(Generators &g, TokenList &tokenList, std::string fname): generators(g),
 }
 
 void LR1::show() {
-//    for (int i = 0; i < table.size(); i++) {
-//        for (const auto &m: table[i]) {
-//            if (m.second.first != 'e') {
-//                cout << i << " " << m.first << "  : ";
-//                if (m.second.first == 'r') {
-//                    cout << "reduce: ";
-//                    show_generator(generators[m.second.second]);
-//                } else if (m.second.first == 's') {
-//                    cout << "shift in: " << m.second.second;
-//                }
-//                cout << endl;
-//            }
-//        }
-//    }
     auto alphabet = generators.get_terminators();
     auto temp = generators.get_non_terminators();
     ofstream of;
@@ -85,13 +76,18 @@ void LR1::show() {
 
     of << "<table border='1'>\n";
     of << "<tr><td>&nbsp;</td>\n";
+
+    vector<string> l(index.size());
     for (const auto& alpha: index)
-        of << "<td>" << alpha.first << "</td>";
+        l[alpha.second] = alpha.first;
+
+    for (size_t i = 0; i < l.size(); i++)
+        of << "<td>" << l[i] << "</td>";
     of << "</tr>\n";
     for (size_t i = 0; i < table.size(); i++) {
         of << "<tr><td>" << i << "</td>";
-        for (const auto& alpha: index) {
-            const auto& m = table[i][index[alpha.first]];
+        for (size_t j = 0; j < l.size(); j++) {
+            const auto& m = table[i][j];
             if (m.first == 'e')
                 of << "<td>&nbsp;</td>";
             else if (m.first == 'r')
@@ -169,7 +165,21 @@ bool LR1::process(TokenGetter& getter) {
                     break;
                 }
                 default:
-                    throw runtime_error("ERROR at LR1 analysis.");
+                    cout << endl << endl;
+                    cout << "alpha stack:  ";
+                    while (!alpha_stack.empty()) {
+                        cout << alpha_stack.top() << "  ";
+                        alpha_stack.pop();
+                    }
+                    cout << endl;
+                    cout << "state stack:  ";
+                    while (!state_stack.empty()) {
+                        cout << state_stack.top() << "  ";
+                        state_stack.pop();
+                    }
+                    cout << endl;
+                    cout << "current alpha:  " << alpha << endl;
+                    throw runtime_error("ERROR at LR1 analysis. ");
             }
         }
     } catch(runtime_error& r) {
@@ -194,6 +204,53 @@ void LR1::save(std::string fname) {
         of << endl;
     }
     of.close();
+}
+//
+//namespace build_LR1 {
+//    struct LR1_Generator {
+//        size_t gen_index;
+//        int dot = 0;
+//        set<string> outlook_set;
+//        string after_dot(Generators& gens) const{
+//            return dot < gens[gen_index].second.size()? gens[gen_index].second[dot]: "#";
+//        }
+//        size_t hash() const {
+//            using namespace std;
+//            return hash<size_t>()(gen_index) ^ hash<int>()(dot);
+//        }
+//        bool operator<(const LR1_Generator& rhs) const {
+//            return hash() < rhs.hash();
+//        }
+//    };
+//
+//    struct DFA_Node {
+//        set<LR1_Generator> gen_set;
+//        ulong index;
+//        map<string, weak_ptr<DFA_Node>> trans;
+//        void closure(Generators& gens) {
+//            bool quit = false;
+//            while (!quit) {
+//                quit = true;
+//                for (const auto& gen: gen_set) {
+//                    auto first = gens.first(gen.after_dot(gens));
+//                    for (auto& first_element: first) {
+//                        if (first_element == gens.get_epsilon())
+//                            cout << "\\e in first" << endl;
+//                        else {
+//                            auto B_c = gens.get_generators_index(first_element);
+//                            for (auto& expend_gen_index: B_c) {
+//                                auto new_gen = LR1_Generator{expend_gen_index, 0};
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    };
+//};
+
+void LR1::build() {
+
 }
 
 

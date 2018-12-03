@@ -147,8 +147,8 @@ std::string TokenList::get_grammar_token(Token&& it) {
     if (it.first == 'p')
         return bound[it.second];
     if (it.first == 'c')
-        return "c";
-    return "i";
+        return "CONSTANT";
+    return "IDENTIFIER";
 }
 
 std::string TokenList::get_token_str(Token t) const {

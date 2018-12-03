@@ -1,14 +1,4 @@
-int a;
-/*
+int a = 10;
 int main(void) {
-    int i = 0;
-    for(; i < a;) {
-        i++;
-    }
-    if (i = 0)
-        a = 10;
-    else
-        a = 100;
-    return a;
+    printf(123);
 }
-*/

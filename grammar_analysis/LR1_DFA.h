@@ -6,35 +6,42 @@
 #define COMPLIE_LR1_DFA_H
 #include <string>
 #include <map>
+#include <unordered_set>
 #include "Generators.h"
 
 
 class LR1_DFA {
     struct LR1_Generator {
-        generator gen;
+        const generator* gen;
+        const size_t gen_index;
         std::string outlook="#";
-        int dot=0;
-        size_t gen_index;
-        explicit LR1_Generator(const generator& g, size_t index, const std::string& outlook="#", int dot=0);
+        const int dot=0;
+        explicit LR1_Generator(const generator* g, size_t index, const std::string& outlook="#", int dot=0);
         std::string get_outlook() const;
         std::string get_after_dot() const;
         bool operator==(const LR1_Generator& another) const;
+        bool operator<(const LR1_Generator& another) const;
         void show() const;
+        std::string str() const;
+        std::string s;
     };
 
     struct Node {
-        std::vector<LR1_DFA::LR1_Generator> generator_list;
+        std::set<LR1_DFA::LR1_Generator> generator_list;
         std::map<std::string, Node*> transfer;
-        // 等号运算符判断只有两个节点内部产生式是否完全一样
+        // 等号运算符判断两个节点内部产生式是否完全一样
         bool operator==(const Node& another) const;
-        // equal方法只要两个节点的产生式集合为互相包含关系就为真。
-        // 即如果一个节点包含另一个节点的所有主产生式，那么将两个节点全部扩展后会得到完全一样的结果。
-        bool equal(const Node& another) const;
+        // 计算闭包
+        void closure(Generators& generators);
         size_t index = 0;
+        std::string hash_key;
+        std::string str();
     };
 
     Node* root = nullptr;
     std::vector<Node*> all_nodes;
+    std::map<std::string, std::vector<Node*>> hash_table;
+    void add_table(Node* );
     Generators &generators;
     void build();
 public:

@@ -101,6 +101,8 @@ public:
     };
     GeneratorAdder& add(const generator_A& A);
     GeneratorAdder& operator<<(const generator_A& A);
+
+    const generator* get_addr(size_t i) const;
 private:
     GeneratorAdder adder;
 

@@ -275,10 +275,7 @@ void Generators::_print_first() {
         build_first_set();
     }
     for (const auto& E: non_terminators) {
-        cout << "First("<<E<<") = {";
-        for (const auto& M: first_set[E])
-            cout << M << ", ";
-        cout << "}"<<endl;
+        cout << "First("<<E<<") = " << first_set[E] <<endl;
     }
 }
 
@@ -423,4 +420,8 @@ void Generators::set_attr_builder(Attribute *attr) {
 
 Attribute *Generators::get_attr_builder() {
     return attr_builder;
+}
+
+const generator *Generators::get_addr(size_t i) const {
+    return &g_list[i];
 }

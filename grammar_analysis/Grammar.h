@@ -15,7 +15,7 @@ public:
     static Generators C_Exp();
     static Generators C_Bin_Exp();
 
-    static Generators C_Grammar();
+    static Generators FG_C_Grammar();
 
     static Generators YACC_C_Grammar();
 

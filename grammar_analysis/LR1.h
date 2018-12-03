@@ -20,6 +20,8 @@ public:
     void show();
     bool process(TokenGetter& getter);
     void save(std::string fname);
+
+    void build();
 };
 
 

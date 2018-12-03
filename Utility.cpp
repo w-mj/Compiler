@@ -34,6 +34,18 @@ static void _split(const std::string &s, char delim,
 
 std::vector<std::string> split(const std::string &s, char delim) {
     std::vector<std::string> elems;
-    _split(s, delim, elems);
+    auto it = s.cbegin();
+    auto end = s.cend();
+    while (it != end) {
+        string buf;
+        while (it != end && *it != delim) {
+            buf.push_back(*it);
+            it++;
+        }
+        elems.push_back(buf);
+        while (it != end && *it == delim) {
+            it++;
+        }
+    }
     return elems;
 }

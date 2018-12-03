@@ -54,13 +54,14 @@ Generators Grammar::C_Bin_Exp() {
     return gen;
 }
 
-Generators Grammar::C_Grammar() {
+Generators Grammar::FG_C_Grammar() {
     Generators gen;
 
     gen.set_terminators("int_const float_const id ; , > < >= <= == != + - * / && || . ! = "
                         "int float ( ) [ ] { } struct return if else while");
-    gen.set_non_terminators("SEMI COMMA ASSIGNOP RELOP MINUS PLUS STAR DIV AND OR NOT "
-                            "doT TYPE LP RP LB RB LC RC struct return if else while Program ExtDefList ExtDef "
+    gen.set_non_terminators("SEMI COMMA ASSIGNOP RELOP MINUS PLUS STAR DIV AND OR NOT STRUCT RETURN "
+                            "DOT TYPE LP RP LB RB LC RC struct return if else while Program ExtDefList ExtDef IF ELSE WHILE CompSt Tag "
+                            "IDENTIFIER INT StmtList Stmt Exp Args "
                             "ExtDecList Specifier StructSpecifier OptTag VarDec FunDec VarList ParamDec DefList Def DecList Dec");
     gen.set_start("Program");
 
@@ -75,7 +76,7 @@ Generators Grammar::C_Grammar() {
     gen << "DIV" >> "/";
     gen << "AND" >> "&&";
     gen << "OR" >> "||";
-    gen << "doT" >> ".";
+    gen << "DOT" >> ".";
     gen << "NOT" >> "!";
     gen << "TYPE" >> "int" | "float";
     gen << "LP" >> "(";
@@ -84,38 +85,52 @@ Generators Grammar::C_Grammar() {
     gen << "RB" >> "]";
     gen << "LC" >> "{";
     gen << "RC" >> "}";
-    gen << "struct" >> "struct";
-    gen << "return" >> "return";
-    gen << "if" >> "if";
-    gen << "else" >> "else";
-    gen << "while" >> "while";
+    gen << "STRUCT" >> "struct";
+    gen << "RETURN" >> "return";
+    gen << "IF" >> "if";
+    gen << "ELSE" >> "else";
+    gen << "WHILE" >> "while";
 
     // High-level Definitions
     gen << "Program" >> "ExtDefList";
     gen << "ExtDefList" >> "ExtDef ExtDefList" | gen.get_epsilon();
-    gen << "ExtDef" >> "Specifier ExtDecList ;" | "Specifier ;" | "Specifier FunDec CompSt";
-    gen << "ExtDecList" >> "VarDec" | "VarDec , ExtDecList";
+    gen << "ExtDef" >> "Specifier ExtDecList SEMI"
+                       | "Specifier SEMI"
+                       | "Specifier FunDec CompSt";
+
+    gen << "ExtDecList" >> "VarDec"
+                       | "VarDec COMMA ExtDecList";
 
     // Sepcifiers
     gen << "Specifier" >> "TYPE" | "StructSpecifier";
-    gen << "StructSpecifier" >> "struct OptTag { DefList }" | "struct id";
-    gen << "OptTag" >> "ID" | gen.get_epsilon();
-    // gen << "Tag" >> "ID";
+    gen << "StructSpecifier" >> "STRUCT OptTag LC DefList RC" | "STRUCT Tag";
+    gen << "OptTag" >> "IDENTIFIER" | gen.get_epsilon();
+    gen << "Tag" >> "IDENTIFIER";
 
     //Declarators
-    gen << "VarDec" >> "id" | "VarDec [ int_const ]";
-    gen << "FunDec" >> "id ( VarList )" | "ID ( )";
-    gen << "VarList" >> "ParamDec , VarList" | "ParamDec";
+    gen << "VarDec" >> "IDENTIFIER" | "VarDec LB INT RB";
+    gen << "FunDec" >> "IDENTIFIER LP VarList RP" | "IDENTIFIER LP RP";
+    gen << "VarList" >> "ParamDec COMMA VarList" | "ParamDec";
     gen << "ParamDec" >> "Specifier VarDec";
+
+    // Statements
+    gen << "CompSt" >> "LC DefList StmtList RC";
+    gen << "StmtList" >> "Stmt StmtList"| gen.get_epsilon();
+    gen << "Stmt" >> "Exp SEMI"|
+            "CompSt"| "RETURN Exp SEMI"|
+            "IF LP Exp RP Stmt"|
+            "IF LP Exp RP Stmt ELSE Stmt"|
+            "WHILE LP Exp RP Stmt";
 
     // Local Definitions
     gen << "DefList" >> "Def DefList" | gen.get_epsilon();
-    gen << "Def" >> "Specifier DecList ;";
-    gen << "DecList" >> "Dec" | "Dec , DecList";
+    gen << "Def" >> "Specifier DecList SEMI";
+    gen << "DecList" >> "Dec" | "Dec COMMA DecList";
     gen << "Dec" >> "VarDec" | "VarDec ASSIGNOP Exp";
 
     // Expressions
-    gen << "EXP" >> "id + id";
+    gen << "Exp" >> "Exp PLUS Exp";
+    gen << "Args" >> "Exp COMMA Args"| "Exp";
 
     return gen;
 }
@@ -189,23 +204,16 @@ Generators Grammar::C_Exp() {
 Generators Grammar::YACC_C_Grammar() {
     Generators gen;
     gen.set_terminators(
-
-            "i c s sizeof "
+            "IDENTIFIER CONSTANT STRING_LITERAL sizeof "
             "-> ++ -- << >> <= >= == != "
             "&& || *= /= %= += "
             "-= <<= >>= &= "
-            "^= |= t "
-
+            "^= |= TYPE_NAME "
             "typedef extern static auto register "
             "char short int long signed unsigned float double const volatile void "
             "struct union enum ... "
-
             "case default if else switch while do for goto continue break return "
-
-            "= += -= *= /= %= <<= >>= &= ^= |= ? : "
-            "|| && | ^ & == != <= >= > < << >> + - *"
-            " / % ++ -- ! ~ ( ) sizeof [ ] . -> , ; { }"
-
+            "( ) [ ] { } . -> , & | ^ + - * / ~ % ! < > ? : = ;"
     );
 
     gen.set_non_terminators(
@@ -223,29 +231,31 @@ Generators Grammar::YACC_C_Grammar() {
             "selection_statement iteration_statement jump_statement translation_unit external_declaration "
             "function_definition");
 
-
     gen.set_start("translation_unit");
 
 
     gen.add("primary_expression")
-    | "i"
-    | "c"
-    | "s"
-    | "( expression )";
+    | "IDENTIFIER"
+    | "CONSTANT"
+    | "STRING_LITERAL"
+    | "( expression )"
+            ;
 
     gen.add("postfix_expression")
     | "primary_expression"
     | "postfix_expression [ expression ]"
     | "postfix_expression ( )"
     | "postfix_expression ( argument_expression_list )"
-    | "postfix_expression . i"
-    | "postfix_expression -> i"
+    | "postfix_expression . IDENTIFIER"
+    | "postfix_expression -> IDENTIFIER"
     | "postfix_expression ++"
-    | "postfix_expression --";
+    | "postfix_expression --"
+            ;
 
     gen.add("argument_expression_list")
     | "assignment_expression"
-    | "argument_expression_list , assignment_expression";
+    | "argument_expression_list , assignment_expression"
+            ;
 
     gen.add("unary_expression")
     | "postfix_expression"
@@ -253,7 +263,8 @@ Generators Grammar::YACC_C_Grammar() {
     | "-- unary_expression"
     | "unary_operator cast_expression"
     | "sizeof unary_expression"
-    | "sizeof ( type_name )";
+    | "sizeof ( type_name )"
+            ;
 
     gen.add("unary_operator")
     | "&"
@@ -261,67 +272,81 @@ Generators Grammar::YACC_C_Grammar() {
     | "+"
     | "-"
     | "~"
-    | "!";
+    | "!"
+            ;
 
     gen.add("cast_expression")
     | "unary_expression"
-    | "( type_name ) cast_expression";
+    | "( type_name ) cast_expression"
+            ;
 
     gen.add("multiplicative_expression")
     | "cast_expression"
     | "multiplicative_expression * cast_expression"
     | "multiplicative_expression / cast_expression"
-    | "multiplicative_expression % cast_expression";
+    | "multiplicative_expression % cast_expression"
+            ;
 
     gen.add("additive_expression")
     | "multiplicative_expression"
     | "additive_expression + multiplicative_expression"
-    | "additive_expression - multiplicative_expression";
+    | "additive_expression - multiplicative_expression"
+            ;
 
     gen.add("shift_expression")
     | "additive_expression"
     | "shift_expression << additive_expression"
-    | "shift_expression >> additive_expression";
+    | "shift_expression >> additive_expression"
+            ;
 
     gen.add("relational_expression")
     | "shift_expression"
     | "relational_expression < shift_expression"
     | "relational_expression > shift_expression"
     | "relational_expression <= shift_expression"
-    | "relational_expression >= shift_expression";
+    | "relational_expression >= shift_expression"
+            ;
 
     gen.add("equality_expression")
     | "relational_expression"
     | "equality_expression == relational_expression"
-    | "equality_expression != relational_expression";
+    | "equality_expression != relational_expression"
+            ;
 
     gen.add("and_expression")
     | "equality_expression"
-    | "and_expression & equality_expression";
+    | "and_expression & equality_expression"
+            ;
 
     gen.add("exclusive_or_expression")
     | "and_expression"
-    | "exclusive_or_expression ^ and_expression";
+    | "exclusive_or_expression ^ and_expression"
+            ;
 
     gen.add("inclusive_or_expression")
     | "exclusive_or_expression"
-    | "inclusive_or_expression | exclusive_or_expression";
+    | "inclusive_or_expression | exclusive_or_expression"
+            ;
 
     gen.add("logical_and_expression")
     | "inclusive_or_expression"
-    | "logical_and_expression && inclusive_or_expression";
+    | "logical_and_expression && inclusive_or_expression"
+            ;
 
     gen.add("logical_or_expression")
     | "logical_and_expression"
-    | "logical_or_expression || logical_and_expression";
+    | "logical_or_expression || logical_and_expression"
+            ;
 
     gen.add("conditional_expression")
     | "logical_or_expression"
-    | "logical_or_expression ? expression : conditional_expression";
+    | "logical_or_expression ? expression : conditional_expression"
+            ;
 
     gen.add("assignment_expression")
     | "conditional_expression"
-    | "unary_expression assignment_operator assignment_expression";
+    | "unary_expression assignment_operator assignment_expression"
+            ;
 
     gen.add("assignment_operator")
     | "="
@@ -334,18 +359,22 @@ Generators Grammar::YACC_C_Grammar() {
     | ">>="
     | "&="
     | "^="
-    | "|=";
+    | "|="
+            ;
 
     gen.add("expression")
     | "assignment_expression"
-    | "expression , assignment_expression";
+    | "expression , assignment_expression"
+            ;
 
     gen.add("constant_expression")
-    | "conditional_expression";
+    | "conditional_expression"
+            ;
 
     gen.add("declaration")
     | "declaration_specifiers ;"
-    | "declaration_specifiers init_declarator_list ;";
+    | "declaration_specifiers init_declarator_list ;"
+            ;
 
     gen.add("declaration_specifiers")
     | "storage_class_specifier"
@@ -353,22 +382,26 @@ Generators Grammar::YACC_C_Grammar() {
     | "type_specifier"
     | "type_specifier declaration_specifiers"
     | "type_qualifier"
-    | "type_qualifier declaration_specifiers";
+    | "type_qualifier declaration_specifiers"
+            ;
 
     gen.add("init_declarator_list")
     | "init_declarator"
-    | "init_declarator_list , init_declarator";
+    | "init_declarator_list , init_declarator"
+            ;
 
     gen.add("init_declarator")
     | "declarator"
-    | "declarator = initializer";
+    | "declarator = initializer"
+            ;
 
     gen.add("storage_class_specifier")
     | "typedef"
     | "extern"
     | "static"
     | "auto"
-    | "register";
+    | "register"
+            ;
 
     gen.add("type_specifier")
     | "void"
@@ -382,105 +415,127 @@ Generators Grammar::YACC_C_Grammar() {
     | "unsigned"
     | "struct_or_union_specifier"
     | "enum_specifier"
-    | "t";
+    | "TYPE_NAME"
+            ;
 
     gen.add("struct_or_union_specifier")
-    | "struct_or_union i { struct_declaration_list }"
+    | "struct_or_union IDENTIFIER { struct_declaration_list }"
     | "struct_or_union { struct_declaration_list }"
-    | "struct_or_union i";
+    | "struct_or_union IDENTIFIER"
+            ;
 
     gen.add("struct_or_union")
     | "struct"
-    | "union";
+    | "union"
+            ;
 
     gen.add("struct_declaration_list")
     | "struct_declaration"
-    | "struct_declaration_list struct_declaration";
+    | "struct_declaration_list struct_declaration"
+            ;
 
     gen.add("struct_declaration")
-    | "specifier_qualifier_list struct_declarator_list ;";
+    | "specifier_qualifier_list struct_declarator_list ;"
+            ;
 
     gen.add("specifier_qualifier_list")
     | "type_specifier specifier_qualifier_list"
     | "type_specifier"
     | "type_qualifier specifier_qualifier_list"
-    | "type_qualifier";
+    | "type_qualifier"
+            ;
 
     gen.add("struct_declarator_list")
     | "struct_declarator"
-    | "struct_declarator_list , struct_declarator";
+    | "struct_declarator_list , struct_declarator"
+            ;
 
     gen.add("struct_declarator")
     | "declarator"
     | ": constant_expression"
-    | "declarator : constant_expression";
+    | "declarator : constant_expression"
+            ;
 
     gen.add("enum_specifier")
     | "enum { enumerator_list }"
-    | "enum i { enumerator_list }"
-    | "enum i";
+    | "enum IDENTIFIER { enumerator_list }"
+    | "enum IDENTIFIER"
+            ;
 
     gen.add("enumerator_list")
     | "enumerator"
-    | "enumerator_list , enumerator";
+    | "enumerator_list , enumerator"
+            ;
 
     gen.add("enumerator")
-    | "i"
-    | "i = constant_expression";
+    | "IDENTIFIER"
+    | "IDENTIFIER = constant_expression"
+            ;
 
     gen.add("type_qualifier")
     | "const"
-    | "volatile";
+    | "volatile"
+            ;
 
     gen.add("declarator")
     | "pointer direct_declarator"
-    | "direct_declarator";
+    | "direct_declarator"
+            ;
 
     gen.add("direct_declarator")
-    | "i"
+    | "IDENTIFIER"
     | "( declarator )"
     | "direct_declarator [ constant_expression ]"
     | "direct_declarator [ ]"
     | "direct_declarator ( parameter_type_list )"
     | "direct_declarator ( identifier_list )"
-    | "direct_declarator ( )";
+    | "direct_declarator ( )"
+            ;
 
     gen.add("pointer")
     | "*"
     | "* type_qualifier_list"
     | "* pointer"
-    | "* type_qualifier_list pointer";
+    | "* type_qualifier_list pointer"
+            ;
 
     gen.add("type_qualifier_list")
     | "type_qualifier"
-    | "type_qualifier_list type_qualifier";
+    | "type_qualifier_list type_qualifier"
+            ;
 
 
     gen.add("parameter_type_list")
     | "parameter_list"
-    | "parameter_list , ...";
+    | "parameter_list , ..."
+            ;
 
     gen.add("parameter_list")
     | "parameter_declaration"
-    | "parameter_list , parameter_declaration";
+    | "parameter_list , parameter_declaration"
+            ;
 
     gen.add("parameter_declaration")
     | "declaration_specifiers declarator"
     | "declaration_specifiers abstract_declarator"
-    | "declaration_specifiers";
+    | "declaration_specifiers"
+            ;
 
     gen.add("identifier_list")
-    | "i"
-    | "identifier_list , i";
+    | "IDENTIFIER"
+    | "identifier_list , IDENTIFIER"
+            ;
 
     gen.add("type_name")
     | "specifier_qualifier_list"
-    | "specifier_qualifier_list abstract_declarator";
+    | "specifier_qualifier_list abstract_declarator"
+            ;
 
     gen.add("abstract_declarator")
     | "pointer"
     | "direct_abstract_declarator"
-    | "pointer direct_abstract_declarator";
+    | "pointer direct_abstract_declarator"
+            ;
 
     gen.add("direct_abstract_declarator")
     | "( abstract_declarator )"
@@ -491,16 +546,19 @@ Generators Grammar::YACC_C_Grammar() {
     | "( )"
     | "( parameter_type_list )"
     | "direct_abstract_declarator ( )"
-    | "direct_abstract_declarator ( parameter_type_list )";
+    | "direct_abstract_declarator ( parameter_type_list )"
+            ;
 
     gen.add("initializer")
     | "assignment_expression"
     | "{ initializer_list }"
-    | "{ initializer_list , }";
+    | "{ initializer_list , }"
+            ;
 
     gen.add("initializer_list")
     | "initializer"
-    | "initializer_list , initializer";
+    | "initializer_list , initializer"
+            ;
 
     gen.add("statement")
     | "labeled_statement"
@@ -508,72 +566,87 @@ Generators Grammar::YACC_C_Grammar() {
     | "expression_statement"
     | "selection_statement"
     | "iteration_statement"
-    | "jump_statement";
+    | "jump_statement"
+            ;
 
     gen.add("labeled_statement")
-    | "i : statement"
+    | "IDENTIFIER : statement"
     | "case constant_expression : statement"
-    | "default : statement";
+    | "default : statement"
+            ;
 
     gen.add("compound_statement")
     | "{ }"
     | "{ statement_list }"
     | "{ declaration_list }"
-    | "{ declaration_list statement_list }";
+    | "{ declaration_list statement_list }"
+            ;
 
     gen.add("declaration_list")
     | "declaration"
-    | "declaration_list declaration";
+    | "declaration_list declaration"
+            ;
 
     gen.add("statement_list")
     | "statement"
-    | "statement_list statement";
+    | "statement_list statement"
+            ;
 
     gen.add("expression_statement")
     | ";"
-    | "expression ;";
+    | "expression ;"
+            ;
 
     gen.add("selection_statement")
     | "if ( expression ) statement"
     | "if ( expression ) statement else statement"
-    | "switch ( expression ) statement";
+    | "switch ( expression ) statement"
+            ;
 
     gen.add("iteration_statement")
     | "while ( expression ) statement"
     | "do statement while ( expression ) ;"
     | "for ( expression_statement expression_statement ) statement"
-    | "for ( expression_statement expression_statement expression ) statement";
+    | "for ( expression_statement expression_statement expression ) statement"
+            ;
 
     gen.add("jump_statement")
-    | "goto i ;"
+    | "goto IDENTIFIER ;"
     | "continue ;"
     | "break ;"
     | "return ;"
-    | "return expression ;";
+    | "return expression ;"
+            ;
 
     gen.add("translation_unit")
     | "external_declaration"
-    | "translation_unit external_declaration";
+    | "translation_unit external_declaration"
+            ;
 
     gen.add("external_declaration")
     | "function_definition"
-    | "declaration";
+    | "declaration"
+            ;
 
     gen.add("function_definition")
     | "declaration_specifiers declarator declaration_list compound_statement"
     | "declaration_specifiers declarator compound_statement"
     | "declarator declaration_list compound_statement"
-    | "declarator compound_statement";
-
+    | "declarator compound_statement"
+            ;
     return gen;
 }
 
 Generators Grammar::TestLR1() {
     Generators gen;
-    gen.set_non_terminators("S B");
-    gen.set_terminators("a b");
+    gen.set_non_terminators("S A E");
+    gen.set_terminators("; id := +");
     gen.set_start("S");
-    gen << "S" >> "B B";
-    gen << "B" >> "a B"| "b";
+    gen << "S" >> "S ; A";
+    gen << "S" >> "A";
+    gen << "A" >> "E";
+    gen << "A" >> "id := E";
+    gen << "E" >> "E + id";
+    gen << "E" >> "id";
     return gen;
 }
