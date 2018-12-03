@@ -131,7 +131,9 @@ vector<vector<pair<char, size_t>>> LR1_DFA::get_table(map<string, size_t>& index
         }
         for (const auto& t: cn->transfer) {
             if (new_table[i][index[t.first]].first != 'e') {
-                cout << "A Shift/Reduction confilict occurs at I" << to_string(i) << " select shift as default." << endl;
+                cout << "A Shift/Reduction conflict occurs at I" << i << ", select Shift in as default." << endl;
+                cout << "    state I" << i << " meets \"" << t.first << "\" conflict at reduction with " << new_table[i][index[t.first]].second
+                     << " or shift in I" << t.second->index << endl;
             }
             new_table[i][index[t.first]].first = 's';
             new_table[i][index[t.first]].second = t.second->index;

@@ -67,7 +67,7 @@ void LR1::show() {
     for (size_t i = 0; i < generators.size(); i++) {
         of << "<tr><td>" << i << "</td><td>:</td><td>" << generators[i].first << " --> ";
         for (const auto& x: generators[i].second)
-            of << x;
+            of << x << "&nbsp;";
         of << "</td></tr>\n";
     }
     of << "</table>\n";
