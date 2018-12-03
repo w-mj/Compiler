@@ -15,38 +15,7 @@
 
 using namespace std;
 
-LR1::LR1(Generators &g, TokenList& tokenList): generators(g), tokenList(tokenList) {
-    time_t timer = time(NULL);
-    LR1_DFA dfa(generators);
-    timer = time(NULL) - timer;
-    cout << "build lr1 table finish " << timer << " second costs." << endl;
-    // dfa.show();
-    table = dfa.get_table(index);
-}
-
-LR1::LR1(Generators &g, TokenList &tokenList, std::string fname): generators(g), tokenList(tokenList) {
-    generators.insert_nonterminators("@Start");
-    generator expend_generator = make_generator("@Start", generators.get_start());
-    size_t i0 = generators.add_generator(expend_generator);
-
-    ifstream f(fname);
-    string buffer;
-    getline(f, buffer);
-    auto index_vec = split(buffer);
-    for (size_t i = 0; i < index_vec.size(); i += 2) {
-        index.emplace(index_vec[i], stoi(index_vec[i + 1]));
-    }
-    int cnt = 0;
-    while (getline(f, buffer)) {
-        table.emplace_back();
-        auto line_vec = split(buffer);
-        for (auto &x: line_vec) {
-            string num(x.begin() + 1, x.end());
-            table[cnt].emplace_back(x[0], stoi(num));
-        }
-        cnt += 1;
-    }
-}
+LR1::LR1(Generators &g, TokenList& tokenList): generators(g), tokenList(tokenList) {}
 
 void LR1::show() {
     auto alphabet = generators.get_terminators();
@@ -192,6 +161,7 @@ bool LR1::process(TokenGetter& getter) {
 }
 
 void LR1::save(std::string fname) {
+    cout << "save LR1 table to \"" << fname << "\"" << endl;
     ofstream of(fname);
     for (auto &x: index) {
         of << x.first << " " << x.second << " ";
@@ -205,52 +175,41 @@ void LR1::save(std::string fname) {
     }
     of.close();
 }
-//
-//namespace build_LR1 {
-//    struct LR1_Generator {
-//        size_t gen_index;
-//        int dot = 0;
-//        set<string> outlook_set;
-//        string after_dot(Generators& gens) const{
-//            return dot < gens[gen_index].second.size()? gens[gen_index].second[dot]: "#";
-//        }
-//        size_t hash() const {
-//            using namespace std;
-//            return hash<size_t>()(gen_index) ^ hash<int>()(dot);
-//        }
-//        bool operator<(const LR1_Generator& rhs) const {
-//            return hash() < rhs.hash();
-//        }
-//    };
-//
-//    struct DFA_Node {
-//        set<LR1_Generator> gen_set;
-//        ulong index;
-//        map<string, weak_ptr<DFA_Node>> trans;
-//        void closure(Generators& gens) {
-//            bool quit = false;
-//            while (!quit) {
-//                quit = true;
-//                for (const auto& gen: gen_set) {
-//                    auto first = gens.first(gen.after_dot(gens));
-//                    for (auto& first_element: first) {
-//                        if (first_element == gens.get_epsilon())
-//                            cout << "\\e in first" << endl;
-//                        else {
-//                            auto B_c = gens.get_generators_index(first_element);
-//                            for (auto& expend_gen_index: B_c) {
-//                                auto new_gen = LR1_Generator{expend_gen_index, 0};
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    };
-//};
 
-void LR1::build() {
+void LR1::build(bool show_dfa) {
+    time_t timer = time(NULL);
+    LR1_DFA dfa(generators);
+    timer = time(NULL) - timer;
+    cout << "building LR1 table finish. cost " << timer << " seconds." << endl;
+    if (show_dfa)
+        dfa.show();
+    table = dfa.get_table(index);
+}
 
+void LR1::load(std::string fname) {
+    cout << "load LR1 table from \"" << fname << "\"" << endl;
+    generators.insert_nonterminators("@Start");
+    generator expend_generator = make_generator("@Start", generators.get_start());
+    size_t i0 = generators.add_generator(expend_generator);
+
+    ifstream f(fname);
+    string buffer;
+    getline(f, buffer);
+    auto index_vec = split(buffer);
+    for (size_t i = 0; i < index_vec.size(); i += 2) {
+        index.emplace(index_vec[i], stoi(index_vec[i + 1]));
+    }
+    int cnt = 0;
+    while (getline(f, buffer)) {
+        table.emplace_back();
+        auto line_vec = split(buffer);
+        for (auto &x: line_vec) {
+            string num(x.begin() + 1, x.end());
+            table[cnt].emplace_back(x[0], stoi(num));
+        }
+        cnt += 1;
+    }
+    cout << "load finish. " << cnt << " states altogether." << endl;
 }
 
 

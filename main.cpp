@@ -48,7 +48,9 @@ int main() {
     //generators.show();
     LR1 lr1(generators, tkl);
     // LR1 lr1(generators, tkl, "lr1_table");
-    lr1.save("lr1_table");
+    // lr1.build();
+    lr1.load();
+    lr1.save();
     lr1.show();
     TokenGetter getter(tkl);
     lr1.process(getter);

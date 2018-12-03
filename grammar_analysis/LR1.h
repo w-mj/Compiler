@@ -16,12 +16,11 @@ class LR1 {
 public:
 
     LR1(Generators& g, TokenList& tokenList);
-    LR1(Generators& g, TokenList& tokenList, std::string fname);
     void show();
     bool process(TokenGetter& getter);
-    void save(std::string fname);
-
-    void build();
+    void save(std::string fname="lr1_table");
+    void load(std::string fname="lr1_table");
+    void build(bool show_dfa=false);
 };
 
 
