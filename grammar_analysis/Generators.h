@@ -9,7 +9,7 @@
 #include <map>
 #include <set>
 #include <iostream>
-#include "Attribute/Attribute.h"
+#include "Attribute.h"
 
 #define get_gen(A, n) (g_list[g_map[A][n]])
 
@@ -24,10 +24,10 @@ class Generators {
     std::set<std::string> non_terminators;
     std::map<generator_A, std::vector<size_t>> g_map;
     std::vector<generator> g_list;
-    std::vector<Attribute*> attr_list;
+    std::vector<Attribute> attr_list;
 
-    Attribute* do_nothing = new Attr_Nothing();
-    Attribute* attr_builder = nullptr;
+    Attribute do_nothing = nullptr;
+    AttrBuilder attr_builder = nullptr;
     generator_A start;
     const generator_A epsilon = "\\e";
     const generator_A end = "#";
@@ -84,10 +84,10 @@ public:
     void set_non_terminators(const std::string& s);
     void insert_nonterminators(const generator_A& n);
 
-    void set_attr(size_t i, Attribute* attr);
-    Attribute& get_attr(size_t i);
-    void set_attr_builder(Attribute* attr);
-    Attribute* get_attr_builder();
+    void set_attr(size_t i, Attribute attr);
+    Attribute get_attr(size_t i);
+    void set_attr_builder(AttrBuilder attr);
+    AttrBuilder get_attr_builder();
 
     struct GeneratorAdder {
         generator_A A;
@@ -97,7 +97,7 @@ public:
         GeneratorAdder& operator<<(const std::string& B);
         GeneratorAdder& operator>>(const std::string& B);
         GeneratorAdder& operator|(const std::string& B);
-        GeneratorAdder& operator|(Attribute* attr);
+        GeneratorAdder& operator|(Attribute attr);
     };
     GeneratorAdder& add(const generator_A& A);
     GeneratorAdder& operator<<(const generator_A& A);

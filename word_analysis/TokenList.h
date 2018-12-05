@@ -10,6 +10,12 @@
 #include "NumericDFA.h"
 #include <iostream>
 
+#define TOKEN_ID 'i'
+#define TOKEN_CHAR 'h'
+#define TOKEN_STR 's'
+#define TOKEN_KEY 'k'
+#define TOKEN_BOUND 'p'
+
 struct Token {
     Token(char c, int i);
     char first;

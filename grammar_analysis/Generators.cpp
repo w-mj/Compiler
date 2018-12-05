@@ -350,7 +350,7 @@ Generators::GeneratorAdder &Generators::GeneratorAdder::operator>>(const std::st
     return operator<<(split(B));
 }
 
-Generators::GeneratorAdder &Generators::GeneratorAdder::operator|(Attribute *attr) {
+Generators::GeneratorAdder &Generators::GeneratorAdder::operator|(Attribute attr) {
     gens->set_attr(last_index, attr);
     return *this;
 }
@@ -394,31 +394,23 @@ Generators::GeneratorAdder &Generators::operator<<(const generator_A &A) {
 }
 
 Generators::~Generators() {
-    set<Attribute*> sett;
-    for (auto attr: attr_list) {
-        if (in_set(sett, attr))
-            continue;
-        sett.insert(attr);
-        delete attr;
-    }
-    delete do_nothing;
 }
 
-void Generators::set_attr(size_t i, Attribute *attr) {
+void Generators::set_attr(size_t i, Attribute attr) {
     attr_list[i] = attr;
 }
 
-Attribute &Generators::get_attr(size_t i) {
+Attribute Generators::get_attr(size_t i) {
     if (attr_list[i] != nullptr)
-        return *attr_list[i];
-    return *do_nothing;
+        return attr_list[i];
+    return do_nothing;
 }
 
-void Generators::set_attr_builder(Attribute *attr) {
+void Generators::set_attr_builder(AttrBuilder attr) {
     attr_builder = attr;
 }
 
-Attribute *Generators::get_attr_builder() {
+AttrBuilder Generators::get_attr_builder() {
     return attr_builder;
 }
 

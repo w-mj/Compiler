@@ -26,7 +26,8 @@ add_executable(Complie main.cpp
         word_analysis/TokenList.h
         grammar_analysis/Grammar.cpp
         grammar_analysis/Grammar.h
-        grammar_analysis/Attribute/Attribute.cpp
-        grammar_analysis/Attribute/Attribute.h
-        grammar_analysis/Attribute/Attr_ExpQuat_2_LR.cpp
-        grammar_analysis/Attribute/Attr_ExpQuat_2_LR.h symbol_table/SymbolTable.cpp symbol_table/SymbolTable.h)
+        grammar_analysis/Attribute.cpp
+        grammar_analysis/Attribute.h
+        symbol_table/SymbolTable.cpp
+        symbol_table/SymbolTable.h
+        symbol_table/type.h error/Error.cpp error/Error.h symbol_table/Quaternary.cpp symbol_table/Quaternary.h)

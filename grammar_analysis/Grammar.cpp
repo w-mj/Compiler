@@ -4,7 +4,11 @@
 
 #include "Grammar.h"
 #include "../Utility.h"
-#include "Attribute/Attr_ExpQuat_2_LR.h"
+#include "Attribute.h"
+#include "../symbol_table/SymbolTable.h"
+#include "../symbol_table/Quaternary.h"
+
+
 
 
 Generators Grammar::Basic_Exp() {
@@ -138,21 +142,21 @@ Generators Grammar::FG_C_Grammar() {
 Generators Grammar::Basic_Exp_Quat(TokenList &tokenList) {
     Generators gen;
 
-    Attribute *attr = new Attr_ExpQuat_2_LR(tokenList);
-    gen.set_attr_builder(attr);
-
-    gen.set_terminators({"+", "-", "*", "/", "(", ")", "i"});
-    gen.set_non_terminators({"E", "T", "F"});
-    gen.set_start("E");
-
-    gen.add("E") >> "E + T" | attr |
-    "E - T" | attr |
-    "T";
-    gen.add("T") >> "T * F" | attr |
-    "T / F" | attr |
-    "F";
-    gen.add("F") >> "( E )" | new process_B |
-    "i";
+//    Attribute *attr = new Attr_ExpQuat_2_LR(tokenList);
+//    gen.set_attr_builder(attr);
+//
+//    gen.set_terminators({"+", "-", "*", "/", "(", ")", "i"});
+//    gen.set_non_terminators({"E", "T", "F"});
+//    gen.set_start("E");
+//
+//    gen.add("E") >> "E + T" | attr |
+//    "E - T" | attr |
+//    "T";
+//    gen.add("T") >> "T * F" | attr |
+//    "T / F" | attr |
+//    "F";
+//    gen.add("F") >> "( E )" | new process_B |
+//    "i";
 
     return gen;
 }
@@ -233,18 +237,20 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.set_start("translation_unit");
 
+    gen.set_attr_builder(default_builder);
+
 
     gen.add("primary_expression")
-    | "IDENTIFIER"
-    | "CONSTANT"
-    | "STRING_LITERAL"
-    | "( expression )"
+    | "IDENTIFIER" | pass_attr
+    | "CONSTANT" | pass_attr
+    | "STRING_LITERAL" | pass_attr
+    | "( expression )" | ATTR{return v[1];}
             ;
 
     gen.add("postfix_expression")
-    | "primary_expression"
-    | "postfix_expression [ expression ]"
-    | "postfix_expression ( )"
+    | "primary_expression" | pass_attr
+    | "postfix_expression [ expression ]" | ATTR{quat(OP::ARRAY_INDEX, ITEM_V(0), ITEM_V(2));}
+    | "postfix_expression ( )" | ATTR{quat(OP::CALL, ITEM_V(0), NONE);}
     | "postfix_expression ( argument_expression_list )"
     | "postfix_expression . IDENTIFIER"
     | "postfix_expression -> IDENTIFIER"

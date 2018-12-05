@@ -11,7 +11,7 @@
 #include <string>
 #include <stack>
 #include <memory>
-#include <time.h>
+#include <ctime>
 
 using namespace std;
 
@@ -50,8 +50,8 @@ void LR1::show() {
     for (const auto& alpha: index)
         l[alpha.second] = alpha.first;
 
-    for (size_t i = 0; i < l.size(); i++)
-        of << "<td>" << l[i] << "</td>";
+    for (const auto &i : l)
+        of << "<td>" << i << "</td>";
     of << "</tr>\n";
     for (size_t i = 0; i < table.size(); i++) {
         of << "<tr><td>" << i << "</td>";
@@ -96,10 +96,10 @@ bool LR1::process(TokenGetter& getter) {
                     alpha_stack.push(alpha);
                     tree_node_stack.push(new Node(str));
                     void *v = nullptr;
-                    if (generators.get_attr_builder() != nullptr)
-                        v = generators.get_attr_builder()->get_data(getter.get());
-                    if (v != nullptr)
+                    if (generators.get_attr_builder() != nullptr) {
+                        v = generators.get_attr_builder()(getter.get());
                         attr_stack.push(v);
+                    }
                     getter.next();
                     break;
                 }
@@ -113,7 +113,7 @@ bool LR1::process(TokenGetter& getter) {
                         return true;
                     }
                     // generators.get_attr(action.second)(nullptr);
-                    bool attribute = !generators.get_attr(action.second).nothing;
+                    bool attribute = generators.get_attr(action.second) != nullptr;
                     Node *new_node = new Node(gen.first);
                     vector<void*> attr_vec;
                     for (auto i = 0; i < gen.second.size(); i++) {
@@ -177,9 +177,9 @@ void LR1::save(std::string fname) {
 }
 
 void LR1::build(bool show_dfa) {
-    time_t timer = time(NULL);
+    time_t timer = time(nullptr);
     LR1_DFA dfa(generators);
-    timer = time(NULL) - timer;
+    timer = time(nullptr) - timer;
     cout << "building LR1 table finish. cost " << timer << " seconds." << endl;
     if (show_dfa)
         dfa.show();
