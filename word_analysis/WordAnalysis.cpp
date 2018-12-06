@@ -11,16 +11,18 @@
 #include "../Utility.h"
 
 using namespace std;
+const vector<string> WordAnalysis::key
+        {"char", "double", "enum", "float", "int", "long", "short", "signed", "struct",
+"union", "unsigned", "void", "for", "do", "while", "break", "continue", "if",
+"else", "goto", "switch", "case", "default", "return", "auto", "extern", "register",
+"static", "const", "sizeof", "typedef", "volatile"};
+
+const vector<string> WordAnalysis::bound{"++", "--", "(", ")", "[", "]", ".", "->", "+", "-", "!", "~", "&",
+"*", "/", "%", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "^", "|",
+"&&", "||", "?", ":", "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=",
+"&=", "^=", "|=", ",", ";", "{", "}"};
 
 WordAnalysis::WordAnalysis():
-     key({"char", "double", "enum", "float", "int", "long", "short", "signed", "struct",
-        "union", "unsigned", "void", "for", "do", "while", "break", "continue", "if",
-        "else", "goto", "switch", "case", "default", "return", "auto", "extern", "register",
-        "static", "const", "sizeof", "typedef", "volatile"}),
-    bound({"++", "--", "(", ")", "[", "]", ".", "->", "+", "-", "!", "~", "&",
-                  "*", "/", "%", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "^", "|",
-                  "&&", "||", "?", ":", "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=",
-                  "&=", "^=", "|=", ",", ";", "{", "}"}),
     key_tree(key), bound_tree(bound)
 {
     tokenList.set_bound_list(bound);

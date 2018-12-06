@@ -7,6 +7,7 @@
 #include "Attribute.h"
 #include "../symbol_table/SymbolTable.h"
 #include "../symbol_table/Quaternary.h"
+#include "../word_analysis/NumericDFA.h"
 
 
 
@@ -249,27 +250,27 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("postfix_expression")
     | "primary_expression" | pass_attr
-    | "postfix_expression [ expression ]" | ATTR{quat(OP::ARRAY_INDEX, ITEM_V(0), ITEM_V(2));}
-    | "postfix_expression ( )" | ATTR{quat(OP::CALL, ITEM_V(0), NONE);}
-    | "postfix_expression ( argument_expression_list )"
+    | "postfix_expression [ expression ]"
+    | "postfix_expression ( )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
+    | "postfix_expression ( argument_expression_list )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
     | "postfix_expression . IDENTIFIER"
     | "postfix_expression -> IDENTIFIER"
-    | "postfix_expression ++"
-    | "postfix_expression --"
+    | "postfix_expression ++" | ATTR{quat(OP::INC, ITEM_V(0), NONE); return v[0];}
+    | "postfix_expression --" | ATTR{quat(OP::DEC, ITEM_V(0), NONE); return v[0];}
             ;
 
     gen.add("argument_expression_list")
-    | "assignment_expression"
-    | "argument_expression_list , assignment_expression"
+    | "assignment_expression" | ATTR{quat(OP::PUSH, ITEM_V(0), NONE); return nullptr;}
+    | "argument_expression_list , assignment_expression"| ATTR{quat(OP::PUSH, ITEM_V(0), NONE); return nullptr;}
             ;
 
     gen.add("unary_expression")
-    | "postfix_expression"
-    | "++ unary_expression"
-    | "-- unary_expression"
-    | "unary_operator cast_expression"
-    | "sizeof unary_expression"
-    | "sizeof ( type_name )"
+    | "postfix_expression"| pass_attr
+    | "++ unary_expression" | ATTR{quat(OP::INC, ITEM_V(1), NONE); return v[1];}
+    | "-- unary_expression" | ATTR{quat(OP::INC, ITEM_V(1), NONE); return v[1];}
+    | "unary_operator cast_expression" | ATTR{return NEW_S(make_unary_operator_quat(v[0], ITEM_V(1)));}
+    | "sizeof unary_expression" | ATTR{return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))}));}
+    | "sizeof ( type_name )" | ATTR{return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))}));}
             ;
 
     gen.add("unary_operator")
@@ -282,66 +283,66 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("cast_expression")
-    | "unary_expression"
-    | "( type_name ) cast_expression"
+    | "unary_expression"| pass_attr
+    | "( type_name ) cast_expression"| ATTR{ST[ITEM_V(3)].type = ST[ITEM_V(1)].type; return v[3];}
             ;
 
     gen.add("multiplicative_expression")
-    | "cast_expression"
-    | "multiplicative_expression * cast_expression"
-    | "multiplicative_expression / cast_expression"
-    | "multiplicative_expression % cast_expression"
+    | "cast_expression"| pass_attr
+    | "multiplicative_expression * cast_expression"| ATTR{return NEW_S(quat(OP::MULTPLY, ITEM_V(0), ITEM_V(2)));}
+    | "multiplicative_expression / cast_expression"| ATTR{return NEW_S(quat(OP::DIVIDE, ITEM_V(0), ITEM_V(2)));}
+    | "multiplicative_expression % cast_expression"| ATTR{return NEW_S(quat(OP::MOD, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("additive_expression")
-    | "multiplicative_expression"
-    | "additive_expression + multiplicative_expression"
-    | "additive_expression - multiplicative_expression"
+    | "multiplicative_expression"| pass_attr
+    | "additive_expression + multiplicative_expression"| ATTR{return NEW_S(quat(OP::PLUS, ITEM_V(0), ITEM_V(2)));}
+    | "additive_expression - multiplicative_expression"| ATTR{return NEW_S(quat(OP::MINUS, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("shift_expression")
-    | "additive_expression"
-    | "shift_expression << additive_expression"
-    | "shift_expression >> additive_expression"
+    | "additive_expression"| pass_attr
+    | "shift_expression << additive_expression"| ATTR{return NEW_S(quat(OP::SHIFT_LEFT, ITEM_V(0), ITEM_V(2)));}
+    | "shift_expression >> additive_expression"| ATTR{return NEW_S(quat(OP::SHIFT_RIGHT, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("relational_expression")
-    | "shift_expression"
-    | "relational_expression < shift_expression"
-    | "relational_expression > shift_expression"
-    | "relational_expression <= shift_expression"
-    | "relational_expression >= shift_expression"
+    | "shift_expression"| pass_attr
+    | "relational_expression < shift_expression"| ATTR{return NEW_S(quat(OP::LESS_THAN, ITEM_V(0), ITEM_V(2)));}
+    | "relational_expression > shift_expression"| ATTR{return NEW_S(quat(OP::GREATER_THEN, ITEM_V(0), ITEM_V(2)));}
+    | "relational_expression <= shift_expression"| ATTR{return NEW_S(quat(OP::LESS_EQUAL, ITEM_V(0), ITEM_V(2)));}
+    | "relational_expression >= shift_expression"| ATTR{return NEW_S(quat(OP::GREATER_EQUAL, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("equality_expression")
-    | "relational_expression"
-    | "equality_expression == relational_expression"
-    | "equality_expression != relational_expression"
+    | "relational_expression"| pass_attr
+    | "equality_expression == relational_expression"| ATTR{return NEW_S(quat(OP::EQUAL, ITEM_V(0), ITEM_V(2)));}
+    | "equality_expression != relational_expression"| ATTR{return NEW_S(quat(OP::NOT_EQUAL, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("and_expression")
-    | "equality_expression"
-    | "and_expression & equality_expression"
+    | "equality_expression"| pass_attr
+    | "and_expression & equality_expression"| ATTR{return NEW_S(quat(OP::BIT_AND, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("exclusive_or_expression")
-    | "and_expression"
-    | "exclusive_or_expression ^ and_expression"
+    | "and_expression"| pass_attr
+    | "exclusive_or_expression ^ and_expression"| ATTR{return NEW_S(quat(OP::BIT_XOR, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("inclusive_or_expression")
-    | "exclusive_or_expression"
-    | "inclusive_or_expression | exclusive_or_expression"
+    | "exclusive_or_expression"| pass_attr
+    | "inclusive_or_expression | exclusive_or_expression"| ATTR{return NEW_S(quat(OP::BIT_OR, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("logical_and_expression")
-    | "inclusive_or_expression"
-    | "logical_and_expression && inclusive_or_expression"
+    | "inclusive_or_expression"| pass_attr
+    | "logical_and_expression && inclusive_or_expression"| ATTR{return NEW_S(quat(OP::LOG_AND, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("logical_or_expression")
-    | "logical_and_expression"
-    | "logical_or_expression || logical_and_expression"
+    | "logical_and_expression"| pass_attr
+    | "logical_or_expression || logical_and_expression"| ATTR{return NEW_S(quat(OP::LOG_OR, ITEM_V(0), ITEM_V(2)));}
             ;
 
     gen.add("conditional_expression")
@@ -350,8 +351,9 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("assignment_expression")
-    | "conditional_expression"
-    | "unary_expression assignment_operator assignment_expression"
+    | "conditional_expression"| pass_attr
+    | "unary_expression assignment_operator assignment_expression"|
+        ATTR{return NEW_S(make_assign_operator_quat(ITEM_V(0), ITEM_V(1), ITEM_V(2)));}
             ;
 
     gen.add("assignment_operator")
@@ -369,16 +371,16 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("expression")
-    | "assignment_expression"
-    | "expression , assignment_expression"
+    | "assignment_expression"| pass_attr
+    | "expression , assignment_expression"| ATTR{return v[2];} // 逗号运算符？
             ;
 
     gen.add("constant_expression")
-    | "conditional_expression"
+    | "conditional_expression"| pass_attr
             ;
 
     gen.add("declaration")
-    | "declaration_specifiers ;"
+    | "declaration_specifiers ;"| nothing_attr
     | "declaration_specifiers init_declarator_list ;"
             ;
 

@@ -9,12 +9,12 @@
 
 struct Number {
     enum NumberType {UShort, Short, UInt, Int, ULong, Long, Float, Double} type;
-    union {
+    union U{
+        unsigned long ul;
         unsigned short us;
         signed short ss;
         unsigned int ui;
         signed int si;
-        unsigned long ul;
         signed long sl;
         float ft;
         double db;

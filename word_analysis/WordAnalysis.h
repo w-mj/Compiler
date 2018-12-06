@@ -15,8 +15,7 @@
 class WordAnalysis {
 private:
 
-    std::vector<std::string> key;
-    std::vector<std::string> bound;
+
 
     PrefixTree key_tree;
     PrefixTree id_tree;
@@ -26,6 +25,11 @@ private:
 
     int getEscape(std::string::iterator s, std::string::iterator e);
 public:
+
+    std::vector<std::string, std::allocator<std::string>> static key;
+    const static std::vector<std::string> bound;
+
+
     explicit WordAnalysis();
     bool process_key(std::string::iterator& iter, const std::string::iterator& end);
     bool process_id(std::string::iterator& iter, const std::string::iterator& end);

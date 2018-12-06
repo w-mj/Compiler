@@ -12,12 +12,45 @@
 #include <atomic>
 
 #include "../word_analysis/NumericDFA.h"
-#include "type.h"
 #include "../word_analysis/TokenList.h"
 
-#define SYMBOL_
 
 typedef Token Item;
+
+#define NEW_S(x) (new Item{'s', (x)})
+#define ST SymbolTable::getInstance()
+
+#define Cat_Var 0
+#define Cat_Param 1
+#define Cat_Field 2
+#define Cat_Arr_ele 3
+#define Cat_Stru_ele 4
+#define Cat_Label 5
+#define Cat_Temp 6
+#define Cat_Const 7
+#define Cat_Type 8
+
+#define ADDRESS 0x80
+#define CONST 0x40
+#define UNSIGNED 0x20
+#define POINTER 0x10
+
+#define CHAR 0x01
+#define LONG 0x02
+#define INT 0x03
+#define FLOAT 0x04
+#define SHORT 0x05
+#define DOUBLE 0x06
+#define VOID 0x07
+
+#define ARRAY 0x0B
+#define FUNCTION 0x0C
+#define STRUCT 0x0D
+#define UNION 0x0E
+#define ENUM 0x0F
+
+
+
 
 class SymbolTable {
 private:
@@ -31,10 +64,27 @@ public:
         return instance;
     }
 
+    struct Type {
+        const int t;
+        const size_t size;
+        const size_t data;
+
+
+        bool operator==(const Type& an) const {
+            return t == an.t && data == an.data;
+        }
+        bool operator<(const Type& an) const {
+            return t + data < an.t + an.data;
+        }
+    };
+
+
     struct Symbol {
         std::string name;
         size_t type;
-        size_t data;
+        int cat = 0;
+        int offset;
+        // size_t data;
     };
 
 
@@ -45,22 +95,14 @@ public:
 
     struct Struct {
         size_t num_fields;
-        size_t field;
-        struct Field {
-            std::string name;
-            size_t type;
-            size_t offset;
-        };
+        size_t data;
     };
 
     struct Function {
         uint param_num;
+        size_t ret_type;
         size_t param_index;
         uint entry;
-        struct Param {
-            size_t type;
-            size_t offset;
-        };
     };
 
     struct Label {
@@ -68,18 +110,8 @@ public:
     };
 
     struct Table {
-        std::vector<SymbolTable::Symbol> symbol_list;
         std::map<std::string, size_t> symbol_index;
-        std::vector<Type> type_list;
         std::map<Type, size_t> type_index;
-
-        std::vector<Struct> struct_list;
-        std::vector<SymbolTable::Struct::Field> strcut_field;
-        std::vector<SymbolTable::Function::Param> func_param_list;
-        std::vector<SymbolTable::Array> array_list;
-
-        std::vector<Number> constant_num_list;
-        std::vector<Label> label_list;
 
         Table* up = nullptr;
     };
@@ -88,12 +120,35 @@ private:
     Table* top_table;
     Table* current_table;
     int temp_cnt = 0;
+
+    std::vector<SymbolTable::Symbol> symbol_list;
+    std::vector<Type> type_list;
+    std::vector<Struct> struct_list;
+    std::vector<SymbolTable::Array> array_list;
+    std::vector<SymbolTable::Function> function_list;
+
+    std::vector<Number> constant_num_list;
+    std::vector<Label> label_list;
 public:
 
     size_t get_or_add_type(const Type&& type);
     const Symbol* get_symbol_by_name(const std::string& name);
-    const Symbol* add_symbol(const std::string& name, const Type& type, size_t data = 0);
-    const Symbol* add_symbol(const Type& type, size_t data = 0);
+
+    size_t add_symbol(const Symbol& s);
+    size_t add_constant_Symbol(const Number& num);
+
+    Symbol& operator[](size_t i);
+
+    int get_symbol_index_by_name(const std::string& name);
+    size_t get_type_index_by_symbol(size_t symbol);
+    size_t get_struct_field_by_symbol_filed(size_t s, size_t f);
+    size_t get_array_element_type(size_t symbol);
+    size_t get_function_type(size_t symbol);
+    size_t get_type_size(size_t symbol);
+
+    Type& get_type_by_symbol(size_t i);
+
+    std::string get_temp_var_name(const std::string& suffix="");
 
     void in();
     void leave();

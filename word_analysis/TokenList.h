@@ -17,15 +17,13 @@
 #define TOKEN_BOUND 'p'
 
 struct Token {
-    Token(char c, int i);
+    Token(char c, size_t i);
     char first;
-    int second;
+    size_t second;
     friend std::ostream& operator<<(std::ostream& out, const Token& s);
 };
 
 std::ostream& operator<<(std::ostream& out, const Token& s);
-
-// TODO: build independent alphabet
 
 class TokenList {
 
