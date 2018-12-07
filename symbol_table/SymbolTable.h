@@ -58,6 +58,8 @@ class SymbolTable {
 private:
     SymbolTable();
 public:
+    SymbolTable(SymbolTable& ano) = delete;
+    SymbolTable& operator=(SymbolTable& an) = delete;
     ~SymbolTable();
 
     static SymbolTable& getInstance()
@@ -156,7 +158,7 @@ public:
     void* add_veriables(void* tv, void* vv);
 
     size_t add_struct_or_union(size_t struct_or_union, size_t declaration_list);
-    size_t add_struct_or_union(size_t struct_or_union, size_t symbol, size_t declaration_list);
+    size_t add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list);
 
 
     void in();

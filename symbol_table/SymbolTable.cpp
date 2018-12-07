@@ -161,25 +161,26 @@ void *SymbolTable::add_veriables(void *tv, void *vv) {
     }
 }
 
-size_t SymbolTable::add_struct_or_union(size_t struct_or_union, size_t symbol_name, size_t declaration_list) {
-//    bool is_struct = WordAnalysis::key[struct_or_union] == "struct";
-//    size_t symbol = add_symbol({TokenList::get_token()})
-//    TYPE(symbol).data = declaration_list;
-//
-//    if (is_struct) {
-//        for (auto i = 0; i < struct_list[declaration_list].num_fields; i++)
-//            TYPE(symbol).size += TYPE(i + struct_list[declaration_list].data).size;
-//        TYPE(symbol).t |= STRUCT;
-//    } else {
-//        for (auto i = 0; i < struct_list[declaration_list].num_fields; i++)
-//            TYPE(symbol).size = max(TYPE(symbol).size, TYPE(i + struct_list[declaration_list].data).size);
-//        TYPE(symbol).t |= UNION;
-//    }
-    return symbol_name;
+size_t SymbolTable::add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list) {
+    bool is_struct = WordAnalysis::key[struct_or_union] == "struct";
+    size_t symbol = add_symbol({*((string*)name)});
+    TYPE(symbol).data = declaration_list;
+
+    if (is_struct) {
+        for (auto i = 0; i < struct_list[declaration_list].num_fields; i++)
+            TYPE(symbol).size += TYPE(i + struct_list[declaration_list].data).size;
+        TYPE(symbol).t |= STRUCT;
+    } else {
+        for (auto i = 0; i < struct_list[declaration_list].num_fields; i++)
+            TYPE(symbol).size = max(TYPE(symbol).size, TYPE(i + struct_list[declaration_list].data).size);
+        TYPE(symbol).t |= UNION;
+    }
+    return symbol;
 }
 
 size_t SymbolTable::add_struct_or_union(size_t struct_or_union, size_t declaration_list) {
-    return add_struct_or_union(struct_or_union, add_symbol({get_temp_var_name()}), declaration_list);
+    string name = get_temp_var_name();
+    return add_struct_or_union(struct_or_union, &name, declaration_list);
 }
 
 void* TypeBuilder::add_storage(size_t key_in_token, void* t) {

@@ -428,8 +428,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("struct_or_union_specifier")
-    | "struct_or_union IDENTIFIER { struct_declaration_list }" | ATTR{ST.add_struct_or_union(ITEM_V(0), )}
-    | "struct_or_union { struct_declaration_list }"
+    | "struct_or_union IDENTIFIER { struct_declaration_list }" | ATTR{return NEW_S(ST.add_struct_or_union(ITEM_V(0),v[1], ITEM_V(3)));}
+    | "struct_or_union { struct_declaration_list }" | ATTR{return NEW_S(ST.add_struct_or_union(ITEM_V(0), ITEM_V(2)));}
     | "struct_or_union IDENTIFIER"
             ;
 

@@ -22,7 +22,7 @@ int main() {
     ifstream file;
     file.open(fname);
     string line;
-    WordAnalysis analyzer;
+    WordAnalysis& analyzer = WA;
 
     analyzer.process_file(file, false);
     file.close();

@@ -12,6 +12,8 @@
 #include "NumericDFA.h"
 #include "TokenList.h"
 
+#define WA WordAnalysis::getInstance()
+
 class WordAnalysis {
 private:
 
@@ -26,7 +28,16 @@ private:
     static std::map<std::string, int> key_map, bound_map;
 
     int getEscape(std::string::iterator s, std::string::iterator e);
+    explicit WordAnalysis();
+
 public:
+    WordAnalysis(WordAnalysis&) = delete;
+    WordAnalysis& operator=(WordAnalysis&) = delete;
+
+    static WordAnalysis& getInstance() {
+        static WordAnalysis ins;
+        return ins;
+    }
 
     const static std::vector<std::string> key;
     const static std::vector<std::string> bound;
@@ -35,7 +46,6 @@ public:
     const static std::map<std::string, int>& get_bound_map();
 
 
-    explicit WordAnalysis();
     bool process_key(std::string::iterator& iter, const std::string::iterator& end);
     bool process_id(std::string::iterator& iter, const std::string::iterator& end);
     bool process_str(std::string::iterator& iter, const std::string::iterator& end);
