@@ -26,7 +26,7 @@ class Generators {
     std::vector<generator> g_list;
     std::vector<Attribute> attr_list;
 
-    Attribute do_nothing = nullptr;
+    Attribute do_nothing = pass_attr;
     AttrBuilder attr_builder = nullptr;
     generator_A start;
     const generator_A epsilon = "\\e";

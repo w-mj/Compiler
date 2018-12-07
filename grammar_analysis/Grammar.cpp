@@ -400,8 +400,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("init_declarator")
-    | "declarator"
-    | "declarator = initializer"
+    | "declarator"| pass_attr
+    | "declarator = initializer"| ATTR{return NEW_S(quat(OP::ASSIGN, ITEM_V(2), NONE, ITEM_V(0)));}
             ;
 
     gen.add("storage_class_specifier")
@@ -428,7 +428,7 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("struct_or_union_specifier")
-    | "struct_or_union IDENTIFIER { struct_declaration_list }"
+    | "struct_or_union IDENTIFIER { struct_declaration_list }" | ATTR{ST.add_struct_or_union(ITEM_V(0), )}
     | "struct_or_union { struct_declaration_list }"
     | "struct_or_union IDENTIFIER"
             ;

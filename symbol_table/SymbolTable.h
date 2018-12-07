@@ -151,7 +151,13 @@ public:
     Type& get_type_by_symbol(size_t i);
 
     std::string get_temp_var_name(const std::string& suffix="");
+
+    // param: TypeBuilder*, vector<size_t>* v;
     void* add_veriables(void* tv, void* vv);
+
+    size_t add_struct_or_union(size_t struct_or_union, size_t declaration_list);
+    size_t add_struct_or_union(size_t struct_or_union, size_t symbol, size_t declaration_list);
+
 
     void in();
     void leave();
