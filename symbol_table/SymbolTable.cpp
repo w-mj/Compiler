@@ -5,6 +5,7 @@
 #include "SymbolTable.h"
 #include "../Utility.h"
 #include "../error/Error.h"
+#include "../word_analysis/WordAnalysis.h"
 
 #define SHORT_SIZE 1
 #define INT_SIZE 2
@@ -23,6 +24,7 @@
 using namespace std;
 SymbolTable::SymbolTable()
 {
+    type_list.push_back(Type{}); // 0 号不用，表示“没有类型”或“不完全类型”
     current_table = top_table = new Table();
     get_or_add_type({INT, INT_SIZE, 0});
     get_or_add_type({SHORT, SHORT_SIZE, 0});
@@ -37,7 +39,7 @@ SymbolTable::SymbolTable()
     add_symbol({"double", top_table->type_index[{DOUBLE, DOUBLE_SIZE, 0}], Cat_Type, 0});
 }
 
-size_t SymbolTable::get_or_add_type(const Type&& type) {
+size_t SymbolTable::get_or_add_type(const Type& type) {
     if (in_set(current_table->type_index, type))
         return current_table->type_index[type];
     size_t i = type_list.size();
@@ -139,4 +141,62 @@ int SymbolTable::get_symbol_index_by_name(const std::string &name) {
 
 size_t SymbolTable::get_type_size(size_t symbol) {
     return TYPE(symbol).size;
+}
+
+void *SymbolTable::add_veriables(void *tv, void *vv) {
+    auto last_type = (Type*)tv;
+    auto last_t_index = get_or_add_type(*last_type);
+
+    auto variable_list = (vector<size_t>*)vv;
+    for (auto i: *variable_list) {
+        auto t = ST[i].type;
+        if (t == 0)
+            ST[i].type = last_t_index;
+        else {
+            // 找到最底层类型
+            while (type_list[t].data != 0)
+                t = type_list[t].data;
+            type_list[t].data = last_t_index;
+        }
+    }
+}
+
+void* TypeBuilder::add_storage(size_t key_in_token, void* t) {
+    warring("storage class specify is not supported.");
+}
+
+void* TypeBuilder::add_qulifier(size_t key_in_token, void* t) {
+    if (WordAnalysis::key[key_in_token] == "const")
+        ((SymbolTable::Type*)t)->t |= CONST;
+    return t;
+}
+
+
+void *TypeBuilder::add_speicifer(void *it, void *t) {
+    auto i = (Item*)it;
+    auto ty = (SymbolTable::Type*)t;
+    if (ty == nullptr)
+        ty = new SymbolTable::Type{0, 0, 0};
+    // TODO: 检测类型名重复
+    if (i->first == 'k') {
+        // 内置类型
+        const auto& k = WordAnalysis::key[i->second];
+        if (k == "int") {
+            ty->t |= INT;
+            ty->size = INT_SIZE;
+        }
+        else if (k == "short") {
+            ty->t |= SHORT;
+            ty->size = SHORT_SIZE;
+        }
+        // TODO: OTHERS
+    } else {
+        // 自定义类型
+        auto& defined_type = ST.get_type_by_symbol(i->second);  // 取类型
+        ty->t = defined_type.t;
+        ty->size = defined_type.size;
+        ty->data = defined_type.data;
+    }
+    return ty;
+
 }

@@ -27,6 +27,13 @@ WordAnalysis::WordAnalysis():
 {
     tokenList.set_bound_list(bound);
     tokenList.set_key_list(key);
+
+    if (key_map.empty())
+        for (int i = 0; i < key.size(); i++)
+            key_map.emplace(key[i], i);
+    if (bound_map.empty())
+        for (int i = 0; i < bound.size(); i++)
+            bound_map.emplace(bound[i], i);
 }
 
 
@@ -228,5 +235,13 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
 
 TokenList WordAnalysis::get_tokenList() const {
     return tokenList;
+}
+
+const std::map<std::string, int> &WordAnalysis::get_key_map() {
+    return key_map;
+}
+
+const std::map<std::string, int> &WordAnalysis::get_bound_map() {
+    return bound_map;
 }
 

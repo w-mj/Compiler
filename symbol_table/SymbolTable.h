@@ -17,7 +17,9 @@
 
 typedef Token Item;
 
-#define NEW_S(x) (new Item{'s', (x)})
+#define NEW_S(x) (new Item{'y', (x)})
+#define NEW_T(x) (new Item{'t', (x)})
+
 #define ST SymbolTable::getInstance()
 
 #define Cat_Var 0
@@ -64,11 +66,11 @@ public:
         return instance;
     }
 
+    // 必须保证Type添加到set后不改变
     struct Type {
-        const int t;
-        const size_t size;
-        const size_t data;
-
+        int t;
+        size_t size;
+        size_t data;
 
         bool operator==(const Type& an) const {
             return t == an.t && data == an.data;
@@ -131,7 +133,7 @@ private:
     std::vector<Label> label_list;
 public:
 
-    size_t get_or_add_type(const Type&& type);
+    size_t get_or_add_type(const Type& type);
     const Symbol* get_symbol_by_name(const std::string& name);
 
     size_t add_symbol(const Symbol& s);
@@ -149,10 +151,17 @@ public:
     Type& get_type_by_symbol(size_t i);
 
     std::string get_temp_var_name(const std::string& suffix="");
+    void* add_veriables(void* tv, void* vv);
 
     void in();
     void leave();
 
+};
+
+struct TypeBuilder {
+    static void* add_speicifer(void* it, void* t=nullptr);
+    static void* add_qulifier(size_t key_in_token, void* t=nullptr);
+    static void* add_storage(size_t key_in_token, void* t=nullptr);
 };
 
 

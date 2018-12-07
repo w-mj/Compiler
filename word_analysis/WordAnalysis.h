@@ -23,11 +23,16 @@ private:
 
     TokenList tokenList;
 
+    static std::map<std::string, int> key_map, bound_map;
+
     int getEscape(std::string::iterator s, std::string::iterator e);
 public:
 
-    std::vector<std::string, std::allocator<std::string>> static key;
+    const static std::vector<std::string> key;
     const static std::vector<std::string> bound;
+
+    const static std::map<std::string, int>& get_key_map();
+    const static std::map<std::string, int>& get_bound_map();
 
 
     explicit WordAnalysis();

@@ -11,3 +11,7 @@ void error(const std::string& s) {
     cout << s << endl;
     exit(100);
 }
+
+void warring(const std::string& s) {
+    cout << s << endl;
+}

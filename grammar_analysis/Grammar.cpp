@@ -10,7 +10,7 @@
 #include "../word_analysis/NumericDFA.h"
 
 
-
+using namespace std;
 
 Generators Grammar::Basic_Exp() {
     Generators gen;
@@ -380,22 +380,23 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("declaration")
-    | "declaration_specifiers ;"| nothing_attr
-    | "declaration_specifiers init_declarator_list ;"
+    | "declaration_specifiers ;"| pass_attr
+    | "declaration_specifiers init_declarator_list ;" | ATTR{ST.add_veriables(v[0], v[1]); return nullptr;}
             ;
 
+    // 类型名: [const|validate] [typedef|extern|static|auto|register] [int|float|...]
     gen.add("declaration_specifiers")
-    | "storage_class_specifier"
-    | "storage_class_specifier declaration_specifiers"
-    | "type_specifier"
-    | "type_specifier declaration_specifiers"
-    | "type_qualifier"
-    | "type_qualifier declaration_specifiers"
+    | "storage_class_specifier"| ATTR{return TypeBuilder::add_storage(ITEM_V(0));}
+    | "storage_class_specifier declaration_specifiers" | ATTR{return TypeBuilder::add_storage(ITEM_V(0), v[1]);}
+    | "type_specifier"| ATTR{return TypeBuilder::add_speicifer(v[0]); }
+    | "type_specifier declaration_specifiers"| ATTR{return TypeBuilder::add_speicifer(v[0], v[1]); }
+    | "type_qualifier"| ATTR{return TypeBuilder::add_qulifier(ITEM_V(0));}
+    | "type_qualifier declaration_specifiers"| ATTR{return TypeBuilder::add_qulifier(ITEM_V(0), v[1]);}
             ;
 
     gen.add("init_declarator_list")
-    | "init_declarator"
-    | "init_declarator_list , init_declarator"
+    | "init_declarator" | ATTR{ return new vector<size_t>{ITEM_V(0)};}
+    | "init_declarator_list , init_declarator"| ATTR{((vector<size_t>*)v[0])->push_back(ITEM_V(2)); return v[0]; }
             ;
 
     gen.add("init_declarator")
