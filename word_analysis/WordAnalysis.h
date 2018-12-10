@@ -13,6 +13,7 @@
 #include "TokenList.h"
 
 #define WA WordAnalysis::getInstance()
+#define SL WA.get_tokenList()
 
 class WordAnalysis {
 private:
@@ -54,7 +55,7 @@ public:
     bool process_bound(std::string::iterator& iter, const std::string::iterator &end);
 
     void process_file(std::ifstream &file, bool print=false);
-    TokenList get_tokenList() const;
+    TokenList get_tokenList() const;  //TODO: 引用TokenList
 
 };
 

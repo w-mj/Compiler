@@ -170,6 +170,14 @@ std::string TokenList::get_token_str(Token t) const {
     return "";
 }
 
+std::string TokenList::get_identification(size_t t) {
+    return id[list[t].second];
+}
+
+Number TokenList::get_number(size_t t) {
+    return constants[list[t].second];
+}
+
 TokenGetter::TokenGetter(TokenList &tkl): tkl(tkl) {
     it = tkl.begin();
     end = tkl.end();

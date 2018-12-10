@@ -32,7 +32,6 @@ typedef Token Item;
 #define Cat_Const 7
 #define Cat_Type 8
 
-#define ADDRESS 0x80
 #define CONST 0x40
 #define UNSIGNED 0x20
 #define POINTER 0x10
@@ -95,6 +94,12 @@ public:
     struct Array {
         size_t len;
         size_t type;
+        bool operator<(const Array& r) const {
+            return len + type < r.len + r.type;
+        }
+        bool operator==(const Array& r) const {
+            return len == r.len && type == r.type;
+        }
     };
 
     struct Struct {
@@ -129,6 +134,7 @@ private:
     std::vector<Type> type_list;
     std::vector<Struct> struct_list;
     std::vector<SymbolTable::Array> array_list;
+    std::map<SymbolTable::Array, size_t> array_map;
     std::vector<SymbolTable::Function> function_list;
 
     std::vector<Number> constant_num_list;
@@ -136,6 +142,7 @@ private:
 public:
 
     size_t get_or_add_type(const Type& type);
+    size_t get_or_add_array(const Array& array);
     const Symbol* get_symbol_by_name(const std::string& name);
 
     size_t add_symbol(const Symbol& s);
@@ -155,10 +162,32 @@ public:
     std::string get_temp_var_name(const std::string& suffix="");
 
     // param: TypeBuilder*, vector<size_t>* v;
-    void* add_veriables(void* tv, void* vv);
+    size_t add_veriables(void* tv, void* vv, int cat=Cat_Var);
 
     size_t add_struct_or_union(size_t struct_or_union, size_t declaration_list);
     size_t add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list);
+
+
+
+    struct TempSymbol {
+        SymbolTable::Symbol s;
+        std::vector<SymbolTable::Type> tl;
+        std::vector<SymbolTable::Array> al;
+
+        size_t insert_symbol_into_table();
+
+        explicit TempSymbol(const std::string& s) {
+            this->s.name = s;
+        }
+        TempSymbol* add_array(size_t len);
+        TempSymbol* add_array();
+    private:
+        size_t insert_type_into_table(size_t ti);
+        size_t insert_array_into_table(size_t ai);
+    };
+
+
+    size_t add_symbol_from_temp(SymbolTable::TempSymbol& temp );
 
 
     void in();
@@ -171,6 +200,11 @@ struct TypeBuilder {
     static void* add_qulifier(size_t key_in_token, void* t=nullptr);
     static void* add_storage(size_t key_in_token, void* t=nullptr);
 };
+
+struct PointerBuilder {
+    std::vector<SymbolTable::Type> tl;
+};
+
 
 
 

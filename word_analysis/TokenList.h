@@ -57,6 +57,8 @@ public:
     Number get_token_num(const Token &t) const;
     std::string get_token(const Token& t) const;
     std::string get_token_str(Token t) const;
+    std::string get_identification(size_t t);
+    Number get_number(size_t);
 
     size_t size() const;
 

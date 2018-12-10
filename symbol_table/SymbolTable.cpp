@@ -2,6 +2,7 @@
 // Created by wmj on 18-11-29.
 //
 
+#include <stack>
 #include "SymbolTable.h"
 #include "../Utility.h"
 #include "../error/Error.h"
@@ -143,12 +144,13 @@ size_t SymbolTable::get_type_size(size_t symbol) {
     return TYPE(symbol).size;
 }
 
-void *SymbolTable::add_veriables(void *tv, void *vv) {
+size_t SymbolTable::add_veriables(void *tv, void *vv, int cat) {
     auto last_type = (Type*)tv;
     auto last_t_index = get_or_add_type(*last_type);
 
     auto variable_list = (vector<size_t>*)vv;
     for (auto i: *variable_list) {
+        ST[i].cat=cat;
         auto t = ST[i].type;
         if (t == 0)
             ST[i].type = last_t_index;
@@ -159,20 +161,25 @@ void *SymbolTable::add_veriables(void *tv, void *vv) {
             type_list[t].data = last_t_index;
         }
     }
+    return (*variable_list)[0];
 }
 
 size_t SymbolTable::add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list) {
     bool is_struct = WordAnalysis::key[struct_or_union] == "struct";
-    size_t symbol = add_symbol({*((string*)name)});
-    TYPE(symbol).data = declaration_list;
+    int symbol = get_symbol_index_by_name(*((string*)name));  // TODO: 重定义错误
+    if (symbol == -1)
+        symbol = add_symbol({*((string*)name)});
+
+    TYPE(symbol).data = struct_list.size();
+    struct_list.emplace_back(current_table->symbol_index.size(), declaration_list);
 
     if (is_struct) {
-        for (auto i = 0; i < struct_list[declaration_list].num_fields; i++)
-            TYPE(symbol).size += TYPE(i + struct_list[declaration_list].data).size;
+        for (auto i = 0; i < STRU(symbol).num_fields; i++)
+            TYPE(symbol).size += TYPE(i + declaration_list).size;
         TYPE(symbol).t |= STRUCT;
     } else {
-        for (auto i = 0; i < struct_list[declaration_list].num_fields; i++)
-            TYPE(symbol).size = max(TYPE(symbol).size, TYPE(i + struct_list[declaration_list].data).size);
+        for (auto i = 0; i < STRU(symbol).num_fields; i++)
+            TYPE(symbol).size = max(TYPE(symbol).size, TYPE(i + declaration_list).size);
         TYPE(symbol).t |= UNION;
     }
     return symbol;
@@ -181,6 +188,28 @@ size_t SymbolTable::add_struct_or_union(size_t struct_or_union, void* name, size
 size_t SymbolTable::add_struct_or_union(size_t struct_or_union, size_t declaration_list) {
     string name = get_temp_var_name();
     return add_struct_or_union(struct_or_union, &name, declaration_list);
+}
+
+size_t SymbolTable::add_symbol_from_temp(SymbolTable::TempSymbol &temp) {
+    stack<Type> ts;
+    stack<Array> ta;
+    size_t ti = temp.s.type;
+    while (ti != 0) {
+        ts.push(temp.tl[ti]);
+        switch (temp.tl[ti].t) {
+            case ARRAY:
+                ta.push(temp.al[temp.tl[ti].data]);
+        }
+    }
+    return 0;
+}
+
+size_t SymbolTable::get_or_add_array(const SymbolTable::Array &array) {
+    if (array_map.find(array) == array_map.end()) {
+        array_map.emplace(array, array_list.size());
+        array_list.push_back(array);
+    }
+    return array_map[array];
 }
 
 void* TypeBuilder::add_storage(size_t key_in_token, void* t) {
@@ -221,4 +250,41 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
     }
     return ty;
 
+}
+
+size_t SymbolTable::TempSymbol::insert_type_into_table(size_t ti) {
+    switch (tl[ti].t) {
+        case ARRAY:
+            tl[ti].data = insert_array_into_table(tl[ti].data);
+    }
+    return ST.get_or_add_type(tl[ti]);
+}
+
+size_t SymbolTable::TempSymbol::insert_array_into_table(size_t ai) {
+    if (al[ai].type != 0)
+        al[ai].type = insert_array_into_table(al[ai].type);
+    return ST.get_or_add_array(al[ai]);
+}
+
+size_t SymbolTable::TempSymbol::insert_symbol_into_table() {
+    if (s.type != 0)
+        s.type = insert_type_into_table(s.type);
+    return ST.add_symbol(s);
+}
+
+SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_array(size_t len) {
+    uint32_t lenn = ST.constant_num_list[ST.type_list[ST.symbol_list[len].type].data].value.ui;
+    last_vec(tl).t = ARRAY;
+    last_vec(tl).data = al.size();
+    al.emplace_back(lenn, tl.size());
+    tl.emplace_back({0, 0, 0});
+    return this;
+}
+
+SymbolTable::TempSymbol * SymbolTable::TempSymbol::add_array() {
+    last_vec(tl).t = ARRAY;
+    last_vec(tl).data = al.size();
+    al.emplace_back(0, tl.size());
+    tl.emplace_back({0, 0, 0});
+    return this;
 }
