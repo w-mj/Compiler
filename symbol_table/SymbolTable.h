@@ -72,7 +72,7 @@ public:
         int t;
         size_t size;
         size_t data;
-
+        bool cst = false;
         Type(int t, size_t size=0, size_t data=0): t(t), size(size), data(data) {}
         bool operator==(const Type& an) const {
             return t == an.t && data == an.data;
@@ -92,8 +92,6 @@ public:
         Symbol(const std::string& name, size_t type, int cat, int offset): name(name), type(type), cat(cat), offset(offset) {}
         Symbol(const std::string& name, size_t type, int cat): name(name), type(type), cat(cat) {}
 
-
-        // size_t data;
     };
 
 
@@ -205,6 +203,11 @@ public:
     void in();
     void leave();
 
+
+    friend std::ostream& operator<<(std::ostream& os, Type& t);
+    friend std::ostream& operator<<(std::ostream& os, Symbol& s);
+    friend std::ostream& operator<<(std::ostream& os, Array& a);
+
 };
 
 struct TypeBuilder {
@@ -212,6 +215,11 @@ struct TypeBuilder {
     static void* add_qulifier(size_t key_in_token, void* t=nullptr);
     static void* add_storage(size_t key_in_token, void* t=nullptr);
 };
+
+std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s);
+std::ostream& operator<<(std::ostream& os, SymbolTable::Array& a);
+std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t);
+
 
 
 

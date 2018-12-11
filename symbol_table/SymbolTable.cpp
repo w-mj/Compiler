@@ -63,12 +63,14 @@ void SymbolTable::in() {
     auto c = new Table;
     c->up = current_table;
     current_table = c;
+    cout << "Symbol table in" << endl;
 }
 
 void SymbolTable::leave() {
     auto t = current_table;
     current_table = current_table->up;
     delete t;
+    cout << "Symbol table leave" << endl;
 }
 
 SymbolTable::~SymbolTable() {
@@ -186,11 +188,11 @@ size_t SymbolTable::add_struct_or_union(size_t struct_or_union, void* name, size
     if (is_struct) {
         for (auto i = 0; i < STRU(symbol).num_fields; i++)
             TYPE(symbol).size += TYPE(i + declaration_list).size;
-        TYPE(symbol).t |= STRUCT;
+        TYPE(symbol).t = STRUCT;
     } else {
         for (auto i = 0; i < STRU(symbol).num_fields; i++)
             TYPE(symbol).size = max(TYPE(symbol).size, TYPE(i + declaration_list).size);
-        TYPE(symbol).t |= UNION;
+        TYPE(symbol).t = UNION;
     }
     return symbol;
 }
@@ -214,7 +216,7 @@ void* TypeBuilder::add_storage(size_t key_in_token, void* t) {
 
 void* TypeBuilder::add_qulifier(size_t key_in_token, void* t) {
     if (WA.key[key_in_token] == "const")
-        ((SymbolTable::Type*)t)->t |= CONST;
+        ((SymbolTable::Type*)t)->cst = true;
     return t;
 }
 
@@ -229,11 +231,11 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
         // 内置类型
         const auto& k = WA.key[i->second];
         if (k == "int") {
-            ty->t |= INT;
+            ty->t = INT;
             ty->size = INT_SIZE;
         }
         else if (k == "short") {
-            ty->t |= SHORT;
+            ty->t = SHORT;
             ty->size = SHORT_SIZE;
         }
         // TODO: OTHERS
@@ -307,4 +309,37 @@ SymbolTable::TempSymbol::merge_pointer(std::vector<SymbolTable::Type> *pointer_y
         (*pointer_ype_list)[i].data = tl.size();
     }
     return this;
+}
+
+
+std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s) {
+    os << s.name << ": " << ST.type_list[s.type];
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, SymbolTable::Array& a) {
+    os <<  ST.type_list[a.type] << "[" << a.len << "]";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t) {
+    if (t.cst)
+        os << "const ";
+    switch (t.t) {
+        case INT:
+            os << "int ";
+            break;
+        case SHORT:
+            os << "short ";
+            break;
+        case ARRAY:
+            os << ST.array_list[t.data];
+            break;
+        case CONST:
+            os << ST.constant_num_list[t.data];
+            break;
+        default:
+            os << "unknown type";
+    }
+    return os;
 }

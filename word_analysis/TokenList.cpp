@@ -175,7 +175,11 @@ std::string TokenList::get_identification(size_t t) {
 }
 
 Number TokenList::get_number(size_t t) {
-    return constants[list[t].second];
+    return constants[t];
+}
+
+std::string TokenList::get_bound(size_t t) {
+    return bound[t];
 }
 
 TokenGetter::TokenGetter(TokenList &tkl): tkl(tkl) {
