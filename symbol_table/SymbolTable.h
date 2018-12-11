@@ -5,7 +5,7 @@
 #ifndef COMPLIE_SYMBOLTABLE_H
 #define COMPLIE_SYMBOLTABLE_H
 
-#include <vector>
+#include <utility> #include <vector>
 #include <string>
 #include <map>
 #include <memory>
@@ -89,8 +89,8 @@ public:
         int cat = 0;
         int offset;
 
-        Symbol(const std::string& name, size_t type, int cat, int offset): name(name), type(type), cat(cat), offset(offset) {}
-        Symbol(const std::string& name, size_t type, int cat): name(name), type(type), cat(cat) {}
+        Symbol(std::string name, size_t type, int cat, int offset): name(std::move(name)), type(type), cat(cat), offset(offset) {}
+        Symbol(std::string name, size_t type, int cat): name(std::move(name)), type(type), cat(cat) {}
 
     };
 
@@ -162,7 +162,8 @@ public:
 
     Symbol& operator[](size_t i);
 
-    int get_symbol_index_by_name(const std::string& name);
+    size_t get_symbol_index_by_name(const std::string& name);
+    int get_symbol_index_by_name_without_error(const std::string& name);
     size_t get_type_index_by_symbol(size_t symbol);
     size_t get_struct_field_by_symbol_filed(size_t s, size_t f);
     size_t get_array_element_type(size_t symbol);
@@ -179,7 +180,7 @@ public:
     size_t add_struct_or_union(size_t struct_or_union, size_t declaration_list);
     size_t add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list);
 
-
+    bool is_symbol_exists(const std::string& name);
 
     struct TempSymbol {
         SymbolTable::Symbol s;
@@ -207,7 +208,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, Type& t);
     friend std::ostream& operator<<(std::ostream& os, Symbol& s);
     friend std::ostream& operator<<(std::ostream& os, Array& a);
-
+    friend std::ostream& operator<<(std::ostream& os, SymbolTable& st);
 };
 
 struct TypeBuilder {
@@ -219,6 +220,7 @@ struct TypeBuilder {
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s);
 std::ostream& operator<<(std::ostream& os, SymbolTable::Array& a);
 std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t);
+std::ostream& operator<<(std::ostream& os, SymbolTable& st);
 
 
 

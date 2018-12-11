@@ -1,4 +1,4 @@
-int a;
+long a;
 int main() {
     a = 100;
 }

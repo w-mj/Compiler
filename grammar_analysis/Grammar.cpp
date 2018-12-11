@@ -243,14 +243,14 @@ Generators Grammar::YACC_C_Grammar() {
 
 
     gen.add("primary_expression")
-    | "IDENTIFIER"| ATTR{ return NEW_S(ST.get_symbol_index_by_name(SL.get_identification(ITEM_V(0))));}
+    | "IDENTIFIER"| ATTR{ return NEW_S(ST.get_symbol_index_by_name(*((string*)v[0])));}
     | "CONSTANT"| ATTR{ return NEW_S(ST.add_constant_Symbol(SL.get_number(ITEM_V(0))));}
     | "STRING_LITERAL"
     | "( expression )" | ATTR{return v[1];}
             ;
 
     gen.add("postfix_expression")
-    | "primary_expression" | pass_attr
+    | "primary_expression"
     | "postfix_expression [ expression ]"
     | "postfix_expression ( )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
     | "postfix_expression ( argument_expression_list )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
@@ -403,8 +403,9 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("init_declarator")
-    | "declarator"| ATTR {return NEW_S(ST.add_symbol(*((SymbolTable::Symbol*)v[0]))); }
-    | "declarator = initializer"| ATTR{return NEW_S(quat(OP::ASSIGN, ITEM_V(2), NONE, ST.add_symbol(*((SymbolTable::Symbol*)v[0]))));}
+    | "declarator"| ATTR{return NEW_S(((SymbolTable::TempSymbol*)v[0])->insert_symbol_into_table(Cat_Var));}
+    | "declarator = initializer"| ATTR{return NEW_S(quat(OP::ASSIGN, ITEM_V(2), NONE,
+                                                         ((SymbolTable::TempSymbol*)v[0])->insert_symbol_into_table(Cat_Var)));}
             ;
 
     gen.add("storage_class_specifier")

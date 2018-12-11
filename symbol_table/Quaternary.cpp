@@ -29,7 +29,7 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
             pq("--", ST[num1], "_", "_");
             break;
         case OP::ASSIGN:
-            pq("=", ST[num1], "_", ST[num2]);
+            pq("=", ST[num1], "_", ST[t]);
             break;
         default:
             throw runtime_error( "not support " + to_string(static_cast<int>(op)) + " yet");

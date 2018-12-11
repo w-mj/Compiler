@@ -16,7 +16,7 @@
 {"name":"type_specifier"
 ,
 "children": [
-{"name":"int"
+{"name":"long"
 }
 ]
 }

@@ -8,6 +8,7 @@
 #include "grammar_analysis/LL1.h"
 #include "grammar_analysis/Grammar.h"
 #include "Utility.h"
+#include "symbol_table/SymbolTable.h"
 
 using namespace std;
 
@@ -55,6 +56,8 @@ int main() {
     TokenGetter getter(tkl);
     lr1.process(getter);
     cout << endl << " LR1 OK" << endl << endl;
+
+    cout << ST;
 
 
     return 0;

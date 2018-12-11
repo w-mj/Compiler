@@ -126,13 +126,23 @@ size_t SymbolTable::add_constant_Symbol(const Number &num) {
     long f = find(constant_num_list.begin(), constant_num_list.end(), num) - constant_num_list.begin();
     if (f >= constant_num_list.size())
         constant_num_list.push_back(num);
-    auto t = get_symbol_index_by_name("@const_" + num.str());
+    int t = get_symbol_index_by_name_without_error("@const_" + num.str());
     if (t == -1)
         return add_symbol({"@const_" + num.str(), get_or_add_type({CONST, 0, f}), Cat_Const, 0});
     return static_cast<size_t>(t);
 }
 
-int SymbolTable::get_symbol_index_by_name(const std::string &name) {
+bool SymbolTable::is_symbol_exists(const std::string& name) {
+    auto c = current_table;
+    while (c != nullptr) {
+        if (in_set(c->symbol_index, name))
+            return true;
+        c = c->up;
+    }
+    return false;
+}
+
+int SymbolTable::get_symbol_index_by_name_without_error(const std::string& name) {
     auto c = current_table;
     while (c != nullptr) {
         if (in_set(c->symbol_index, name))
@@ -140,6 +150,17 @@ int SymbolTable::get_symbol_index_by_name(const std::string &name) {
         c = c->up;
     }
     return -1;
+}
+
+size_t SymbolTable::get_symbol_index_by_name(const std::string &name) {
+    auto c = current_table;
+    while (c != nullptr) {
+        if (in_set(c->symbol_index, name))
+            return c->symbol_index[name];
+        c = c->up;
+    }
+    error("identification " + name + " is not defined.");
+    return 0;
 }
 
 size_t SymbolTable::get_type_size(size_t symbol) {
@@ -150,7 +171,7 @@ size_t SymbolTable::add_veriables(void *tv, void *vv, int cat) {
     auto last_type = (Type*)tv;
     auto last_t_index = get_or_add_type(*last_type);
 
-    auto variable_list = (vector<size_t>*)vv;
+    vector<size_t>* variable_list = (vector<size_t>*)vv;
     for (auto i: *variable_list) {
         ST[i].cat=cat;
         auto t = ST[i].type;
@@ -237,6 +258,9 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
         else if (k == "short") {
             ty->t = SHORT;
             ty->size = SHORT_SIZE;
+        } else if (k == "long") {
+            ty->t = LONG;
+            ty->size = LONG_SIZE;
         }
         // TODO: OTHERS
     } else {
@@ -332,6 +356,15 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t) {
         case SHORT:
             os << "short ";
             break;
+        case FLOAT:
+            os << "float ";
+            break;
+        case DOUBLE:
+            os << "double ";
+            break;
+        case LONG:
+            os << "long ";
+            break;
         case ARRAY:
             os << ST.array_list[t.data];
             break;
@@ -342,4 +375,11 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t) {
             os << "unknown type";
     }
     return os;
+}
+
+
+std::ostream& operator<<(std::ostream& os, SymbolTable& st) {
+    for (size_t i = 0; i < st.symbol_list.size(); i++) {
+        os << i << "#" << st.symbol_list[i] << endl;
+    }
 }
