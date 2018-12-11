@@ -462,9 +462,8 @@ Generators Grammar::YACC_C_Grammar() {
     | "struct_declarator_list , struct_declarator"| ATTR{((vector<size_t>*)v[0])->push_back(ITEM_V(2)); return v[0]; }
             ;
 
-    // Not support yet
     gen.add("struct_declarator")
-    | "declarator"
+    | "declarator" | ATTR{return NEW_S(((SymbolTable::TempSymbol*)v[0])->insert_symbol_into_table(Cat_Stru_ele));}
     | ": constant_expression"
     | "declarator : constant_expression"
             ;
@@ -491,7 +490,7 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("declarator")
-    | "pointer direct_declarator"
+    | "pointer direct_declarator"| ATTR{ return ((SymbolTable::TempSymbol*)v[1])->merge_pointer((vector<SymbolTable::Type>*)v[0]); }
     | "direct_declarator"
             ;
 
@@ -516,7 +515,7 @@ Generators Grammar::YACC_C_Grammar() {
     | "type_qualifier"
     | "type_qualifier_list type_qualifier"
             ;
-    
+
     // 定义函数的参数列表
     gen.add("parameter_type_list")
     | "parameter_list"

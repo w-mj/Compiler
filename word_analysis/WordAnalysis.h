@@ -18,15 +18,13 @@
 class WordAnalysis {
 private:
 
-
-
     PrefixTree key_tree;
     PrefixTree id_tree;
     PrefixTree bound_tree;
 
     TokenList tokenList;
 
-    static std::map<std::string, int> key_map, bound_map;
+    std::map<std::string, int> key_map, bound_map;
 
     int getEscape(std::string::iterator s, std::string::iterator e);
     explicit WordAnalysis();
@@ -40,11 +38,11 @@ public:
         return ins;
     }
 
-    const static std::vector<std::string> key;
-    const static std::vector<std::string> bound;
+    std::vector<std::string> key;
+    std::vector<std::string> bound;
 
-    const static std::map<std::string, int>& get_key_map();
-    const static std::map<std::string, int>& get_bound_map();
+    const std::map<std::string, int>& get_key_map();
+    const std::map<std::string, int>& get_bound_map();
 
 
     bool process_key(std::string::iterator& iter, const std::string::iterator& end);

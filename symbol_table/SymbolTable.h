@@ -73,6 +73,7 @@ public:
         size_t size;
         size_t data;
 
+        Type(int t, size_t size=0, size_t data=0): t(t), size(size), data(data) {}
         bool operator==(const Type& an) const {
             return t == an.t && data == an.data;
         }
@@ -87,6 +88,11 @@ public:
         size_t type;
         int cat = 0;
         int offset;
+
+        Symbol(const std::string& name, size_t type, int cat, int offset): name(name), type(type), cat(cat), offset(offset) {}
+        Symbol(const std::string& name, size_t type, int cat): name(name), type(type), cat(cat) {}
+
+
         // size_t data;
     };
 
@@ -94,6 +100,7 @@ public:
     struct Array {
         size_t len;
         size_t type;
+        Array(size_t a, size_t b): len(a), type(b) {}
         bool operator<(const Array& r) const {
             return len + type < r.len + r.type;
         }
@@ -105,6 +112,8 @@ public:
     struct Struct {
         size_t num_fields;
         size_t data;
+
+        Struct(size_t n, size_t d): num_fields(n), data(d) {}
     };
 
     struct Function {
@@ -112,10 +121,15 @@ public:
         size_t ret_type;
         size_t param_index;
         uint entry;
+
+        Function(uint param_num, size_t ret_type, size_t param_index, uint entry):
+                param_num(param_num), ret_type(ret_type), param_index(param_index), entry(entry) {}
     };
 
     struct Label {
         uint offset;
+
+        Label(uint off): offset(off) {}
     };
 
     struct Table {
@@ -174,21 +188,19 @@ public:
         std::vector<SymbolTable::Type> tl;
         std::vector<SymbolTable::Array> al;
 
-        size_t insert_symbol_into_table();
+        size_t insert_symbol_into_table(int cat);
 
-        explicit TempSymbol(const std::string& s) {
+        explicit TempSymbol(const std::string& s): s("", 0, Cat_Var, 0) {
             this->s.name = s;
         }
         TempSymbol* add_array(size_t len);
         TempSymbol* add_array();
+
+        TempSymbol* merge_pointer(std::vector<SymbolTable::Type>* pointer_ype_list);
     private:
         size_t insert_type_into_table(size_t ti);
         size_t insert_array_into_table(size_t ai);
     };
-
-
-    size_t add_symbol_from_temp(SymbolTable::TempSymbol& temp );
-
 
     void in();
     void leave();
@@ -201,9 +213,6 @@ struct TypeBuilder {
     static void* add_storage(size_t key_in_token, void* t=nullptr);
 };
 
-struct PointerBuilder {
-    std::vector<SymbolTable::Type> tl;
-};
 
 
 

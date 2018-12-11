@@ -3,12 +3,12 @@
 //
 
 #include "Attribute.h"
+#include "../word_analysis/WordAnalysis.h"
 
-struct C_GramData {
-    Token d;
-};
-
+using C_GramData = Token;
+using namespace std;
 void* default_builder(const Token& tk) {
-    auto data = new C_GramData{ tk };
-    return data;
+    if (tk.first == TOKEN_ID)
+        return new string(SL.get_identification(tk.second));
+    return new C_GramData( tk );
 }

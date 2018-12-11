@@ -11,20 +11,25 @@
 #include "../Utility.h"
 
 using namespace std;
-const vector<string> WordAnalysis::key
-        {"char", "double", "enum", "float", "int", "long", "short", "signed", "struct",
-"union", "unsigned", "void", "for", "do", "while", "break", "continue", "if",
-"else", "goto", "switch", "case", "default", "return", "auto", "extern", "register",
-"static", "const", "sizeof", "typedef", "volatile"};
 
-const vector<string> WordAnalysis::bound{"++", "--", "(", ")", "[", "]", ".", "->", "+", "-", "!", "~", "&",
-"*", "/", "%", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "^", "|",
-"&&", "||", "?", ":", "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=",
-"&=", "^=", "|=", ",", ";", "{", "}"};
 
-WordAnalysis::WordAnalysis():
-    key_tree(key), bound_tree(bound)
-{
+WordAnalysis::WordAnalysis() :
+        key{"char", "double", "enum", "float", "int", "long", "short", "signed", "struct",
+            "union", "unsigned", "void", "for", "do", "while", "break", "continue", "if",
+            "else", "goto", "switch", "case", "default", "return", "auto", "extern", "register",
+            "static", "const", "sizeof", "typedef", "volatile"},
+        bound{"++", "--", "(", ")", "[", "]", ".", "->", "+", "-", "!", "~", "&",
+              "*", "/", "%", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "^", "|",
+              "&&", "||", "?", ":", "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=",
+              "&=", "^=", "|=", ",", ";", "{", "}"},
+        key_tree({"char", "double", "enum", "float", "int", "long", "short", "signed", "struct",
+                  "union", "unsigned", "void", "for", "do", "while", "break", "continue", "if",
+                  "else", "goto", "switch", "case", "default", "return", "auto", "extern", "register",
+                  "static", "const", "sizeof", "typedef", "volatile"}),
+        bound_tree({"++", "--", "(", ")", "[", "]", ".", "->", "+", "-", "!", "~", "&",
+                    "*", "/", "%", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "^", "|",
+                    "&&", "||", "?", ":", "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=",
+                    "&=", "^=", "|=", ",", ";", "{", "}"}) {
     tokenList.set_bound_list(bound);
     tokenList.set_key_list(key);
 
@@ -37,8 +42,7 @@ WordAnalysis::WordAnalysis():
 }
 
 
-
-bool WordAnalysis::process_key(std::string::iterator &iter, const std::string::iterator& end) {
+bool WordAnalysis::process_key(std::string::iterator &iter, const std::string::iterator &end) {
     string::iterator start = iter;
     bool m = key_tree.match(iter, end, isalnumunder);
     if (m) {
@@ -84,7 +88,7 @@ bool WordAnalysis::process_str(std::string::iterator &iter, const std::string::i
     tokenList.add_str(result);
 //    str.push_back(result);
 //    token.emplace_back('s', str.size() - 1);
-    iter ++; // skip the last "
+    iter++; // skip the last "
     return true;
 }
 
@@ -92,7 +96,7 @@ bool WordAnalysis::process_char(std::string::iterator &iter, const std::string::
     int c = 0;
     iter += 1; // skip '
     string::iterator f = iter;
-    while (f != end && (*f != '\'' || *(f-1) == '\\')) f++;
+    while (f != end && (*f != '\'' || *(f - 1) == '\\')) f++;
     if (f == end)
         throw runtime_error("missing terminating ' character");
     if (f - iter == 0)
@@ -134,18 +138,30 @@ bool WordAnalysis::process_bound(std::string::iterator &iter, const std::string:
 int WordAnalysis::getEscape(string::iterator s, string::iterator e) {
     if (e - s == 1)
         switch (*s) {
-            case 'a': return 7;
-            case 'b': return 8;
-            case 'f': return 12;
-            case 'n': return 10;
-            case 'r': return 13;
-            case 't': return 9;
-            case 'v': return 11;
-            case '\\': return 92;
-            case '\'': return 39;
-            case '"': return 34;
-            case '0': return 0;
-            default: break;
+            case 'a':
+                return 7;
+            case 'b':
+                return 8;
+            case 'f':
+                return 12;
+            case 'n':
+                return 10;
+            case 'r':
+                return 13;
+            case 't':
+                return 9;
+            case 'v':
+                return 11;
+            case '\\':
+                return 92;
+            case '\'':
+                return 39;
+            case '"':
+                return 34;
+            case '0':
+                return 0;
+            default:
+                break;
         }
     if (e - s == 3) {
         if (isoct(*s) && isoct(*(s + 1)) && isoct(*(s + 2))) {
@@ -169,7 +185,7 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
     string::iterator start;
     string line;
     bool in_commit = false;
-    while(getline(file, line)) {
+    while (getline(file, line)) {
         size_t start_tk = tokenList.size();
         if (print)
             cout << endl << "in line: " << line << endl;
@@ -202,7 +218,7 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
 
                     } else
                         iter++;
-                } else if (isdigit(*iter) || (*iter == '.' && isdigit(*(iter+1))) ) {
+                } else if (isdigit(*iter) || (*iter == '.' && isdigit(*(iter + 1)))) {
                     process_constant(iter, line.end());
                     // token2str(-1);
                 } else if (*iter == '"') {
@@ -210,8 +226,7 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
                 } else if (*iter == '\'') {
                     process_char(iter, line.end());
                 } else {
-                    if (process_bound(iter, line.end()))
-                        ;
+                    if (process_bound(iter, line.end()));
                     else
                         iter++;
                 }

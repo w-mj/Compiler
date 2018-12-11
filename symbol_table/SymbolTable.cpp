@@ -25,7 +25,7 @@
 using namespace std;
 SymbolTable::SymbolTable()
 {
-    type_list.push_back(Type{}); // 0 号不用，表示“没有类型”或“不完全类型”
+    type_list.emplace_back(0, 0, 0); // 0 号不用，表示“没有类型”或“不完全类型”
     current_table = top_table = new Table();
     get_or_add_type({INT, INT_SIZE, 0});
     get_or_add_type({SHORT, SHORT_SIZE, 0});
@@ -82,7 +82,7 @@ SymbolTable::~SymbolTable() {
 size_t SymbolTable::add_symbol(const Symbol& s) {
     if (get_symbol_by_name(s.name) != nullptr) {
         error("Symbol " + s.name + " is already installed.");
-        return nullptr;
+        return 0;
     }
     size_t t = symbol_list.size();
     symbol_list.push_back(s);
@@ -124,9 +124,9 @@ size_t SymbolTable::add_constant_Symbol(const Number &num) {
     long f = find(constant_num_list.begin(), constant_num_list.end(), num) - constant_num_list.begin();
     if (f >= constant_num_list.size())
         constant_num_list.push_back(num);
-    auto t = get_symbol_index_by_name("const_" + num.str());
+    auto t = get_symbol_index_by_name("@const_" + num.str());
     if (t == -1)
-        return add_symbol({"const_" + num.str(), get_or_add_type({CONST, 0, f}), Cat_Const, 0});
+        return add_symbol({"@const_" + num.str(), get_or_add_type({CONST, 0, f}), Cat_Const, 0});
     return static_cast<size_t>(t);
 }
 
@@ -156,19 +156,29 @@ size_t SymbolTable::add_veriables(void *tv, void *vv, int cat) {
             ST[i].type = last_t_index;
         else {
             // 找到最底层类型
-            while (type_list[t].data != 0)
-                t = type_list[t].data;
-            type_list[t].data = last_t_index;
+            while (t != 0) {
+                switch (type_list[t].t) {
+                    case ARRAY:
+                        t = array_list[type_list[t].data].type;
+                        if (t == 0)
+                            array_list[type_list[t].data].type = last_t_index;
+                        break;
+                    default:
+                        t = type_list[t].data;
+                        if (t == 0)
+                            type_list[t].data = last_t_index;
+                }
+            }
         }
     }
     return (*variable_list)[0];
 }
 
 size_t SymbolTable::add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list) {
-    bool is_struct = WordAnalysis::key[struct_or_union] == "struct";
+    bool is_struct = WA.key[struct_or_union] == "struct";
     int symbol = get_symbol_index_by_name(*((string*)name));  // TODO: 重定义错误
     if (symbol == -1)
-        symbol = add_symbol({*((string*)name)});
+        symbol = add_symbol({*((string*)name), 0, Cat_Var});
 
     TYPE(symbol).data = struct_list.size();
     struct_list.emplace_back(current_table->symbol_index.size(), declaration_list);
@@ -190,20 +200,6 @@ size_t SymbolTable::add_struct_or_union(size_t struct_or_union, size_t declarati
     return add_struct_or_union(struct_or_union, &name, declaration_list);
 }
 
-size_t SymbolTable::add_symbol_from_temp(SymbolTable::TempSymbol &temp) {
-    stack<Type> ts;
-    stack<Array> ta;
-    size_t ti = temp.s.type;
-    while (ti != 0) {
-        ts.push(temp.tl[ti]);
-        switch (temp.tl[ti].t) {
-            case ARRAY:
-                ta.push(temp.al[temp.tl[ti].data]);
-        }
-    }
-    return 0;
-}
-
 size_t SymbolTable::get_or_add_array(const SymbolTable::Array &array) {
     if (array_map.find(array) == array_map.end()) {
         array_map.emplace(array, array_list.size());
@@ -217,7 +213,7 @@ void* TypeBuilder::add_storage(size_t key_in_token, void* t) {
 }
 
 void* TypeBuilder::add_qulifier(size_t key_in_token, void* t) {
-    if (WordAnalysis::key[key_in_token] == "const")
+    if (WA.key[key_in_token] == "const")
         ((SymbolTable::Type*)t)->t |= CONST;
     return t;
 }
@@ -231,7 +227,7 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
     // TODO: 检测类型名重复
     if (i->first == 'k') {
         // 内置类型
-        const auto& k = WordAnalysis::key[i->second];
+        const auto& k = WA.key[i->second];
         if (k == "int") {
             ty->t |= INT;
             ty->size = INT_SIZE;
@@ -266,7 +262,8 @@ size_t SymbolTable::TempSymbol::insert_array_into_table(size_t ai) {
     return ST.get_or_add_array(al[ai]);
 }
 
-size_t SymbolTable::TempSymbol::insert_symbol_into_table() {
+size_t SymbolTable::TempSymbol::insert_symbol_into_table(int cat) {
+    s.cat = cat;
     if (s.type != 0)
         s.type = insert_type_into_table(s.type);
     return ST.add_symbol(s);
@@ -277,7 +274,7 @@ SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_array(size_t len) {
     last_vec(tl).t = ARRAY;
     last_vec(tl).data = al.size();
     al.emplace_back(lenn, tl.size());
-    tl.emplace_back({0, 0, 0});
+    tl.emplace_back(0, 0, 0);
     return this;
 }
 
@@ -285,6 +282,29 @@ SymbolTable::TempSymbol * SymbolTable::TempSymbol::add_array() {
     last_vec(tl).t = ARRAY;
     last_vec(tl).data = al.size();
     al.emplace_back(0, tl.size());
-    tl.emplace_back({0, 0, 0});
+    tl.emplace_back(0, 0, 0);
+    return this;
+}
+
+SymbolTable::TempSymbol *
+SymbolTable::TempSymbol::merge_pointer(std::vector<SymbolTable::Type> *pointer_ype_list) {
+    auto t = s.type;
+    while (t != 0) {
+        switch (tl[t].t) {
+            case ARRAY:
+                t = al[tl[t].data].type;
+                if (t == 0)
+                    al[tl[t].data].type = tl.size();
+                break;
+            default:
+                t = tl[t].data;
+                if (t == 0)
+                    tl[t].data = tl.size();
+        }
+    }
+    for (auto i = 0; i < pointer_ype_list->size(); i++) {
+        tl.push_back((*pointer_ype_list)[i]);
+        (*pointer_ype_list)[i].data = tl.size();
+    }
     return this;
 }

@@ -21,6 +21,7 @@ struct Number {
     } value;
     std::string str() const;
     friend std::ostream& operator<<(std::ostream& out, const Number& s);
+    bool operator==(const Number& an);
 };
 
 class NumericDFA {

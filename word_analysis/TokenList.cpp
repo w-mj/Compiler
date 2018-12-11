@@ -171,7 +171,7 @@ std::string TokenList::get_token_str(Token t) const {
 }
 
 std::string TokenList::get_identification(size_t t) {
-    return id[list[t].second];
+    return id[t];
 }
 
 Number TokenList::get_number(size_t t) {

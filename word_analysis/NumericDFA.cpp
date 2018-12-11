@@ -200,3 +200,26 @@ std::string Number::str() const{
         case Number::NumberType::Double: return to_string(value.db);
     }
 }
+
+bool Number::operator==(const Number &an) {
+    if (type != an.type)
+        return false;
+    switch (type) {
+        case Int:
+            return value.si == an.value.si;
+        case UInt:
+            return value.ui == an.value.ui;
+        case UShort:
+            return value.us == an.value.us;
+        case Short:
+            return value.ss == an.value.ss;
+        case ULong:
+            return value.ul == an.value.ul;
+        case Long:
+            return value.sl == an.value.sl;
+        case Float:
+            return value.ft == an.value.ft;
+        case Double:
+            return value.db == an.value.db;
+    }
+}
