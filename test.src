@@ -1,4 +1,5 @@
-long a;
 int main() {
+    int a, b = 10;
     a = 100;
+    b = 1000;
 }

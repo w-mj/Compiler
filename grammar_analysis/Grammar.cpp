@@ -402,6 +402,7 @@ Generators Grammar::YACC_C_Grammar() {
     | "init_declarator_list , init_declarator"| ATTR{((vector<size_t>*)v[0])->push_back(ITEM_V(2)); return v[0]; }
             ;
 
+    // TODO: 检测初始化类型匹配
     gen.add("init_declarator")
     | "declarator"| ATTR{return NEW_S(((SymbolTable::TempSymbol*)v[0])->insert_symbol_into_table(Cat_Var));}
     | "declarator = initializer"| ATTR{return NEW_S(quat(OP::ASSIGN, ITEM_V(2), NONE,
@@ -507,9 +508,9 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("pointer")
     | "*"| ATTR{ return new vector<SymbolTable::Type>{POINTER}; }
-    | "* type_qualifier_list" | ATTR{ return new std::vector<SymbolTable::Type>{CONST}; }  // 不支持volatile
+    | "* type_qualifier_list" | ATTR{ return new std::vector<SymbolTable::Type>{0, 0, 0, true}; }  // 不支持volatile
     | "* pointer"| ATTR{((vector<SymbolTable::Type>*)v[1])->push_back({POINTER}); return v[1];}
-    | "* type_qualifier_list pointer"| ATTR{((vector<SymbolTable::Type>*)v[1])->push_back({POINTER| CONST}); return v[1];};
+    | "* type_qualifier_list pointer"| ATTR{((vector<SymbolTable::Type>*)v[1])->push_back({POINTER, 0, 0, true}); return v[1];};
             ;
 
     gen.add("type_qualifier_list")
