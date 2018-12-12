@@ -9,6 +9,7 @@
 #include "grammar_analysis/Grammar.h"
 #include "Utility.h"
 #include "symbol_table/SymbolTable.h"
+#include "symbol_table/Quaternary.h"
 
 using namespace std;
 
@@ -57,8 +58,9 @@ int main() {
     lr1.process(getter);
     cout << endl << " LR1 OK" << endl << endl;
 
-    cout << ST;
+    show_quat();
 
+    cout << endl << ST;
 
     return 0;
 }

@@ -21,10 +21,19 @@ enum class OP {
     FUNC, EFUNC, IF, EI, EL, WH, DO, EW
 };
 
+struct Quat {
+    OP op;
+    size_t num1;
+    size_t num2;
+    size_t tar;
+    Quat(OP op, size_t num1, size_t num2, size_t tar): op(op), num1(num1), num2(num2), tar(tar) {}
+};
+
 
 // 生成一个四元式和临时变量，并将临时变量在符号表中的索引返回
 //size_t quat(OP op, size_t num1, size_t num2);
 size_t quat(OP op, size_t num1, size_t, size_t target=0);
+void show_quat();
 
 size_t make_unary_operator_quat(void* it, size_t num1);
 size_t make_assign_operator_quat(size_t l, size_t a, size_t r);
