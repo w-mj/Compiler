@@ -612,8 +612,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("selection_statement")
-    | "if ( expression ) statement"
-    | "if ( expression ) statement else statement"
+    | "if ( expression ) statement"| attr_endif
+    | "if ( expression ) statement else statement"| attr_endif
     | "switch ( expression ) statement"
             ;
 

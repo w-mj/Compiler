@@ -1,5 +1,12 @@
 int main() {
-    int a, b = 10;
+    int a, b = 10, c;
     a = 100;
     b = 1000;
+
+    c = a + b;
+    if (c) {
+        a = 100;
+    } else {
+        a = 10000;
+    }
 }

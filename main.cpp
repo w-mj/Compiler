@@ -47,7 +47,7 @@ int main() {
 
     Generators generators = Grammar::YACC_C_Grammar();
     // generators._print_first();
-    //generators.show();
+    // generators.show();
     LR1 lr1(generators, tkl);
     // LR1 lr1(generators, tkl, "lr1_table");
     // lr1.build();
@@ -58,7 +58,7 @@ int main() {
     lr1.process(getter);
     cout << endl << " LR1 OK" << endl << endl;
 
-    show_quat();
+    cout << QL;
 
     cout << endl << ST;
 

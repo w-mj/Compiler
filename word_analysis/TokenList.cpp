@@ -182,6 +182,10 @@ std::string TokenList::get_bound(size_t t) {
     return bound[t];
 }
 
+std::string TokenList::get_key(size_t t) {
+    return key[t];
+}
+
 TokenGetter::TokenGetter(TokenList &tkl): tkl(tkl) {
     it = tkl.begin();
     end = tkl.end();

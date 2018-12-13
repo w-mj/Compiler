@@ -9,8 +9,6 @@
 
 using namespace std;
 
-
-vector<Quat> quat_list;
 size_t quat(OP op, size_t num1, size_t num2, size_t t) {
     switch (op) {
         case OP::PLUS:
@@ -32,12 +30,18 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::NOT:
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST[num1].type, Cat_Temp, 0});
             break;
+        case OP::IF:
+        case OP::EL:
+        case OP::EI:
+            break;
         default:
             throw runtime_error( "not support " + to_string(static_cast<int>(op)) + " yet");
+
     }
-    quat_list.emplace_back(op, num1, num2, t);
+    QL.emplace_back(op, num1, num2, t);
     return t;
 }
+
 
 string op2str(OP& op) {
     switch (op) {
@@ -83,12 +87,6 @@ string op2str(OP& op) {
     }
 }
 
-void show_quat() {
-    for (int i = 0; i < quat_list.size(); i++) {
-        auto& t = quat_list[i];
-        (cout << i << "{" << op2str(t.op) << ", " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << "}" << endl);
-    }
-}
 
 size_t make_unary_operator_quat(void* it, size_t num1) {
     auto op = ((Item*)it) -> second;
@@ -143,4 +141,27 @@ size_t make_assign_operator_quat(size_t l, size_t a, size_t r) {
     else if (oper == "^=")
         t = quat(OP::BIT_XOR, l, r, l);
     return t;
+}
+
+Quat &QuatList::operator[](size_t i) {
+    return quat_list[i];
+}
+
+size_t QuatList::size() {
+    return quat_list.size();
+}
+
+std::ostream& operator<<(std::ostream& os, QuatList& ql) {
+    for (int i = 0; i < ql.size(); i++) {
+        auto& t = ql[i];
+        switch (t.op) {
+            case OP::IF:
+            case OP::EL:
+            case OP::EI:
+                (cout << i << "{" << op2str(t.op) << ", " << ST[t.num1] << ", " << ST[t.num2] << ", " << t.tar << "}" << endl);
+                break;
+            default:
+                (cout << i << "{" << op2str(t.op) << ", " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << "}" << endl);
+        }
+    }
 }

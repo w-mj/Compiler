@@ -23,5 +23,9 @@ const Attribute pass_attr = ATTR{return v[0];};
 
 void* default_builder(const Token&);
 
+void* attr_builder_if();
+void* attr_builder_else();
+void* attr_endif(std::vector<void*>& v);
+
 
 #endif //COMPLIE_ARRTIBUTE_H

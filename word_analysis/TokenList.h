@@ -59,6 +59,7 @@ public:
     std::string get_token_str(Token t) const;
     std::string get_identification(size_t t);
     std::string get_bound(size_t t);
+    std::string get_key(size_t t);
     Number get_number(size_t);
 
     size_t size() const;
