@@ -44,47 +44,7 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
 
 
 string op2str(OP& op) {
-    switch (op) {
-        case OP::PLUS:return "+";
-        case OP::MINUS:return "-";
-        case OP::MULTPLY:return "*";
-        case OP::DIVIDE:return "/";
-        case OP::MOD:return "%";
-        case OP::INC:return "++";
-        case OP::DEC:return "--";
-        case OP::BIT_AND:return "&";
-        case OP::BIT_OR:return "|";
-        case OP::BIT_XOR:return "^";
-        case OP::SHIFT_LEFT:return "<<";
-        case OP::SHIFT_RIGHT:return ">>";
-        case OP::ASSIGN:return "=";
-        case OP::GET_ADDR:return "&";
-        case OP::GET_VALUE:return "*";
-        case OP::CALL:return "call";
-        case OP::RET:return "ret";
-        case OP::PUSH:return "push";
-        case OP::POP:return "pop";
-        case OP::NEG:return "-";
-        case OP::POS:return "+";
-        case OP::NOT:return "!";
-        case OP::INV:return "~";
-        case OP::LESS_THAN:return "<";
-        case OP::GREATER_THEN:return ">";
-        case OP::LESS_EQUAL:return "<=";
-        case OP::GREATER_EQUAL:return ">=";
-        case OP::EQUAL:return "==";
-        case OP::NOT_EQUAL:return "!=";
-        case OP::LOG_AND:return "&&";
-        case OP::LOG_OR:return "||";
-        case OP::FUNC:return "func";
-        case OP::EFUNC:return "end-func";
-        case OP::IF:return "if";
-        case OP::EI:return "end-if";
-        case OP::EL:return "else";
-        case OP::WH:return "while";
-        case OP::DO:return "do";
-        case OP::EW:return "end-while";
-    }
+
 }
 
 
@@ -152,16 +112,57 @@ size_t QuatList::size() {
 }
 
 std::ostream& operator<<(std::ostream& os, QuatList& ql) {
+    os << endl << endl;
+    for (int i = 0; i < ql.size(); i++) {
+        os << static_cast<int>(ql[i].op) << " " << ql[i].num1 << " " << ql[i].num2 << " " << ql[i].tar << endl;
+    }
+    os << endl << endl;
+
     for (int i = 0; i < ql.size(); i++) {
         auto& t = ql[i];
+        os << i << "# ";
         switch (t.op) {
-            case OP::IF:
-            case OP::EL:
-            case OP::EI:
-                (cout << i << "{" << op2str(t.op) << ", " << ST[t.num1] << ", " << ST[t.num2] << ", " << t.tar << "}" << endl);
-                break;
-            default:
-                (cout << i << "{" << op2str(t.op) << ", " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << "}" << endl);
+
+            case OP::PLUS:os << "(+, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::MINUS:os << "(-, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::MULTPLY:os << "(*, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::DIVIDE:os << "(/, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::MOD:os << "(%, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::BIT_AND:os << "(&, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::BIT_OR:os << "(|, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::BIT_XOR:os << "(^, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::SHIFT_LEFT:os << "(<<, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::SHIFT_RIGHT:os << "(>>, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::LESS_THAN:os << "(<, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::GREATER_THEN:os << "(>, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::LESS_EQUAL:os << "(<=, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::GREATER_EQUAL:os << "(>=, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::EQUAL:os << "(==, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::NOT_EQUAL:os << "(!=, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::LOG_AND:os << "(&&, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+            case OP::LOG_OR:os << "(||, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
+
+            case OP::INC:os << "(++, " << ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::DEC:os << "(--, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::ASSIGN:os << "(=, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::GET_ADDR:os << "(&, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::GET_VALUE:os << "(*, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::CALL:os << "(call, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::RET:os << "(ret, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::PUSH:os << "(push, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::POP:os << "(pop, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::NEG:os << "(-, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::POS:os << "(+, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::NOT:os << "(!, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::INV:os << "(~, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
+            case OP::IF:os << "(if, "<< ST[t.num1] << ", _ , " << t.tar << ")" << endl; break;
+            case OP::FUNC:os << "(func, " << endl; break;
+            case OP::EFUNC:os << "(end-func, " << endl; break;
+            case OP::EL:os << "(else, " << ", _ ," << t.tar << ")" << endl; break;
+            case OP::WH:os << "(while, "; break;
+            case OP::DO:os << "(do, "; break;
+            case OP::EW:os << "(end-while, "; break;
+            case OP::EI:os << "(end-if, _, _, _)"; break;
         }
     }
 }
