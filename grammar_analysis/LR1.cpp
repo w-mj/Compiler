@@ -76,13 +76,13 @@ bool LR1::process(TokenGetter& getter) {
     stack<Node*> tree_node_stack;
     stack<size_t> state_stack;
     stack<void*> attr_stack;
+    set<void*> to_delete;
 
     alpha_stack.push("#");
     tree_node_stack.push(new Node("#"));
     state_stack.push(0);
-    // attr_stack.push(nullptr);
 
-    //try {
+    try {
         while (true) {
             size_t state = state_stack.top();
 
@@ -110,6 +110,10 @@ bool LR1::process(TokenGetter& getter) {
                         tree_node_stack.pop();
                         n->json();
                         delete_tree(n);
+                        while (!attr_stack.empty()) {
+                            delete attr_stack.top();
+                            attr_stack.pop();
+                        }
                         return true;
                     }
                     // generators.get_attr(action.second)(nullptr);
@@ -122,6 +126,7 @@ bool LR1::process(TokenGetter& getter) {
                         new_node->children.insert(new_node->children.begin(), tree_node_stack.top());
                         tree_node_stack.pop();
                         if (attribute) {
+                            to_delete.insert(attr_stack.top());
                             attr_vec.insert(attr_vec.begin(), attr_stack.top());
                             attr_stack.pop();
                         }
@@ -129,8 +134,14 @@ bool LR1::process(TokenGetter& getter) {
                     alpha_stack.push(gen.first);
                     state_stack.push(table[state_stack.top()][index[gen.first]].second);
                     tree_node_stack.push(new_node);
-                    if (attribute)
-                        attr_stack.push(generators.get_attr(action.second)(attr_vec));
+                    if (attribute) {
+                        void* new_attr = generators.get_attr(action.second)(attr_vec);
+                        attr_stack.push(new_attr);
+                        to_delete.erase(new_attr);
+                        for (auto k: to_delete)
+                            delete k;
+                        to_delete.clear();
+                    }
                     break;
                 }
                 default:
@@ -151,13 +162,17 @@ bool LR1::process(TokenGetter& getter) {
                     throw runtime_error("ERROR at LR1 analysis. ");
             }
         }
-    // }
-//   catch(runtime_error& r) {
-//        while (!tree_node_stack.empty()) {
-//            delete_tree(tree_node_stack.top());
-//            tree_node_stack.pop();
-//        }
-//    }
+     }
+   catch(runtime_error& r) {
+        while (!tree_node_stack.empty()) {
+            delete_tree(tree_node_stack.top());
+            tree_node_stack.pop();
+        }
+       while (!attr_stack.empty()) {
+           delete attr_stack.top();
+           attr_stack.pop();
+       }
+    }
 }
 
 void LR1::save(std::string fname) {
