@@ -628,7 +628,7 @@ Generators Grammar::YACC_C_Grammar() {
     | "goto IDENTIFIER ;"
     | "continue ;"
     | "break ;"
-    | "return ;"
+    | "return ;"| ATTR{quat(OP::RET, 0, 0, 0);}
     | "return expression ;"
             ;
 

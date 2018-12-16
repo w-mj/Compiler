@@ -17,40 +17,42 @@ void* default_builder(const Token& tk) {
         return new string(SL.get_identification(tk.second));
     }
     if (tk.first == TOKEN_KEY) {
-        string s = SL.get_key(tk.second);
-        if (s == "if") {
-            brackets_stack.push("if");
-            return nullptr;
-        }
-        else if (s == "else")
-            return attr_builder_else();
-        else if (s == "while") {
-            brackets_stack.push("while");
-            return attr_builder_while();
+        switch(tk.second) {
+            case kif:
+                brackets_stack.push("if");
+                return nullptr;
+            case kelse:
+                return attr_builder_else();
+            case kwhile:
+                brackets_stack.push("while");
+                return attr_builder_while();
+            case kfor:
+                brackets_stack.push("for");
+                return attr_builder_for();
         }
     }
     if (tk.first == TOKEN_BOUND) {
-        string b = SL.get_bound(tk.second);
-        if (b == "{") {
-            ST.in();
-            return attr_stmt_pos();
-        }
-        else if (b == "}") {
-            ST.leave();
-            return attr_stmt_pos();
-        } else if (b == "(") {
-            brackets_stack.push("(");
-        } else if (b == ")") {
-            brackets_stack.pop();
-            if (!brackets_stack.empty()) {
-                if (brackets_stack.top() == "while") {
-                    brackets_stack.pop();
-                    return attr_builder_while_do();
-                } else if (brackets_stack.top() == "if") {
-                    brackets_stack.top();
-                    return attr_builder_if();
+        switch (tk.second) {
+            case plc:
+                ST.in();
+                return nullptr;
+            case prc:
+                ST.leave();
+                return nullptr;
+            case plp:
+                brackets_stack.push("(");
+                return nullptr;
+            case prp:
+                brackets_stack.pop();
+                if (!brackets_stack.empty()) {
+                    if (brackets_stack.top() == "while") {
+                        brackets_stack.pop();
+                        return attr_builder_while_do();
+                    } else if (brackets_stack.top() == "if") {
+                        brackets_stack.top();
+                        return attr_builder_if();
+                    }
                 }
-            }
         }
     }
     return new C_GramData( tk );
@@ -110,9 +112,17 @@ void* attr_endwhile(std::vector<void*>& v) {
 }
 
 void* attr_stmt_pos() {
-    static size_t stmt_start = 0;
-    size_t a = stmt_start;
-    cout << a << endl;
-    stmt_start = QL.size();
-    return new size_t(a);
+//    static size_t stmt_start = 0;
+//    size_t a = stmt_start;
+//    cout << a << endl;
+//    stmt_start = QL.size();
+//    return new size_t(a);
+    return nullptr;
+}
+
+
+void* attr_builder_for() {
+    size_t t = QL.size();
+    quat(OP::FOR, 0, 0, 0);
+    return new size_t(t);
 }

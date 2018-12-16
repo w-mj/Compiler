@@ -15,6 +15,18 @@
 #define WA WordAnalysis::getInstance()
 #define SL WA.get_tokenList()
 
+enum {
+    kchar=0, kdouble, kenum, kfloat, kint, klong, kshort, ksigned, kstruct, kunion, kunsigned, kvoid, kfor, kdo,
+    kwhile, kbreak, kcontinue, kif, kelse, kgoto, kswitch, kcase, kdefault, kreturn, kauto, kextern, kregister,
+    kstatic, kconst, ksizeof, ktypedef, kvolatile
+};
+
+enum {
+    pinc=0, pdec, plp, prp, plb, prb, pdot, ppointer, pplus, pminus, pnot, pinv, pband, pmultply, pdivide, pmod,
+    psl, psr, plt, ppe, pgt, pge, peq, pne, pxor, pbor, pand, por, pqes, pcolon, passign, paddass, pminusass,
+    pmultplyass, pdivass, pmodass, pslass, psrass, pandass, pxorass, poras, pcomma, psimi, plc, prc
+};
+
 class WordAnalysis {
 private:
 

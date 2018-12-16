@@ -20,8 +20,8 @@ enum class OP {
     CALL, RET, PUSH, POP,
     NEG, POS, NOT, INV, // NOT: !, INV: ~
     LESS_THAN, GREATER_THEN, LESS_EQUAL, GREATER_EQUAL, EQUAL, NOT_EQUAL, LOG_AND, LOG_OR,
-    FUNC, EFUNC, IF, EI, EL, WH, DO, EW,
-    NOP
+    FUNC, EFUNC, IF, EI, EL, WH, DO, EW, FOR, JIF,
+    NOP, JMP
 };
 
 struct Quat {
