@@ -410,5 +410,39 @@ int SymbolTable::get_func_param_num(size_t symbol) {
 }
 
 std::string SymbolTable::get_type_name(size_t symbol) {
-    return std::__cxx11::string();
+    switch(get_basic_symbol_type(symbol)) {
+        case INT:
+            return "int";
+        case SHORT:
+            return "short";
+        case LONG:
+            return "long";
+        case DOUBLE:
+            return "double";
+        case FLOAT:
+            return "float";
+        default:
+            throw runtime_error("<SymbolTable.cpp get_type_name> not support type name.");
+    }
+}
+
+size_t SymbolTable::get_basic_symbol_type(size_t symbol) {
+    switch (TYPE(symbol).t) {
+        case INT:
+            return get_symbol_by_name("int")->type;
+        case FLOAT:
+            return get_symbol_by_name("float")->type;
+        case SHORT:
+            return get_symbol_by_name("short")->type;
+        case LONG:
+            return get_symbol_by_name("long")->type;
+        case DOUBLE:
+            return get_symbol_by_name("double")->type;
+        case ARRAY:
+            return get_basic_symbol_type(ARR(symbol).type);
+        case STRUCT:
+            return get_basic_symbol_type(FUNC(symbol).ret_type);
+        default:
+            throw runtime_error("<SymbolTable.cpp get_basic_symbol_type> not support type " + TYPE(symbol).t);
+    }
 }

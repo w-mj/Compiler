@@ -135,6 +135,7 @@ public:
         std::map<Type, size_t> type_index;
 
         Table* up = nullptr;
+        int offset = 0;
     };
 
 private:
@@ -169,6 +170,8 @@ public:
     size_t get_array_element_type(size_t symbol);
     size_t get_function_type(size_t symbol);
     size_t get_type_size(size_t symbol);
+
+    size_t get_basic_symbol_type(size_t symbol);
 
     std::string get_symbol_name(size_t symbol);
     bool is_temp_var(size_t symbol);

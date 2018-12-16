@@ -5,9 +5,7 @@ int main() {
     int i;
 
     a = 100;
-    b = 1000 + a + c;
-
-
+    b = a + a + c;
 
     c = a + b;
     if (c == 0)

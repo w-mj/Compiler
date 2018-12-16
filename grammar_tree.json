@@ -669,7 +669,7 @@
 {"name":"primary_expression"
 ,
 "children": [
-{"name":"1000"
+{"name":"a"
 }
 ]
 }
