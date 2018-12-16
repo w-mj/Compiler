@@ -1,12 +1,17 @@
+int ext1;
+int ext2, ext3;
 int main() {
     int a, b = 10, c;
     a = 100;
-    b = 1000;
+    b = 1000 + a + c;
 
     c = a + b;
-    if (c) {
+    if (c == 0)
         a = 100;
-    } else {
+    else
         a = 10000;
-    }
+
+    while (a > 10)
+        a--;
+
 }

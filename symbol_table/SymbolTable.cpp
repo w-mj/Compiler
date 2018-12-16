@@ -63,14 +63,14 @@ void SymbolTable::in() {
     auto c = new Table;
     c->up = current_table;
     current_table = c;
-    cout << "Symbol table in" << endl;
+    // cout << "Symbol table in" << endl;
 }
 
 void SymbolTable::leave() {
     auto t = current_table;
     current_table = current_table->up;
     delete t;
-    cout << "Symbol table leave" << endl;
+    // cout << "Symbol table leave" << endl;
 }
 
 SymbolTable::~SymbolTable() {
@@ -382,4 +382,33 @@ std::ostream& operator<<(std::ostream& os, SymbolTable& st) {
     for (size_t i = 0; i < st.symbol_list.size(); i++) {
         os << i << "#" << st.symbol_list[i] << endl;
     }
+    return os;
+}
+
+std::string SymbolTable::get_symbol_name(size_t symbol) {
+    return ST[symbol].name;
+}
+
+bool SymbolTable::is_temp_var(size_t symbol) {
+    return ST[symbol].name[0] == '@';
+}
+
+void SymbolTable::set_symbol_addr(size_t symbol, size_t addr) {
+    ST[symbol].addr = addr;
+}
+
+size_t SymbolTable::get_symbol_addr(size_t symbol) {
+    return ST[symbol].addr;
+}
+
+int SymbolTable::get_symbol_offset(size_t symbol) {
+    return ST[symbol].offset;
+}
+
+int SymbolTable::get_func_param_num(size_t symbol) {
+    return ST.function_list[ST.type_list[ST[symbol].type].data].param_num;
+}
+
+std::string SymbolTable::get_type_name(size_t symbol) {
+    return std::__cxx11::string();
 }

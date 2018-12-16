@@ -89,10 +89,9 @@ public:
         size_t type;
         int cat = 0;
         int offset;
+        size_t addr=0;
 
-        Symbol(std::string name, size_t type, int cat, int offset): name(std::move(name)), type(type), cat(cat), offset(offset) {}
-        Symbol(std::string name, size_t type, int cat): name(std::move(name)), type(type), cat(cat) {}
-
+        Symbol(std::string name, size_t type, int cat, int offset=0): name(std::move(name)), type(type), cat(cat), offset(offset) {}
     };
 
 
@@ -128,7 +127,7 @@ public:
     struct Label {
         uint offset;
 
-        Label(uint off): offset(off) {}
+        explicit Label(uint off): offset(off) {}
     };
 
     struct Table {
@@ -170,6 +169,14 @@ public:
     size_t get_array_element_type(size_t symbol);
     size_t get_function_type(size_t symbol);
     size_t get_type_size(size_t symbol);
+
+    std::string get_symbol_name(size_t symbol);
+    bool is_temp_var(size_t symbol);
+    void set_symbol_addr(size_t symbol, size_t addr);
+    size_t get_symbol_addr(size_t symbol);
+    int get_symbol_offset(size_t symbol);
+    int get_func_param_num(size_t symbol);
+    std::string get_type_name(size_t symbol);  // 数组返回基本类型
 
     Type& get_type_by_symbol(size_t i);
 

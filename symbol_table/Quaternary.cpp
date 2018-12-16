@@ -11,31 +11,40 @@ using namespace std;
 
 size_t quat(OP op, size_t num1, size_t num2, size_t t) {
     switch (op) {
-        case OP::PLUS:
-            if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST[num1].type, Cat_Temp, 0});
-            break;
-        case OP::CALL:
-            if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST.get_function_type(num1), Cat_Temp, 0});
-            break;
-        case OP::INC:
-            break;
-        case OP::DEC:
-            break;
-        case OP::ASSIGN:
-            break;
+        // 生成临时变量的二元运算符
         case OP::BIT_AND:
         case OP::POS:
         case OP::NEG:
         case OP::INV:
         case OP::NOT:
+        case OP::GREATER_THEN:
+        case OP::GREATER_EQUAL:
+        case OP::LESS_EQUAL:
+        case OP::LESS_THAN:
+        case OP::EQUAL:
+        case OP::PLUS:
+        case OP::MINUS:
+        case OP::MULTPLY:
+        case OP::DIVIDE:
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST[num1].type, Cat_Temp, 0});
             break;
+        case OP::CALL:
+            if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST.get_function_type(num1), Cat_Temp, 0});
+            break;
+        // 不需要生成临时变量, 无目标或后填充
+        case OP::INC:
+        case OP::DEC:
+        case OP::ASSIGN:
         case OP::IF:
         case OP::EL:
         case OP::EI:
+        case OP::WH:
+        case OP::DO:
+        case OP::EW:
+        case OP::NOP:
             break;
         default:
-            throw runtime_error( "not support " + to_string(static_cast<int>(op)) + " yet");
+            throw runtime_error( "<Quaternary.cpp> not support " + to_string(static_cast<int>(op)) + " yet");
 
     }
     QL.emplace_back(op, num1, num2, t);
@@ -112,17 +121,11 @@ size_t QuatList::size() {
 }
 
 std::ostream& operator<<(std::ostream& os, QuatList& ql) {
-    os << endl << endl;
-    for (int i = 0; i < ql.size(); i++) {
-        os << static_cast<int>(ql[i].op) << " " << ql[i].num1 << " " << ql[i].num2 << " " << ql[i].tar << endl;
-    }
-    os << endl << endl;
 
     for (int i = 0; i < ql.size(); i++) {
         auto& t = ql[i];
         os << i << "# ";
         switch (t.op) {
-
             case OP::PLUS:os << "(+, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
             case OP::MINUS:os << "(-, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
             case OP::MULTPLY:os << "(*, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
@@ -141,7 +144,6 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::NOT_EQUAL:os << "(!=, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
             case OP::LOG_AND:os << "(&&, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
             case OP::LOG_OR:os << "(||, "<< ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl;break;
-
             case OP::INC:os << "(++, " << ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
             case OP::DEC:os << "(--, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
             case OP::ASSIGN:os << "(=, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
@@ -159,10 +161,11 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::FUNC:os << "(func, " << endl; break;
             case OP::EFUNC:os << "(end-func, " << endl; break;
             case OP::EL:os << "(else, " << ", _ ," << t.tar << ")" << endl; break;
-            case OP::WH:os << "(while, "; break;
-            case OP::DO:os << "(do, "; break;
-            case OP::EW:os << "(end-while, "; break;
-            case OP::EI:os << "(end-if, _, _, _)"; break;
+            case OP::WH:os << "(while, _, _, _)" << endl; break;
+            case OP::DO:os << "(do, " << ST[t.num1] << ", _, " << t.tar <<")" << endl; break;
+            case OP::EW:os << "(end-while, _, _, " << t.tar << ")" << endl; break;
+            case OP::EI:os << "(end-if, _, _, _)" << endl; break;
         }
     }
+    return os;
 }

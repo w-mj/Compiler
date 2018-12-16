@@ -256,8 +256,8 @@ Generators Grammar::YACC_C_Grammar() {
     | "postfix_expression ( argument_expression_list )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
     | "postfix_expression . IDENTIFIER"
     | "postfix_expression -> IDENTIFIER"
-    | "postfix_expression ++" | ATTR{quat(OP::INC, ITEM_V(0), NONE); return v[0];}  // TODO: 区分前后++
-    | "postfix_expression --" | ATTR{quat(OP::DEC, ITEM_V(0), NONE); return v[0];}
+    | "postfix_expression ++" | ATTR{quat(OP::INC, ITEM_V(0), NONE, ITEM_V(0)); return v[0];}  // TODO: 区分前后++
+    | "postfix_expression --" | ATTR{quat(OP::DEC, ITEM_V(0), NONE, ITEM_V(0)); return v[0];}
             ;
 
     // 调用函数时的参数列表
@@ -268,8 +268,8 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("unary_expression")
     | "postfix_expression"
-    | "++ unary_expression" | ATTR{quat(OP::INC, ITEM_V(1), NONE); return v[1];}
-    | "-- unary_expression" | ATTR{quat(OP::DEC, ITEM_V(1), NONE); return v[1];}
+    | "++ unary_expression" | ATTR{quat(OP::INC, ITEM_V(1), NONE, ITEM_V(0)); return v[1];}
+    | "-- unary_expression" | ATTR{quat(OP::DEC, ITEM_V(1), NONE, ITEM_V(0)); return v[1];}
     | "unary_operator cast_expression" | ATTR{return NEW_S(make_unary_operator_quat(v[0], ITEM_V(1)));}
     | "sizeof unary_expression" | ATTR{return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))}));}
     | "sizeof ( type_name )" | ATTR{return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))}));}
@@ -373,8 +373,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("expression")
-    | "assignment_expression"
-    | "expression , assignment_expression"| ATTR{return v[2];} // 逗号运算符？
+    | "assignment_expression" | ATTR{ attr_stmt_pos(); return v[0]; }
+    | "expression , assignment_expression"| ATTR{attr_stmt_pos(); return v[2];} // 逗号运算符？
             ;
 
     gen.add("constant_expression")
@@ -382,8 +382,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("declaration")
-    | "declaration_specifiers ;"
-    | "declaration_specifiers init_declarator_list ;" | ATTR{ST.add_veriables(v[0], v[1]); return nullptr;}
+    | "declaration_specifiers ;"| ATTR{ return attr_stmt_pos(); }
+    | "declaration_specifiers init_declarator_list ;" | ATTR{ST.add_veriables(v[0], v[1]); return attr_stmt_pos();}
             ;
 
     // 类型名: [const|validate] [typedef|extern|static|auto|register] [int|float|...]
@@ -444,7 +444,7 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("struct_declaration_list")
-    | "struct_declaration" | pass_attr
+    | "struct_declaration"
     | "struct_declaration_list struct_declaration" | ATTR{return v[0]; }  // 始终指向第一个成员
             ;
 
@@ -590,10 +590,10 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("compound_statement")
-    | "{ }"
-    | "{ statement_list }"
-    | "{ declaration_list }"
-    | "{ declaration_list statement_list }"
+    | "{ }" |ATTR{ quat(OP::NOP, 0, 0, 0); return new size_t(QL.size() - 1); }  // 生成空四元式占位
+    | "{ statement_list }"| ATTR{ return v[1]; }
+    | "{ declaration_list }" | ATTR{return v[1]; }
+    | "{ declaration_list statement_list }" | ATTR{return v[1]; }
             ;
 
     gen.add("declaration_list")
@@ -607,8 +607,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("expression_statement")
-    | ";"
-    | "expression ;"
+    | ";"| ATTR{quat(OP::NOP, 0, 0, 0); return attr_stmt_pos(); }
+    | "expression ;" | ATTR{ return attr_stmt_pos(); }
             ;
 
     gen.add("selection_statement")
@@ -618,7 +618,7 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("iteration_statement")
-    | "while ( expression ) statement"
+    | "while ( expression ) statement" | attr_endwhile
     | "do statement while ( expression ) ;"
     | "for ( expression_statement expression_statement ) statement"
     | "for ( expression_statement expression_statement expression ) statement"

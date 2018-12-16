@@ -27,5 +27,11 @@ void* attr_builder_if();
 void* attr_builder_else();
 void* attr_endif(std::vector<void*>& v);
 
+void* attr_builder_while();
+void* attr_builder_while_do();
+void* attr_endwhile(std::vector<void*>& v);
+
+void* attr_stmt_pos();
+
 
 #endif //COMPLIE_ARRTIBUTE_H

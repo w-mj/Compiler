@@ -49,7 +49,6 @@ int main() {
     // generators._print_first();
     // generators.show();
     LR1 lr1(generators, tkl);
-    // LR1 lr1(generators, tkl, "lr1_table");
     // lr1.build();
     lr1.load();
     // lr1.save();
@@ -58,9 +57,9 @@ int main() {
     lr1.process(getter);
     cout << endl << " LR1 OK" << endl << endl;
 
-    cout << QL;
+    cout << QL << endl << endl;
 
-    cout << endl << ST;
+    cout << ST << endl;
 
     return 0;
 }
