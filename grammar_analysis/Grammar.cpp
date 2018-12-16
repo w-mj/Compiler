@@ -373,8 +373,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("expression")
-    | "assignment_expression" | ATTR{ attr_stmt_pos(); return v[0]; }
-    | "expression , assignment_expression"| ATTR{attr_stmt_pos(); return v[2];} // 逗号运算符？
+    | "assignment_expression"
+    | "expression , assignment_expression"| ATTR{return v[2];} // 逗号运算符？
             ;
 
     gen.add("constant_expression")
@@ -382,7 +382,7 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("declaration")
-    | "declaration_specifiers ;"| ATTR{ return attr_stmt_pos(); }
+    | "declaration_specifiers ;"
     | "declaration_specifiers init_declarator_list ;" | ATTR{ST.add_veriables(v[0], v[1]); return attr_stmt_pos();}
             ;
 

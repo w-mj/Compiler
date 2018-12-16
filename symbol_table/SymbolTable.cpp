@@ -86,6 +86,7 @@ size_t SymbolTable::add_symbol(const Symbol& s) {
         error("Symbol " + s.name + " is already installed.");
         return 0;
     }
+
     size_t t = symbol_list.size();
     symbol_list.push_back(s);
     current_table->symbol_index.emplace(s.name, t);
@@ -171,12 +172,15 @@ size_t SymbolTable::add_veriables(void *tv, void *vv, int cat) {
     auto last_type = (Type*)tv;
     auto last_t_index = get_or_add_type(*last_type);
 
-    vector<size_t>* variable_list = (vector<size_t>*)vv;
+    auto * variable_list = (vector<size_t>*)vv;
     for (auto i: *variable_list) {
         ST[i].cat=cat;
         auto t = ST[i].type;
-        if (t == 0)
+        if (t == 0) {
             ST[i].type = last_t_index;
+            ST[i].offset = current_table->offset;
+            current_table->offset += TYPE(i).size;
+        }
         else {
             // 找到最底层类型
             while (t != 0) {
@@ -337,7 +341,11 @@ SymbolTable::TempSymbol::merge_pointer(std::vector<SymbolTable::Type> *pointer_y
 
 
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s) {
-    os << s.name << ": " << ST.type_list[s.type];
+    os << s.name << ":" << ST.type_list[s.type];
+    if (s.cat == Cat_Var)
+        os << "&" << s.offset;
+    if (s.cat == Cat_Type)
+        os << "*" << ST.type_list[s.type].size;
     return os;
 }
 
@@ -390,7 +398,7 @@ std::string SymbolTable::get_symbol_name(size_t symbol) {
 }
 
 bool SymbolTable::is_temp_var(size_t symbol) {
-    return ST[symbol].name[0] == '@';
+    return ST[symbol].name[0] == '@' && isdigit(ST[symbol].name[1]);
 }
 
 void SymbolTable::set_symbol_addr(size_t symbol, size_t addr) {
