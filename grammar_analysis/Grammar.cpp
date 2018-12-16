@@ -607,8 +607,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("expression_statement")
-    | ";"| ATTR{quat(OP::NOP, 0, 0, 0); return attr_stmt_pos(); }
-    | "expression ;" | ATTR{ return attr_stmt_pos(); }
+    | ";"
+    | "expression ;" | ATTR{ return v[1]; }
             ;
 
     gen.add("selection_statement")
@@ -620,8 +620,8 @@ Generators Grammar::YACC_C_Grammar() {
     gen.add("iteration_statement")
     | "while ( expression ) statement" | attr_endwhile
     | "do statement while ( expression ) ;"
-    | "for ( expression_statement expression_statement ) statement"
-    | "for ( expression_statement expression_statement expression ) statement"
+    | "for ( expression_statement expression_statement ) statement"| attr_endfor
+    | "for ( expression_statement expression_statement expression ) statement"| attr_endfor
             ;
 
     gen.add("jump_statement")

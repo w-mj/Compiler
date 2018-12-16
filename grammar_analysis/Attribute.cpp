@@ -28,7 +28,7 @@ void* default_builder(const Token& tk) {
                 return attr_builder_while();
             case kfor:
                 brackets_stack.push("for");
-                return attr_builder_for();
+                return nullptr;
         }
     }
     if (tk.first == TOKEN_BOUND) {
@@ -49,8 +49,31 @@ void* default_builder(const Token& tk) {
                         brackets_stack.pop();
                         return attr_builder_while_do();
                     } else if (brackets_stack.top() == "if") {
-                        brackets_stack.top();
+                        brackets_stack.pop();
                         return attr_builder_if();
+                    } else if (brackets_stack.top() == "for2") {
+                        brackets_stack.pop();
+                        return attr_builder_for_inc();
+                    }
+                }
+                break;
+            case psimi:
+                if (!brackets_stack.empty()) {
+                    if (brackets_stack.top() == "(") {
+                        brackets_stack.pop();
+                        if (!brackets_stack.empty()) {
+                            if (brackets_stack.top() == "for") {
+                                brackets_stack.pop();
+                                brackets_stack.push("for1");
+                                brackets_stack.push("(");
+                                return attr_builder_for_init();
+                            } else if (brackets_stack.top() == "for1") {
+                                brackets_stack.pop();
+                                brackets_stack.push("for2");
+                                brackets_stack.push("(");
+                                return attr_builder_for_cond();
+                            }
+                        }
                     }
                 }
         }
@@ -85,7 +108,8 @@ void* attr_endif(std::vector<void*>& v) {
         QL[if_pos].tar = pos;
     }
     attr_stmt_pos();
-    return new size_t(if_pos);
+    // return new size_t(if_pos);
+    return nullptr;
 }
 
 void* attr_builder_while() {
@@ -108,7 +132,8 @@ void* attr_endwhile(std::vector<void*>& v) {
     quat(OP::EW, 0, 0, while_pos);
     QL[do_pos].num1 = QL[do_pos - 1].tar;
     QL[do_pos].tar = QL.size();
-    return new size_t(while_pos);
+    return nullptr;
+    // return new size_t(while_pos);
 }
 
 void* attr_stmt_pos() {
@@ -121,8 +146,33 @@ void* attr_stmt_pos() {
 }
 
 
-void* attr_builder_for() {
+void* attr_builder_for_init() {
     size_t t = QL.size();
     quat(OP::FOR, 0, 0, 0);
     return new size_t(t);
+}
+
+void* attr_builder_for_cond() {
+    size_t t = QL.size();
+    quat(OP::DO, 0, 0, 0);
+    quat(OP::JMP, 0, 0, 0);
+    return new size_t(t);
+}
+
+void* attr_builder_for_inc() {
+    size_t t = QL.size();
+    quat(OP::JMP, 0, 0, 0);
+    return new size_t(t);
+}
+
+void* attr_endfor(std::vector<void*>& v) {
+    size_t for_pos = *((size_t*)v[2]);
+    size_t do_pos = *((size_t*)v[3]);
+    size_t jmp_pos = v.size() == 6? *((size_t*)v[4]): *((size_t*)v[5]);
+    quat(OP::EFOR, 0, 0, do_pos + 2);
+    QL[do_pos].num1 = QL[do_pos - 1].tar;
+    QL[do_pos].tar = QL.size();
+    QL[jmp_pos].tar = for_pos;
+    QL[do_pos + 1].tar = jmp_pos + 1;
+    return nullptr;
 }

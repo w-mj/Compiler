@@ -42,6 +42,9 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::DO:
         case OP::EW:
         case OP::NOP:
+        case OP::FOR:
+        case OP::JMP:
+        case OP::EFOR:
             break;
         default:
             throw runtime_error( "<Quaternary.cpp> not support " + to_string(static_cast<int>(op)) + " yet");
@@ -162,8 +165,11 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::EFUNC:os << "(end-func, " << endl; break;
             case OP::EL:os << "(else, " << ", _ ," << t.tar << ")" << endl; break;
             case OP::WH:os << "(while, _, _, _)" << endl; break;
+            case OP::FOR:os << "(for, _, _, _)" << endl; break;
             case OP::DO:os << "(do, " << ST[t.num1] << ", _, " << t.tar <<")" << endl; break;
             case OP::EW:os << "(end-while, _, _, " << t.tar << ")" << endl; break;
+            case OP::EFOR:os << "(end-for, _, _, " << t.tar << ")" << endl; break;
+            case OP::JMP:os << "(jmp, _, _, " << t.tar << ")" << endl; break;
             case OP::EI:os << "(end-if, _, _, _)" << endl; break;
         }
     }
