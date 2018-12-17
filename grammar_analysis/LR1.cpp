@@ -76,7 +76,6 @@ bool LR1::process(TokenGetter& getter) {
     stack<Node*> tree_node_stack;
     stack<size_t> state_stack;
     stack<void*> attr_stack;
-    set<void*> to_delete;
 
     alpha_stack.push("#");
     tree_node_stack.push(new Node("#"));
@@ -126,7 +125,6 @@ bool LR1::process(TokenGetter& getter) {
                         new_node->children.insert(new_node->children.begin(), tree_node_stack.top());
                         tree_node_stack.pop();
                         if (attribute) {
-                            to_delete.insert(attr_stack.top());
                             attr_vec.insert(attr_vec.begin(), attr_stack.top());
                             attr_stack.pop();
                         }
@@ -137,10 +135,10 @@ bool LR1::process(TokenGetter& getter) {
                     if (attribute) {
                         void* new_attr = generators.get_attr(action.second)(attr_vec);
                         attr_stack.push(new_attr);
-                        to_delete.erase(new_attr);
-                        for (auto k: to_delete)
-                            delete k;
-                        to_delete.clear();
+                        for (void* n: attr_vec) {
+                            if (n != new_attr)
+                                delete n;
+                        }
                     }
                     break;
                 }
