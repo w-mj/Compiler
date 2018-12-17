@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(Complie)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Complie main.cpp
         word_analysis/WordAnalysis.cpp
@@ -30,4 +30,7 @@ add_executable(Complie main.cpp
         grammar_analysis/Attribute.h
         symbol_table/SymbolTable.cpp
         symbol_table/SymbolTable.h
-        symbol_table/type.h error/Error.cpp error/Error.h symbol_table/Quaternary.cpp symbol_table/Quaternary.h)
+        error/Error.cpp
+        error/Error.h
+        symbol_table/Quaternary.cpp
+        symbol_table/Quaternary.h)

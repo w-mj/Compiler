@@ -56,6 +56,10 @@ std::ostream& operator<<(std::ostream& out, std::set<T>& s) {
     return out;
 }
 
+template<typename T, typename ...Args>
+bool oneof(T a, Args... args) {
+    return ((a == args) || ...);
+};
 
 
 

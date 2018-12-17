@@ -20,6 +20,7 @@ typedef Token Item;
 
 #define NEW_S(x) (new Item{'y', (x)})
 #define NEW_T(x) (new Item{'t', (x)})
+#define TEMP_S SymbolTable::TempSymbol
 
 #define ST SymbolTable::getInstance()
 
@@ -32,6 +33,7 @@ typedef Token Item;
 #define Cat_Temp 6
 #define Cat_Const 7
 #define Cat_Type 8
+#define Cat_Func_Declaration 9
 
 #define CONST 0x40
 #define UNSIGNED 0x20
@@ -136,6 +138,8 @@ public:
 
         Table* up = nullptr;
         int offset = 0;
+        size_t param_start_pos = 0;
+        bool next_func = false;
     };
 
 private:
@@ -149,6 +153,7 @@ private:
     std::vector<SymbolTable::Array> array_list;
     std::map<SymbolTable::Array, size_t> array_map;
     std::vector<SymbolTable::Function> function_list;
+    std::map<SymbolTable::Function, size_t> function_map;
 
     std::vector<Number> constant_num_list;
     std::vector<Label> label_list;
@@ -159,6 +164,7 @@ public:
 
     size_t get_or_add_type(const Type& type);
     size_t get_or_add_array(const Array& array);
+    size_t get_or_add_function(const size_t return_type, const std::vector<size_t>& param_type);
     const Symbol* get_symbol_by_name(const std::string& name);
 
     size_t add_symbol(const Symbol& s);
@@ -200,22 +206,29 @@ public:
         SymbolTable::Symbol s;
         std::vector<SymbolTable::Type> tl;
         std::vector<SymbolTable::Array> al;
+        std::vector<SymbolTable::Function> fl;
+        std::vector<SymbolTable::TempSymbol*> fpl;
 
         size_t insert_symbol_into_table(int cat);
 
         explicit TempSymbol(const std::string& s): s(s, 0, Cat_Var, 0) {
             std::cout << "temp symbol " << s << std::endl;
+            tl.emplace_back(0, 0, 0);
         }
 
         TempSymbol* add_array(size_t len);
         TempSymbol* add_array();
+        TempSymbol* add_function(std::vector<SymbolTable::TempSymbol*>& v);
         TempSymbol* add_basic_type(SymbolTable::Type& type);
         static size_t add_basic_type_and_insert_into_table(std::vector<TempSymbol*> v, SymbolTable::Type* t, int cat);
+        static size_t add_basic_type_and_insert_into_table(TempSymbol* v, SymbolTable::Type* t, int cat);
+
 
         TempSymbol* merge_pointer(std::vector<SymbolTable::Type>* pointer_ype_list);
     private:
         size_t insert_type_into_table(size_t ti);
         size_t insert_array_into_table(size_t ai);
+        size_t insert_function_into_table(size_t fi);
     };
 
     void in();
@@ -234,12 +247,12 @@ struct TypeBuilder {
     static void* add_storage(size_t key_in_token, void* t=nullptr);
 };
 
+using FunctionParamTemp = std::vector<SymbolTable::TempSymbol*>;
+
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s);
 std::ostream& operator<<(std::ostream& os, SymbolTable::Array& a);
 std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t);
 std::ostream& operator<<(std::ostream& os, SymbolTable& st);
-
-
 
 
 

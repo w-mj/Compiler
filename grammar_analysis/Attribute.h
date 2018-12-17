@@ -38,5 +38,8 @@ void* attr_builder_for_cond();
 void* attr_builder_for_inc();
 void* attr_endfor(std::vector<void*>& v);
 
+void* attr_start_func();
+void* attr_end_func();
+
 
 #endif //COMPLIE_ARRTIBUTE_H

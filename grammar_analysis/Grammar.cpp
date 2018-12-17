@@ -506,7 +506,7 @@ Generators Grammar::YACC_C_Grammar() {
     | "( declarator )"
     | "direct_declarator [ constant_expression ]" | ATTR{return ((SymbolTable::TempSymbol*)v[0]) -> add_array(ITEM_V(2));}
     | "direct_declarator [ ]"| ATTR{return ((SymbolTable::TempSymbol*)v[0]) -> add_array();}
-    | "direct_declarator ( parameter_type_list )"
+    | "direct_declarator ( parameter_type_list )"| ATTR{return ((SymbolTable::TempSymbol*)v[0]) -> add_function(*(FunctionParamTemp*)v[2]);}
     | "direct_declarator ( identifier_list )"
     | "direct_declarator ( )"
             ;
@@ -530,12 +530,14 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("parameter_list")
-    | "parameter_declaration"
-    | "parameter_list , parameter_declaration"
+    | "parameter_declaration"| ATTR{return new FunctionParamTemp {(TEMP_S*)v[0]};}
+    | "parameter_list , parameter_declaration"| ATTR{((FunctionParamTemp*)v[0])->push_back((TEMP_S*)v[0]); return v[0]; }
             ;
 
     gen.add("parameter_declaration")
-    | "declaration_specifiers declarator"
+    | "declaration_specifiers declarator"| ATTR {return ((TEMP_S*)v[1])->add_basic_type(*((SymbolTable::Type*)v[0]));}
+//      ATTR {return NEW_S(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(
+//              (SymbolTable::TempSymbol*)v[1], (SymbolTable::Type*)v[0], Cat_Param));}
     | "declaration_specifiers abstract_declarator"
     | "declaration_specifiers"
             ;

@@ -23,6 +23,8 @@
 #define ARR(x) (array_list[TYPE(x).data])
 #define FUNC(x) (function_list[TYPE(x).data])
 
+#define cant_be_duplicate(x) (x.cat == Cat_Type || x.cat == Cat_Var)
+
 
 using namespace std;
 SymbolTable::SymbolTable()
@@ -65,6 +67,19 @@ void SymbolTable::in() {
     auto c = new Table;
     c->up = current_table;
     current_table = c;
+
+    // 为函数参数建立索引和偏移
+    int param_offset = 0;
+    if (c->up->next_func && c->up->param_start_pos != 0) {
+        for (size_t i = symbol_list.size() - 1; i >= c->up->param_start_pos; i--) {
+            c->symbol_index.emplace(symbol_list[i].name, i);
+            symbol_list[i].offset = param_offset;
+            param_offset -= TYPE(i).size;
+        }
+        c->up->param_start_pos = 0;
+    } else {
+        c->offset = c->up->offset;
+    }
     // cout << "Symbol table in" << endl;
 }
 
@@ -84,21 +99,24 @@ SymbolTable::~SymbolTable() {
 }
 
 size_t SymbolTable::add_symbol(const Symbol& s) {
-    if (get_symbol_by_name(s.name) != nullptr) {
+    if (cant_be_duplicate(s) && get_symbol_by_name(s.name) != nullptr) {
         error("Symbol " + s.name + " is already exists.");
         return 0;
     }
 
+    if (s.cat == Cat_Param) {
+        throw runtime_error(debugpos + "add param by \"add_symbol\"");
+    }
+
     size_t t = symbol_list.size();
     symbol_list.push_back(s);
-    if (s.cat == Cat_Var) {
+    if (oneof(s.cat, Cat_Var, Cat_Func_Declaration)) {
         last_vec(symbol_list).offset = current_table->offset;
         current_table->offset += type_list[s.type].size;
     }
     // 为类型和普通变量添加索引
     if (s.cat == Cat_Type || s.cat == Cat_Var || s.cat == Cat_Const)
         current_table->symbol_index.emplace(s.name, t);
-
 
     return t;
 }
@@ -242,6 +260,27 @@ size_t SymbolTable::get_or_add_array(const SymbolTable::Array &array) {
     }
     return array_map[array];
 }
+size_t SymbolTable::get_or_add_function(const size_t return_type, const std::vector<size_t>& param_type) {
+    for (size_t i = 0; i < function_list.size(); i++) {
+        bool equal = true;
+        if (function_list[i].ret_type == return_type && function_list[i].param_num == param_type.size()) {
+            for (size_t p = 0; equal && p < param_type.size(); p++) {
+                if (symbol_list[p].type != param_type[p])
+                    equal = false;
+            }
+        }
+        if (equal)
+            return i;
+    }
+    size_t t = function_list.size();
+    int param_offset = 0;
+    function_list.emplace_back(param_type.size(), return_type, symbol_list.size(), 0);
+    for (size_t i = param_type.size() - 1; i >= 0 ; i--) {
+        symbol_list.emplace_back("@func_" + to_string(t) + "_param_" + to_string(i), param_type[i], Cat_Param, param_offset);
+        param_offset -= type_list[param_type[i]].size;
+    }
+    return t;
+}
 
 void* TypeBuilder::add_storage(size_t key_in_token, void* t) {
     warring("storage class specify is not supported.");
@@ -292,9 +331,17 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
 
 size_t SymbolTable::TempSymbol::insert_type_into_table(size_t ti) {
     switch (tl[ti].t) {
+        case INT:
+        case FLOAT:
+        case SHORT:
+        case LONG:
+        case DOUBLE:
+            break;
         case ARRAY:
             tl[ti].data = insert_array_into_table(tl[ti].data);
             break;
+        case FUNCTION:
+            tl[ti].data = insert_function_into_table(tl[ti].data);
         default:
             throw runtime_error(debugpos + " not support type");
     }
@@ -302,16 +349,27 @@ size_t SymbolTable::TempSymbol::insert_type_into_table(size_t ti) {
 }
 
 size_t SymbolTable::TempSymbol::insert_array_into_table(size_t ai) {
-    if (al[ai].type != 0)
-        al[ai].type = insert_array_into_table(al[ai].type);
+    al[ai].type = insert_type_into_table(al[ai].type);
     return ST.get_or_add_array(al[ai]);
+}
+
+size_t SymbolTable::TempSymbol::insert_function_into_table(size_t fi) {
+    fl[fi].ret_type = insert_type_into_table(fl[fi].ret_type);
+    vector<size_t> param_type;
+    for (size_t i = fl[fi].param_index; i < fl[fi].param_index + fl[fi].param_num; i++) {
+        fpl[i]->s.type = fpl[i]->insert_type_into_table(fpl[i]->s.type);
+        param_type.push_back(fpl[i]->s.type);
+    }
+    return ST.get_or_add_function(fl[fi].ret_type, param_type);
 }
 
 size_t SymbolTable::TempSymbol::insert_symbol_into_table(int cat) {
     s.cat = cat;
-    if (s.type != 0)
+    if (oneof(tl[s.type], ARRAY, FUNCTION)) {
         s.type = insert_type_into_table(s.type);
-    else
+        if (tl[s.type] == FUNCTION)
+            ST.current_table->next_func=true;
+    } else
         s.type = ST.get_or_add_type(tl[s.type]);
     return ST.add_symbol(s);
 }
@@ -334,6 +392,15 @@ SymbolTable::TempSymbol * SymbolTable::TempSymbol::add_array() {
     return this;
 }
 
+SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_function(std::vector<SymbolTable::TempSymbol*>& v) {
+    last_vec(tl).t = FUNCTION;
+    last_vec(tl).data = fl.size();
+    fl.emplace_back(v.size(), tl.size(), 0, 0);
+    tl.emplace_back(0, 0, 0);
+    fpl.insert(fpl.begin(), v.begin(), v.end());
+    return this;
+}
+
 SymbolTable::TempSymbol *
 SymbolTable::TempSymbol::merge_pointer(std::vector<SymbolTable::Type> *pointer_ype_list) {
     auto t = s.type;
@@ -344,16 +411,22 @@ SymbolTable::TempSymbol::merge_pointer(std::vector<SymbolTable::Type> *pointer_y
                 if (t == 0)
                     al[tl[t].data].type = tl.size();
                 break;
+            case FUNCTION:
+                t = fl[tl[t].data].ret_type;
+                if (t == 0)
+                    fl[tl[t].data].ret_type = tl.size();
+                break;
             default:
                 t = tl[t].data;
                 if (t == 0)
                     tl[t].data = tl.size();
         }
     }
-    for (auto i = 0; i < pointer_ype_list->size(); i++) {
-        tl.push_back((*pointer_ype_list)[i]);
-        (*pointer_ype_list)[i].data = tl.size();
+    for (const auto &i : *pointer_ype_list) {
+        tl.push_back(i);
+        last_vec(tl).data = tl.size();
     }
+    tl.emplace_back(0, 0, 0);
     return this;
 }
 
@@ -368,15 +441,24 @@ SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_basic_type(SymbolTable::Ty
 size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(vector<SymbolTable::TempSymbol *> v,
                                                                      SymbolTable::Type *t, int cat) {
     size_t k = -1;
+    int tcat = cat;
     for (auto x: v) {
+        tcat = cat;
+        if (x->tl[x->s.type].t == FUNCTION)
+            tcat = Cat_Func_Declaration;
         x->add_basic_type(*t);
         if (k == -1)
-            k = x->insert_symbol_into_table(cat);
+            k = x->insert_symbol_into_table(tcat);
         else
-            x->insert_symbol_into_table(cat);
+            x->insert_symbol_into_table(tcat);
         delete x;
     }
     return k;
+}
+size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable::TempSymbol* v,
+                                                                            SymbolTable::Type* t, int cat) {
+    v->add_basic_type(*t);
+    return v->insert_symbol_into_table(cat);
 }
 
 
@@ -515,3 +597,5 @@ size_t SymbolTable::get_basic_symbol_type(size_t symbol) {
             throw runtime_error("<SymbolTable.cpp get_basic_symbol_type> not support type " + TYPE(symbol).t);
     }
 }
+
+
