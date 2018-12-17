@@ -76,6 +76,7 @@ bool LR1::process(TokenGetter& getter) {
     stack<Node*> tree_node_stack;
     stack<size_t> state_stack;
     stack<void*> attr_stack;
+    set<void*> to_delete;
 
     alpha_stack.push("#");
     tree_node_stack.push(new Node("#"));
@@ -98,6 +99,7 @@ bool LR1::process(TokenGetter& getter) {
                     if (generators.get_attr_builder() != nullptr) {
                         v = generators.get_attr_builder()(getter.get());
                         attr_stack.push(v);
+                        to_delete.insert(v);
                     }
                     getter.next();
                     break;
@@ -109,10 +111,8 @@ bool LR1::process(TokenGetter& getter) {
                         tree_node_stack.pop();
                         n->json();
                         delete_tree(n);
-                        while (!attr_stack.empty()) {
-                            delete attr_stack.top();
-                            attr_stack.pop();
-                        }
+                        for (auto x: to_delete)
+                            delete x;
                         return true;
                     }
                     // generators.get_attr(action.second)(nullptr);
@@ -135,10 +135,7 @@ bool LR1::process(TokenGetter& getter) {
                     if (attribute) {
                         void* new_attr = generators.get_attr(action.second)(attr_vec);
                         attr_stack.push(new_attr);
-                        for (void* n: attr_vec) {
-                            if (n != new_attr)
-                                delete n;
-                        }
+                        to_delete.insert(new_attr);
                     }
                     break;
                 }
@@ -166,10 +163,8 @@ bool LR1::process(TokenGetter& getter) {
             delete_tree(tree_node_stack.top());
             tree_node_stack.pop();
         }
-       while (!attr_stack.empty()) {
-           delete attr_stack.top();
-           attr_stack.pop();
-       }
+       for (auto x: to_delete)
+           delete x;
     }
 }
 

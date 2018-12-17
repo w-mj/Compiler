@@ -1,8 +1,8 @@
 int ext1;
 int ext2, ext3;
 int main() {
-    int a, b = 10, c;
-    int i;
+    int a, b, c;
+    float i;
 
     a = 100;
     b = a + a + c;

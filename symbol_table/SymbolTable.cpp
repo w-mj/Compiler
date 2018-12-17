@@ -3,6 +3,8 @@
 //
 
 #include <stack>
+#include <cstdio>
+#include <cstdlib>
 #include "SymbolTable.h"
 #include "../Utility.h"
 #include "../error/Error.h"
@@ -83,13 +85,21 @@ SymbolTable::~SymbolTable() {
 
 size_t SymbolTable::add_symbol(const Symbol& s) {
     if (get_symbol_by_name(s.name) != nullptr) {
-        error("Symbol " + s.name + " is already installed.");
+        error("Symbol " + s.name + " is already exists.");
         return 0;
     }
 
     size_t t = symbol_list.size();
     symbol_list.push_back(s);
-    current_table->symbol_index.emplace(s.name, t);
+    if (s.cat == Cat_Var) {
+        last_vec(symbol_list).offset = current_table->offset;
+        current_table->offset += type_list[s.type].size;
+    }
+    // 为类型和普通变量添加索引
+    if (s.cat == Cat_Type || s.cat == Cat_Var || s.cat == Cat_Const)
+        current_table->symbol_index.emplace(s.name, t);
+
+
     return t;
 }
 
@@ -168,7 +178,7 @@ size_t SymbolTable::get_type_size(size_t symbol) {
     return TYPE(symbol).size;
 }
 
-size_t SymbolTable::add_veriables(void *tv, void *vv, int cat) {
+size_t SymbolTable::set_variables_type(void *tv, void *vv, int cat) {
     auto last_type = (Type*)tv;
     auto last_t_index = get_or_add_type(*last_type);
 
@@ -178,8 +188,6 @@ size_t SymbolTable::add_veriables(void *tv, void *vv, int cat) {
         auto t = ST[i].type;
         if (t == 0) {
             ST[i].type = last_t_index;
-            ST[i].offset = current_table->offset;
-            current_table->offset += TYPE(i).size;
         }
         else {
             // 找到最底层类型
@@ -266,6 +274,10 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
             ty->t = LONG;
             ty->size = LONG_SIZE;
         }
+         else if (k == "float") {
+            ty->t = FLOAT;
+            ty->size = FLOAT_SIZE;
+        }
         // TODO: OTHERS
     } else {
         // 自定义类型
@@ -282,6 +294,9 @@ size_t SymbolTable::TempSymbol::insert_type_into_table(size_t ti) {
     switch (tl[ti].t) {
         case ARRAY:
             tl[ti].data = insert_array_into_table(tl[ti].data);
+            break;
+        default:
+            throw runtime_error(debugpos + " not support type");
     }
     return ST.get_or_add_type(tl[ti]);
 }
@@ -296,10 +311,13 @@ size_t SymbolTable::TempSymbol::insert_symbol_into_table(int cat) {
     s.cat = cat;
     if (s.type != 0)
         s.type = insert_type_into_table(s.type);
+    else
+        s.type = ST.get_or_add_type(tl[s.type]);
     return ST.add_symbol(s);
 }
 
 SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_array(size_t len) {
+    // len 是一个constant expression计算的结果
     uint32_t lenn = ST.constant_num_list[ST.type_list[ST.symbol_list[len].type].data].value.ui;
     last_vec(tl).t = ARRAY;
     last_vec(tl).data = al.size();
@@ -337,6 +355,28 @@ SymbolTable::TempSymbol::merge_pointer(std::vector<SymbolTable::Type> *pointer_y
         (*pointer_ype_list)[i].data = tl.size();
     }
     return this;
+}
+
+SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_basic_type(SymbolTable::Type &type) {
+    if (tl.empty())
+        tl.push_back(type);
+    else
+        last_vec(tl) = type;
+    return this;
+}
+
+size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(vector<SymbolTable::TempSymbol *> v,
+                                                                     SymbolTable::Type *t, int cat) {
+    size_t k = -1;
+    for (auto x: v) {
+        x->add_basic_type(*t);
+        if (k == -1)
+            k = x->insert_symbol_into_table(cat);
+        else
+            x->insert_symbol_into_table(cat);
+        delete x;
+    }
+    return k;
 }
 
 
@@ -434,6 +474,27 @@ std::string SymbolTable::get_type_name(size_t symbol) {
     }
 }
 
+size_t SymbolTable::recursive_type(size_t type) {
+    switch (type_list[type].t) {
+        case INT:
+            return get_symbol_by_name("int")->type;
+        case FLOAT:
+            return get_symbol_by_name("float")->type;
+        case SHORT:
+            return get_symbol_by_name("short")->type;
+        case LONG:
+            return get_symbol_by_name("long")->type;
+        case DOUBLE:
+            return get_symbol_by_name("double")->type;
+        case ARRAY:
+            return recursive_type(array_list[type_list[type].data].type);
+        case FUNCTION:
+            return recursive_type(function_list[type_list[type].data].ret_type);
+        default:
+            throw runtime_error("<SymbolTable.cpp recursive_type> not support type " + type);
+    }
+}
+
 size_t SymbolTable::get_basic_symbol_type(size_t symbol) {
     switch (TYPE(symbol).t) {
         case INT:
@@ -447,9 +508,9 @@ size_t SymbolTable::get_basic_symbol_type(size_t symbol) {
         case DOUBLE:
             return get_symbol_by_name("double")->type;
         case ARRAY:
-            return get_basic_symbol_type(ARR(symbol).type);
-        case STRUCT:
-            return get_basic_symbol_type(FUNC(symbol).ret_type);
+            return recursive_type(ARR(symbol).type);
+        case FUNCTION:
+            return recursive_type(FUNC(symbol).ret_type);
         default:
             throw runtime_error("<SymbolTable.cpp get_basic_symbol_type> not support type " + TYPE(symbol).t);
     }

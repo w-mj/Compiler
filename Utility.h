@@ -18,6 +18,9 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <cstdlib>
+
+#define debugpos std::string(__FILE__) + std::to_string( __LINE__) + std::string(__FUNCTION__)
 
 int hex2dec(char c);
 bool isalnumunder(int c);
@@ -52,7 +55,6 @@ std::ostream& operator<<(std::ostream& out, std::set<T>& s) {
     out << "}";
     return out;
 }
-
 
 
 

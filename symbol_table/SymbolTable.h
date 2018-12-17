@@ -152,6 +152,9 @@ private:
 
     std::vector<Number> constant_num_list;
     std::vector<Label> label_list;
+
+    size_t recursive_type(size_t type);
+
 public:
 
     size_t get_or_add_type(const Type& type);
@@ -186,7 +189,7 @@ public:
     std::string get_temp_var_name(const std::string& suffix="");
 
     // param: TypeBuilder*, vector<size_t>* v;
-    size_t add_veriables(void* tv, void* vv, int cat=Cat_Var);
+    size_t set_variables_type(void* tv, void* vv, int cat=Cat_Var);
 
     size_t add_struct_or_union(size_t struct_or_union, size_t declaration_list);
     size_t add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list);
@@ -200,11 +203,14 @@ public:
 
         size_t insert_symbol_into_table(int cat);
 
-        explicit TempSymbol(const std::string& s): s("", 0, Cat_Var, 0) {
-            this->s.name = s;
+        explicit TempSymbol(const std::string& s): s(s, 0, Cat_Var, 0) {
+            std::cout << "temp symbol " << s << std::endl;
         }
+
         TempSymbol* add_array(size_t len);
         TempSymbol* add_array();
+        TempSymbol* add_basic_type(SymbolTable::Type& type);
+        static size_t add_basic_type_and_insert_into_table(std::vector<TempSymbol*> v, SymbolTable::Type* t, int cat);
 
         TempSymbol* merge_pointer(std::vector<SymbolTable::Type>* pointer_ype_list);
     private:
