@@ -70,8 +70,7 @@ void SymbolTable::in() {
     c->up = current_table;
     current_table = c;
 
-    // 为函数参数建立索引和偏移
-    int param_offset = 0;
+
     if (c->up->next_func) {
         c->offset = 0;
         c->up->next_func = false;
@@ -467,6 +466,7 @@ size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable
             break;
         case Cat_Func_Defination:
             q = quat(OP::FUNC, s, 0, 0);
+            ST.current_table->next_func = true;
             break;
         default:
             throw runtime_error(debugpos + "don't make quat.");

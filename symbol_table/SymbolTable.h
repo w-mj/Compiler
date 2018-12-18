@@ -216,7 +216,7 @@ public:
         size_t insert_symbol_into_table(int cat);
 
         explicit TempSymbol(const std::string& s): s(s, 0, Cat_Var, 0) {
-            std::cout << "temp symbol " << s << std::endl;
+            // std::cout << "temp symbol " << s << std::endl;
             tl.emplace_back(0, 0, 0);
         }
 
