@@ -531,7 +531,7 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("parameter_list")
     | "parameter_declaration"| ATTR{return new FunctionParamTemp {(TEMP_S*)v[0]};}
-    | "parameter_list , parameter_declaration"| ATTR{((FunctionParamTemp*)v[0])->push_back((TEMP_S*)v[0]); return v[0]; }
+    | "parameter_list , parameter_declaration"| ATTR{((FunctionParamTemp*)v[0])->push_back((TEMP_S*)v[2]); return v[0]; }
             ;
 
     gen.add("parameter_declaration")

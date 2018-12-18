@@ -165,6 +165,7 @@ bool LR1::process(TokenGetter& getter) {
         }
        for (auto x: to_delete)
            delete x;
+        throw;
     }
 }
 

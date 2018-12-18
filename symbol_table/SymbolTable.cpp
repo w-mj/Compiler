@@ -110,12 +110,13 @@ size_t SymbolTable::add_symbol(const Symbol& s) {
 
     size_t t = symbol_list.size();
     symbol_list.push_back(s);
+    // 分配栈偏移
     if (oneof(s.cat, Cat_Var, Cat_Func_Declaration)) {
         last_vec(symbol_list).offset = current_table->offset;
         current_table->offset += type_list[s.type].size;
     }
     // 为类型和普通变量添加索引
-    if (s.cat == Cat_Type || s.cat == Cat_Var || s.cat == Cat_Const)
+    if (oneof(s.cat, Cat_Type, Cat_Var, Cat_Const, Cat_Func_Declaration))
         current_table->symbol_index.emplace(s.name, t);
 
     return t;
@@ -275,7 +276,7 @@ size_t SymbolTable::get_or_add_function(const size_t return_type, const std::vec
     size_t t = function_list.size();
     int param_offset = 0;
     function_list.emplace_back(param_type.size(), return_type, symbol_list.size(), 0);
-    for (size_t i = param_type.size() - 1; i >= 0 ; i--) {
+    for (int i = (int)param_type.size() - 1; i >= 0 ; i--) {
         symbol_list.emplace_back("@func_" + to_string(t) + "_param_" + to_string(i), param_type[i], Cat_Param, param_offset);
         param_offset -= type_list[param_type[i]].size;
     }
@@ -284,6 +285,7 @@ size_t SymbolTable::get_or_add_function(const size_t return_type, const std::vec
 
 void* TypeBuilder::add_storage(size_t key_in_token, void* t) {
     warring("storage class specify is not supported.");
+    return t;
 }
 
 void* TypeBuilder::add_qulifier(size_t key_in_token, void* t) {
@@ -342,6 +344,7 @@ size_t SymbolTable::TempSymbol::insert_type_into_table(size_t ti) {
             break;
         case FUNCTION:
             tl[ti].data = insert_function_into_table(tl[ti].data);
+            break;
         default:
             throw runtime_error(debugpos + " not support type");
     }
@@ -365,7 +368,7 @@ size_t SymbolTable::TempSymbol::insert_function_into_table(size_t fi) {
 
 size_t SymbolTable::TempSymbol::insert_symbol_into_table(int cat) {
     s.cat = cat;
-    if (oneof(tl[s.type], ARRAY, FUNCTION)) {
+    if (oneof(tl[s.type].t, ARRAY, FUNCTION)) {
         s.type = insert_type_into_table(s.type);
         if (tl[s.type] == FUNCTION)
             ST.current_table->next_func=true;
@@ -464,7 +467,7 @@ size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable
 
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s) {
     os << s.name << ":" << ST.type_list[s.type];
-    if (s.cat == Cat_Var)
+    if (oneof(s.cat, Cat_Var, Cat_Param))
         os << "&" << s.offset;
     if (s.cat == Cat_Type)
         os << "*" << ST.type_list[s.type].size;
@@ -501,12 +504,21 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t) {
         case CONST:
             os << ST.constant_num_list[t.data];
             break;
+        case FUNCTION:
+            os << ST.function_list[t.data];
+            break;
         default:
             os << "unknown type";
     }
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, SymbolTable::Function& f) {
+    os << "FUNCTION:" << ST.type_list[f.ret_type] << "->";
+    for (size_t i = 0; i < f.param_num; i++)
+        os << ST.type_list[ST[i + f.param_index].type];
+    return os;
+}
 
 std::ostream& operator<<(std::ostream& os, SymbolTable& st) {
     for (size_t i = 0; i < st.symbol_list.size(); i++) {

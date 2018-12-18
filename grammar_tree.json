@@ -7,6 +7,9 @@
 {"name":"translation_unit"
 ,
 "children": [
+{"name":"translation_unit"
+,
+"children": [
 {"name":"external_declaration"
 ,
 "children": [
@@ -116,6 +119,148 @@
 ,
 "children": [
 {"name":"ext3"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":";"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"external_declaration"
+,
+"children": [
+{"name":"declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"int"
+}
+]
+}
+]
+}
+,
+{"name":"init_declarator_list"
+,
+"children": [
+{"name":"init_declarator"
+,
+"children": [
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"func"
+}
+]
+}
+,
+{"name":"("
+}
+,
+{"name":"parameter_type_list"
+,
+"children": [
+{"name":"parameter_list"
+,
+"children": [
+{"name":"parameter_list"
+,
+"children": [
+{"name":"parameter_declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"int"
+}
+]
+}
+]
+}
+,
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"x"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":","
+}
+,
+{"name":"parameter_declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"int"
+}
+]
+}
+]
+}
+,
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"y"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":")"
 }
 ]
 }

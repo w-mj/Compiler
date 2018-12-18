@@ -239,6 +239,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, Symbol& s);
     friend std::ostream& operator<<(std::ostream& os, Array& a);
     friend std::ostream& operator<<(std::ostream& os, SymbolTable& st);
+    friend std::ostream& operator<<(std::ostream& os, SymbolTable::Function& f);
 };
 
 struct TypeBuilder {
@@ -253,6 +254,7 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s);
 std::ostream& operator<<(std::ostream& os, SymbolTable::Array& a);
 std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t);
 std::ostream& operator<<(std::ostream& os, SymbolTable& st);
+std::ostream& operator<<(std::ostream& os, SymbolTable::Function& f);
 
 
 
