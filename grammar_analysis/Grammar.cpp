@@ -588,7 +588,7 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("labeled_statement")
-    | "IDENTIFIER : statement"
+    | "IDENTIFIER : statement"| ATTR{quat(OP::LABEL, ST.get_or_add_label(*((string*)v[0])), 0, 0);}
     | "case constant_expression : statement"
     | "default : statement"
             ;
@@ -639,7 +639,7 @@ Generators Grammar::YACC_C_Grammar() {
     ;
 
     gen.add("jump_statement")
-    | "goto IDENTIFIER ;"
+    | "goto IDENTIFIER ;"| ATTR{quat(OP::GOTO, 0, 0, ST.get_or_add_label(*((string*)v[1])));}
     | "continue ;"
     | "break ;"
     | "return ;"| ATTR{quat(OP::RET, 0, 0, 0);}

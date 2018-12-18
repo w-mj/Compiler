@@ -170,6 +170,7 @@ public:
 
     size_t add_symbol(const Symbol& s);
     size_t add_constant_Symbol(const Number& num);
+    size_t get_or_add_label(const std::string& name);
 
     Symbol& operator[](size_t i);
 

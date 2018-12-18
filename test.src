@@ -4,6 +4,7 @@ int funchhh(int x, int y);
 
 int main() {
     int a;
+    X:
     goto L;
     a += 1;
     L:
@@ -12,4 +13,5 @@ int main() {
         a++;
     for (; a; )
         a--;
+    goto X;
 }

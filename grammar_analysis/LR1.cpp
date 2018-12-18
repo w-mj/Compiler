@@ -111,8 +111,8 @@ bool LR1::process(TokenGetter& getter) {
                         tree_node_stack.pop();
                         n->json();
                         delete_tree(n);
-                        for (auto x: to_delete)
-                            delete x;
+//                        for (auto x: to_delete)
+//                            delete x;
                         return true;
                     }
                     // generators.get_attr(action.second)(nullptr);

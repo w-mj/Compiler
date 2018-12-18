@@ -117,7 +117,7 @@ size_t SymbolTable::add_symbol(const Symbol& s) {
         current_table->offset += type_list[s.type].size;
     }
     // 为类型和普通变量添加索引
-    if (oneof(s.cat, Cat_Type, Cat_Var, Cat_Const, Cat_Func_Declaration))
+    if (oneof(s.cat, Cat_Type, Cat_Var, Cat_Const, Cat_Func_Declaration, Cat_Label))
         current_table->symbol_index.emplace(s.name, t);
 
     return t;
@@ -495,11 +495,16 @@ int SymbolTable::TempSymbol::first_type_t() {
 
 
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s) {
-    os << s.name << ":" << ST.type_list[s.type];
-    if (oneof(s.cat, Cat_Var, Cat_Param))
+    os << s.name;
+    if (oneof(s.cat, Cat_Var, Cat_Param)) {
+        os << ":" << ST.type_list[s.type];
         os << "&" << s.offset;
-    if (s.cat == Cat_Type)
+    }
+    if (s.cat == Cat_Type) {
+        os << ":" << ST.type_list[s.type];
         os << "*" << ST.type_list[s.type].size;
+    }
+
     return os;
 }
 
@@ -641,6 +646,16 @@ size_t SymbolTable::get_basic_symbol_type(size_t symbol) {
 
 void SymbolTable::set_symbol_offset(size_t symbol, int off) {
     symbol_list[symbol].offset = off;
+}
+
+size_t SymbolTable::get_or_add_label(const std::string &name) {
+    int i = get_symbol_index_by_name_without_error(name);
+    if (i == -1)
+        return add_symbol({name, 0, Cat_Label});
+    else if (symbol_list[i].cat == Cat_Label)
+        return static_cast<size_t>(i);
+    error("label " + name + " is already defined.");
+    return 0;
 }
 
 
