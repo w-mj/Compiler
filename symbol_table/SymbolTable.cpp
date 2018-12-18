@@ -270,9 +270,10 @@ size_t SymbolTable::get_or_add_function(const size_t return_type, const std::vec
                 if (symbol_list[p].type != param_type[p])
                     equal = false;
             }
+            if (equal)
+                return i;
         }
-        if (equal)
-            return i;
+
     }
     size_t t = function_list.size();
     int param_offset = 0;
@@ -371,8 +372,6 @@ size_t SymbolTable::TempSymbol::insert_symbol_into_table(int cat) {
     s.cat = cat;
     if (oneof(tl[s.type].t, ARRAY, FUNCTION)) {
         s.type = insert_type_into_table(s.type);
-        if (tl[s.type] == FUNCTION)
-            ST.current_table->next_func=true;
     } else
         s.type = ST.get_or_add_type(tl[s.type]);
     return ST.add_symbol(s);
@@ -457,7 +456,7 @@ size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(vector<Symb
 size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable::TempSymbol* v,
                                                                             SymbolTable::Type* t, int cat) {
     size_t s, q;
-    if (v->tl[v->s.type].t == FUNCTION)
+    if (cat != Cat_Func_Defination && v->tl[v->s.type].t == FUNCTION)
         cat = Cat_Func_Declaration;
     v->add_basic_type(*t);
     s = v->insert_symbol_into_table(cat);

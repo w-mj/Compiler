@@ -658,7 +658,7 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("function_definition")
     | "declaration_specifiers declarator declaration_list compound_statement"
-    | "function_definition_head compound_statement" | ATTR{quat(OP::EFUNC, 0, 0, 0);}
+    | "function_definition_head compound_statement" | ATTR{quat(OP::EFUNC, 0, 0, 0); return nullptr; }
     | "declarator declaration_list compound_statement"
     | "declarator compound_statement"
             ;

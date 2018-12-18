@@ -2,7 +2,7 @@ int ext1;
 int ext2, ext3;
 int funchhh(int x, int y);
 
-int main() {
+int main(int b) {
     int a;
     X:
     goto L;
