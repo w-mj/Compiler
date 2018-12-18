@@ -44,6 +44,10 @@ SymbolTable::SymbolTable()
     add_symbol({"long", top_table->type_index[{LONG, LONG_SIZE, 0}], Cat_Type, 0});
     add_symbol({"float", top_table->type_index[{FLOAT, FLOAT_SIZE, 0}], Cat_Type, 0});
     add_symbol({"double", top_table->type_index[{DOUBLE, DOUBLE_SIZE, 0}], Cat_Type, 0});
+    Number True{};
+    True.type = Number::Int;
+    True.value.si = 1;
+    add_constant_Symbol(True);
 }
 
 size_t SymbolTable::get_or_add_type(const Type& type) {

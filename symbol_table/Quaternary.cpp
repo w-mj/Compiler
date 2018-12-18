@@ -50,6 +50,7 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::DEF_VAR:
         case OP::FUNC:
         case OP::EFUNC:
+        case OP::RET:
             break;
         default:
             throw runtime_error(debugpos+ " not support " + to_string(static_cast<int>(op)) + " yet");

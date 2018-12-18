@@ -3,21 +3,13 @@ int ext2, ext3;
 int funchhh(int x, int y);
 
 int main() {
-    int a, b=10, c;
-    float i;
-
-    a = 100;
-    b = a + a + c;
-
-    c = a + b;
-    if (c == 0)
-        a = 100;
-    else
-        a = 10000;
-
-    while (a > 10)
+    int a;
+    goto L;
+    a += 1;
+    L:
+    a = 10;
+    while (a < 0)
+        a++;
+    for (; 1; )
         a--;
-
-    for (i = 0; i < 100; i++)
-        i--;
 }

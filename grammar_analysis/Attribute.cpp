@@ -7,6 +7,7 @@
 #include "../word_analysis/WordAnalysis.h"
 #include "../symbol_table/SymbolTable.h"
 #include "../symbol_table/Quaternary.h"
+#include "../error/Error.h"
 
 using C_GramData = Token;
 using namespace std;
@@ -27,7 +28,7 @@ void* default_builder(const Token& tk) {
                 brackets_stack.push("while");
                 return attr_builder_while();
             case kfor:
-                brackets_stack.push("for");
+                // brackets_stack.push("for");
                 return nullptr;
         }
     }
@@ -51,31 +52,33 @@ void* default_builder(const Token& tk) {
                     } else if (brackets_stack.top() == "if") {
                         brackets_stack.pop();
                         return attr_builder_if();
-                    } else if (brackets_stack.top() == "for2") {
-                        brackets_stack.pop();
-                        return attr_builder_for_inc();
                     }
+//                    else if (brackets_stack.top() == "for2") {
+//                        brackets_stack.pop();
+//                        return attr_builder_for_inc();
+//                    }
                 }
                 break;
             case psimi:
-                if (!brackets_stack.empty()) {
-                    if (brackets_stack.top() == "(") {
-                        brackets_stack.pop();
-                        if (!brackets_stack.empty()) {
-                            if (brackets_stack.top() == "for") {
-                                brackets_stack.pop();
-                                brackets_stack.push("for1");
-                                brackets_stack.push("(");
-                                return attr_builder_for_init();
-                            } else if (brackets_stack.top() == "for1") {
-                                brackets_stack.pop();
-                                brackets_stack.push("for2");
-                                brackets_stack.push("(");
-                                return attr_builder_for_cond();
-                            }
-                        }
-                    }
-                }
+                break;
+//                if (!brackets_stack.empty()) {
+//                    if (brackets_stack.top() == "(") {
+//                        brackets_stack.pop();
+//                        if (!brackets_stack.empty()) {
+//                            if (brackets_stack.top() == "for") {
+//                                brackets_stack.pop();
+//                                brackets_stack.push("for1");
+//                                brackets_stack.push("(");
+//                                return attr_builder_for_init();
+//                            } else if (brackets_stack.top() == "for1") {
+//                                brackets_stack.pop();
+//                                brackets_stack.push("for2");
+//                                brackets_stack.push("(");
+//                                return attr_builder_for_cond();
+//                            }
+//                        }
+//                    }
+//                }
         }
     }
     return new C_GramData( tk );
@@ -170,7 +173,10 @@ void* attr_endfor(std::vector<void*>& v) {
     size_t do_pos = *((size_t*)v[3]);
     size_t jmp_pos = v.size() == 6? *((size_t*)v[4]): *((size_t*)v[5]);
     quat(OP::EFOR, 0, 0, do_pos + 2);
-    QL[do_pos].num1 = QL[do_pos - 1].tar;
+    if (do_pos == for_pos + 1)
+        QL[do_pos].num1 = ST.get_symbol_index_by_name("@const_1");
+    else
+        QL[do_pos].num1 = QL[do_pos - 1].tar;
     QL[do_pos].tar = QL.size();
     QL[jmp_pos].tar = for_pos;
     QL[do_pos + 1].tar = jmp_pos + 1;

@@ -235,7 +235,7 @@ Generators Grammar::YACC_C_Grammar() {
             "type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement "
             "labeled_statement compound_statement declaration_list statement_list expression_statement "
             "selection_statement iteration_statement jump_statement translation_unit external_declaration "
-            "function_definition function_definition_head");
+            "function_definition function_definition_head for_init for_cond for_inc");
 
     gen.set_start("translation_unit");
 
@@ -594,10 +594,10 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("compound_statement")
-    | "{ }" |ATTR{ quat(OP::NOP, 0, 0, 0); return new size_t(QL.size() - 1); }  // 生成空四元式占位
-    | "{ statement_list }"| ATTR{ return v[1]; }
-    | "{ declaration_list }" | ATTR{return v[1]; }
-    | "{ declaration_list statement_list }" | ATTR{return v[1]; }
+    | "{ }" // |ATTR{ quat(OP::NOP, 0, 0, 0); return new size_t(QL.size() - 1); }  // 生成空四元式占位
+    | "{ statement_list }"// | ATTR{ return v[1]; }
+    | "{ declaration_list }" // | ATTR{return v[1]; }
+    | "{ declaration_list statement_list }"// | ATTR{return v[1]; }
             ;
 
     gen.add("declaration_list")
@@ -612,7 +612,7 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("expression_statement")
     | ";"
-    | "expression ;" | ATTR{ return v[1]; }
+    | "expression ;"// | ATTR{ return v[1]; }
             ;
 
     gen.add("selection_statement")
@@ -624,9 +624,18 @@ Generators Grammar::YACC_C_Grammar() {
     gen.add("iteration_statement")
     | "while ( expression ) statement" | attr_endwhile
     | "do statement while ( expression ) ;"
-    | "for ( expression_statement expression_statement ) statement"| attr_endfor
-    | "for ( expression_statement expression_statement expression ) statement"| attr_endfor
+    | "for ( for_init for_cond for_inc statement"| attr_endfor
+    | "for ( for_init for_cond expression for_inc statement"| attr_endfor
             ;
+    gen.add("for_init")
+    | "expression_statement" | ATTR{ return attr_builder_for_init(); }
+    ;
+    gen.add("for_cond")
+    | "expression_statement" | ATTR{return attr_builder_for_cond(); }
+    ;
+    gen.add("for_inc")
+    | ")"| ATTR{return attr_builder_for_inc(); }
+    ;
 
     gen.add("jump_statement")
     | "goto IDENTIFIER ;"
