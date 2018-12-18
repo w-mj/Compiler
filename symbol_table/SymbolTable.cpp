@@ -5,6 +5,7 @@
 #include <stack>
 #include <cstdio>
 #include <cstdlib>
+#include <cassert>
 #include "SymbolTable.h"
 #include "../Utility.h"
 #include "../error/Error.h"
@@ -71,13 +72,9 @@ void SymbolTable::in() {
 
     // 为函数参数建立索引和偏移
     int param_offset = 0;
-    if (c->up->next_func && c->up->param_start_pos != 0) {
-        for (size_t i = symbol_list.size() - 1; i >= c->up->param_start_pos; i--) {
-            c->symbol_index.emplace(symbol_list[i].name, i);
-            symbol_list[i].offset = param_offset;
-            param_offset -= TYPE(i).size;
-        }
-        c->up->param_start_pos = 0;
+    if (c->up->next_func) {
+        c->offset = 0;
+        c->up->next_func = false;
     } else {
         c->offset = c->up->offset;
     }
@@ -408,6 +405,8 @@ SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_function(std::vector<Symbo
 SymbolTable::TempSymbol *
 SymbolTable::TempSymbol::merge_pointer(std::vector<SymbolTable::Type> *pointer_ype_list) {
     auto t = s.type;
+    if (tl[t].t == FUNCTION)
+        ST.current_table->next_func = true;
     while (t != 0) {
         switch (tl[t].t) {
             case ARRAY:
@@ -444,30 +443,40 @@ SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_basic_type(SymbolTable::Ty
 
 size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(vector<SymbolTable::TempSymbol *> v,
                                                                      SymbolTable::Type *t, int cat) {
-    size_t k = -1, last;
-    int tcat = cat;
-    for (auto x: v) {
-        tcat = cat;
-        if (x->tl[x->s.type].t == FUNCTION)
-            tcat = Cat_Func_Declaration;
-
-        x->add_basic_type(*t);
-
-        if (k == -1)
-            last = k = x->insert_symbol_into_table(tcat);
-        else
-            last = x->insert_symbol_into_table(tcat);
-
-        if (tcat == Cat_Func_Declaration)
-            quat(OP::DEF_FUN, last, 0, 0);
-        delete x;
+    auto k = static_cast<size_t>(-1);
+    int tcat;
+    for (auto x = v.rbegin(); x != v.rend(); x++) {
+        k = add_basic_type_and_insert_into_table(*x, t, cat);
     }
+    assert(k != -1);
     return k;
 }
 size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable::TempSymbol* v,
                                                                             SymbolTable::Type* t, int cat) {
+    size_t s, q;
+    if (v->tl[v->s.type].t == FUNCTION)
+        cat = Cat_Func_Declaration;
     v->add_basic_type(*t);
-    return v->insert_symbol_into_table(cat);
+    s = v->insert_symbol_into_table(cat);
+    if (cat == Cat_Func_Declaration)
+        q = quat(OP::DEF_FUN, s, 0, 0);
+    if (cat == Cat_Var)
+        q = quat(OP::DEF_VAR, s, 0, 0);
+    if (!v->initializer_list.empty()) {
+        if (v->s.cat == Cat_Var) {
+            quat(OP::ASSIGN, v->initializer_list[0], 0, s);
+        }
+    }
+    return q;
+}
+
+SymbolTable::TempSymbol *SymbolTable::TempSymbol::set_initializer_list(std::vector<size_t> &list) {
+    initializer_list = move(list);
+    return this;
+}
+
+int SymbolTable::TempSymbol::first_type_t() {
+    return tl[s.type].t;
 }
 
 

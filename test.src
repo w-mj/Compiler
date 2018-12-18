@@ -3,7 +3,7 @@ int ext2, ext3;
 int funchhh(int x, int y);
 
 int main(int x, int y) {
-    int a, b, c;
+    int a, b=10, c;
     float i;
 
     a = 100;

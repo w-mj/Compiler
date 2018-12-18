@@ -478,6 +478,97 @@
 }
 ]
 }
+,
+{"name":"="
+}
+,
+{"name":"initializer"
+,
+"children": [
+{"name":"assignment_expression"
+,
+"children": [
+{"name":"conditional_expression"
+,
+"children": [
+{"name":"logical_or_expression"
+,
+"children": [
+{"name":"logical_and_expression"
+,
+"children": [
+{"name":"inclusive_or_expression"
+,
+"children": [
+{"name":"exclusive_or_expression"
+,
+"children": [
+{"name":"and_expression"
+,
+"children": [
+{"name":"equality_expression"
+,
+"children": [
+{"name":"relational_expression"
+,
+"children": [
+{"name":"shift_expression"
+,
+"children": [
+{"name":"additive_expression"
+,
+"children": [
+{"name":"multiplicative_expression"
+,
+"children": [
+{"name":"cast_expression"
+,
+"children": [
+{"name":"unary_expression"
+,
+"children": [
+{"name":"postfix_expression"
+,
+"children": [
+{"name":"primary_expression"
+,
+"children": [
+{"name":"10"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
 ]
 }
 ]

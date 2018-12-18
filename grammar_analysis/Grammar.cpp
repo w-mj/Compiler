@@ -384,7 +384,7 @@ Generators Grammar::YACC_C_Grammar() {
     gen.add("declaration")
     | "declaration_specifiers ;"
     | "declaration_specifiers init_declarator_list ;" |
-    ATTR {return NEW_S(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(*((vector<SymbolTable::TempSymbol*>*)v[1]),
+    ATTR {return new size_t(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(*((vector<SymbolTable::TempSymbol*>*)v[1]),
                                                                                      ((SymbolTable::Type*)v[0]), Cat_Var)); }
             ;
 
@@ -407,8 +407,7 @@ Generators Grammar::YACC_C_Grammar() {
     // TODO: 检测初始化类型匹配
     gen.add("init_declarator")
     | "declarator"// | ATTR{return NEW_S(((SymbolTable::TempSymbol*)v[0])->insert_symbol_into_table(Cat_Var));}
-    | "declarator = initializer"| ATTR{return NEW_S(quat(OP::ASSIGN, ITEM_V(2), NONE,
-                                                         ((SymbolTable::TempSymbol*)v[0])->insert_symbol_into_table(Cat_Var)));}
+    | "declarator = initializer"| ATTR{return ((TEMP_S*)v[0])->set_initializer_list(*((vector<size_t>*)v[2]));}
             ;
 
     gen.add("storage_class_specifier")
@@ -447,13 +446,11 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("struct_declaration_list")
     | "struct_declaration"
-    | "struct_declaration_list struct_declaration" | ATTR{return v[0]; }  // 始终指向第一个成员
+    | "struct_declaration_list struct_declaration"
             ;
 
     gen.add("struct_declaration")
-    | "specifier_qualifier_list struct_declarator_list ;"// | ATTR{ return NEW_S(ST.set_variables_type(v[0], v[1], Cat_Stru_ele)); }
-      | ATTR {return NEW_S(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(*((vector<SymbolTable::TempSymbol*>*)v[1]),
-                                                                            ((SymbolTable::Type*)v[0]), Cat_Stru_ele)); }
+    | "specifier_qualifier_list struct_declarator_list ;"
             ;
 
     gen.add("specifier_qualifier_list")
@@ -571,7 +568,7 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("initializer")
-    | "assignment_expression"
+    | "assignment_expression"| ATTR{ return new vector<size_t>{ITEM_V(0)};}
     | "{ initializer_list }"
     | "{ initializer_list , }"
             ;
@@ -651,7 +648,8 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("function_definition")
     | "declaration_specifiers declarator declaration_list compound_statement"
-    | "declaration_specifiers declarator compound_statement"
+    | "declaration_specifiers declarator compound_statement"|
+    ATTR {return NEW_S(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table((SymbolTable::TempSymbol*)v[1], (SymbolTable::Type*)v[0], Cat_Func_Declaration)); }
     | "declarator declaration_list compound_statement"
     | "declarator compound_statement"
             ;

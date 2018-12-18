@@ -209,6 +209,8 @@ public:
         std::vector<SymbolTable::Function> fl;
         std::vector<SymbolTable::TempSymbol*> fpl;
 
+        std::vector<size_t> initializer_list;
+
         size_t insert_symbol_into_table(int cat);
 
         explicit TempSymbol(const std::string& s): s(s, 0, Cat_Var, 0) {
@@ -220,11 +222,13 @@ public:
         TempSymbol* add_array();
         TempSymbol* add_function(std::vector<SymbolTable::TempSymbol*>& v);
         TempSymbol* add_basic_type(SymbolTable::Type& type);
+        TempSymbol* set_initializer_list(std::vector<size_t>& list);
         static size_t add_basic_type_and_insert_into_table(std::vector<TempSymbol*> v, SymbolTable::Type* t, int cat);
         static size_t add_basic_type_and_insert_into_table(TempSymbol* v, SymbolTable::Type* t, int cat);
 
-
         TempSymbol* merge_pointer(std::vector<SymbolTable::Type>* pointer_ype_list);
+
+        int first_type_t();
     private:
         size_t insert_type_into_table(size_t ti);
         size_t insert_array_into_table(size_t ai);
