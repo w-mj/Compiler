@@ -612,7 +612,7 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("expression_statement")
     | ";"
-    | "expression ;"// | ATTR{ return v[1]; }
+    | "expression ;"
             ;
 
     gen.add("selection_statement")
@@ -631,7 +631,8 @@ Generators Grammar::YACC_C_Grammar() {
     | "expression_statement" | ATTR{ return attr_builder_for_init(); }
     ;
     gen.add("for_cond")
-    | "expression_statement" | ATTR{return attr_builder_for_cond(); }
+    | "expression ;" | ATTR{return attr_builder_for_cond(ITEM_V(0)); }
+    | ";"| ATTR{return attr_builder_for_cond(ST.get_symbol_index_by_name("@const_1")); }
     ;
     gen.add("for_inc")
     | ")"| ATTR{return attr_builder_for_inc(); }

@@ -10,6 +10,6 @@ int main() {
     a = 10;
     while (a < 0)
         a++;
-    for (; 1; )
+    for (; a; )
         a--;
 }

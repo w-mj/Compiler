@@ -155,9 +155,9 @@ void* attr_builder_for_init() {
     return new size_t(t);
 }
 
-void* attr_builder_for_cond() {
+void* attr_builder_for_cond(size_t cond) {
     size_t t = QL.size();
-    quat(OP::DO, 0, 0, 0);
+    quat(OP::DO, cond, 0, 0);
     quat(OP::JMP, 0, 0, 0);
     return new size_t(t);
 }
@@ -173,10 +173,10 @@ void* attr_endfor(std::vector<void*>& v) {
     size_t do_pos = *((size_t*)v[3]);
     size_t jmp_pos = v.size() == 6? *((size_t*)v[4]): *((size_t*)v[5]);
     quat(OP::EFOR, 0, 0, do_pos + 2);
-    if (do_pos == for_pos + 1)
-        QL[do_pos].num1 = ST.get_symbol_index_by_name("@const_1");
-    else
-        QL[do_pos].num1 = QL[do_pos - 1].tar;
+//    if (do_pos == for_pos + 1)
+//        QL[do_pos].num1 = ST.get_symbol_index_by_name("@const_1");
+//    else
+//        QL[do_pos].num1 = QL[do_pos - 1].tar;
     QL[do_pos].tar = QL.size();
     QL[jmp_pos].tar = for_pos;
     QL[do_pos + 1].tar = jmp_pos + 1;

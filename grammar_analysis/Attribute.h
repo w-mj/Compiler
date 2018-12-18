@@ -34,7 +34,7 @@ void* attr_endwhile(std::vector<void*>& v);
 void* attr_stmt_pos();
 
 void* attr_builder_for_init();
-void* attr_builder_for_cond();
+void* attr_builder_for_cond(size_t cond);
 void* attr_builder_for_inc();
 void* attr_endfor(std::vector<void*>& v);
 
