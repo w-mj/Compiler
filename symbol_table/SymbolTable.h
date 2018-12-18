@@ -34,6 +34,7 @@ typedef Token Item;
 #define Cat_Const 7
 #define Cat_Type 8
 #define Cat_Func_Declaration 9
+#define Cat_Func_Defination 10
 
 #define CONST 0x40
 #define UNSIGNED 0x20
@@ -185,6 +186,7 @@ public:
     std::string get_symbol_name(size_t symbol);
     bool is_temp_var(size_t symbol);
     void set_symbol_addr(size_t symbol, size_t addr);
+    void set_symbol_offset(size_t symbol, int off);
     size_t get_symbol_addr(size_t symbol);
     int get_symbol_offset(size_t symbol);
     int get_func_param_num(size_t symbol);

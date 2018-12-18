@@ -235,7 +235,7 @@ Generators Grammar::YACC_C_Grammar() {
             "type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement "
             "labeled_statement compound_statement declaration_list statement_list expression_statement "
             "selection_statement iteration_statement jump_statement translation_unit external_declaration "
-            "function_definition");
+            "function_definition function_definition_head");
 
     gen.set_start("translation_unit");
 
@@ -648,10 +648,15 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("function_definition")
     | "declaration_specifiers declarator declaration_list compound_statement"
-    | "declaration_specifiers declarator compound_statement"|
-    ATTR {return NEW_S(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table((SymbolTable::TempSymbol*)v[1], (SymbolTable::Type*)v[0], Cat_Func_Declaration)); }
+    | "function_definition_head compound_statement" | ATTR{quat(OP::EFUNC, 0, 0, 0);}
     | "declarator declaration_list compound_statement"
     | "declarator compound_statement"
+            ;
+
+    gen.add("function_definition_head")
+    | "declaration_specifiers declarator"|
+        ATTR {return NEW_S(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table((SymbolTable::TempSymbol*)v[1], (SymbolTable::Type*)v[0], Cat_Func_Defination)); }
+
             ;
     return gen;
 }

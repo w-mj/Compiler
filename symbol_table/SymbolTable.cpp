@@ -458,10 +458,20 @@ size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable
         cat = Cat_Func_Declaration;
     v->add_basic_type(*t);
     s = v->insert_symbol_into_table(cat);
-    if (cat == Cat_Func_Declaration)
-        q = quat(OP::DEF_FUN, s, 0, 0);
-    if (cat == Cat_Var)
-        q = quat(OP::DEF_VAR, s, 0, 0);
+    switch (cat) {
+        case Cat_Func_Declaration:
+            q = quat(OP::DEF_FUN, s, 0, 0);
+            break;
+        case Cat_Var:
+            q = quat(OP::DEF_VAR, s, 0, 0);
+            break;
+        case Cat_Func_Defination:
+            q = quat(OP::FUNC, s, 0, 0);
+            break;
+        default:
+            throw runtime_error(debugpos + "don't make quat.");
+
+    }
     if (!v->initializer_list.empty()) {
         if (v->s.cat == Cat_Var) {
             quat(OP::ASSIGN, v->initializer_list[0], 0, s);
@@ -623,6 +633,10 @@ size_t SymbolTable::get_basic_symbol_type(size_t symbol) {
         default:
             throw runtime_error("<SymbolTable.cpp get_basic_symbol_type> not support type " + TYPE(symbol).t);
     }
+}
+
+void SymbolTable::set_symbol_offset(size_t symbol, int off) {
+    symbol_list[symbol].offset = off;
 }
 
 

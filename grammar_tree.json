@@ -286,6 +286,9 @@
 {"name":"function_definition"
 ,
 "children": [
+{"name":"function_definition_head"
+,
+"children": [
 {"name":"declaration_specifiers"
 ,
 "children": [
@@ -316,87 +319,9 @@
 {"name":"("
 }
 ,
-{"name":"parameter_type_list"
-,
-"children": [
-{"name":"parameter_list"
-,
-"children": [
-{"name":"parameter_list"
-,
-"children": [
-{"name":"parameter_declaration"
-,
-"children": [
-{"name":"declaration_specifiers"
-,
-"children": [
-{"name":"type_specifier"
-,
-"children": [
-{"name":"int"
-}
-]
-}
-]
-}
-,
-{"name":"declarator"
-,
-"children": [
-{"name":"direct_declarator"
-,
-"children": [
-{"name":"x"
-}
-]
-}
-]
-}
-]
-}
-]
-}
-,
-{"name":","
-}
-,
-{"name":"parameter_declaration"
-,
-"children": [
-{"name":"declaration_specifiers"
-,
-"children": [
-{"name":"type_specifier"
-,
-"children": [
-{"name":"int"
-}
-]
-}
-]
-}
-,
-{"name":"declarator"
-,
-"children": [
-{"name":"direct_declarator"
-,
-"children": [
-{"name":"y"
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-,
 {"name":")"
+}
+]
 }
 ]
 }
