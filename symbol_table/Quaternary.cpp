@@ -6,6 +6,7 @@
 #include "../word_analysis/WordAnalysis.h"
 #include <iostream>
 #include <algorithm>
+#include "../Utility.h"
 
 using namespace std;
 
@@ -45,6 +46,7 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::FOR:
         case OP::JMP:
         case OP::EFOR:
+        case OP::DEF_FUN:
             break;
         default:
             throw runtime_error( "<Quaternary.cpp> not support " + to_string(static_cast<int>(op)) + " yet");
@@ -171,6 +173,9 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::EFOR:os << "(end-for, _, _, " << t.tar << ")" << endl; break;
             case OP::JMP:os << "(jmp, _, _, " << t.tar << ")" << endl; break;
             case OP::EI:os << "(end-if, _, _, _)" << endl; break;
+            case OP::DEF_FUN:os << "(def_fun, " << ST[t.num1] << ", _, _)" << endl; break;
+            default:
+                os << debugpos << "unsupport quat" << endl;
         }
     }
     return os;

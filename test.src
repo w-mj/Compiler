@@ -1,6 +1,6 @@
 int ext1;
 int ext2, ext3;
-int func(int x, int y);
+int funchhh(int x, int y);
 
 int main(int x, int y) {
     int a, b, c;

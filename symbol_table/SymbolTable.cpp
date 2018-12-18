@@ -9,6 +9,7 @@
 #include "../Utility.h"
 #include "../error/Error.h"
 #include "../word_analysis/WordAnalysis.h"
+#include "Quaternary.h"
 
 #define SHORT_SIZE 1
 #define INT_SIZE 2
@@ -443,17 +444,22 @@ SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_basic_type(SymbolTable::Ty
 
 size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(vector<SymbolTable::TempSymbol *> v,
                                                                      SymbolTable::Type *t, int cat) {
-    size_t k = -1;
+    size_t k = -1, last;
     int tcat = cat;
     for (auto x: v) {
         tcat = cat;
         if (x->tl[x->s.type].t == FUNCTION)
             tcat = Cat_Func_Declaration;
+
         x->add_basic_type(*t);
+
         if (k == -1)
-            k = x->insert_symbol_into_table(tcat);
+            last = k = x->insert_symbol_into_table(tcat);
         else
-            x->insert_symbol_into_table(tcat);
+            last = x->insert_symbol_into_table(tcat);
+
+        if (tcat == Cat_Func_Declaration)
+            quat(OP::DEF_FUN, last, 0, 0);
         delete x;
     }
     return k;

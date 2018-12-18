@@ -20,7 +20,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#define debugpos std::string(__FILE__) + std::to_string( __LINE__) + std::string(__FUNCTION__)
+#define debugpos std::string(__FILE__) + " " + std::to_string( __LINE__) + " " + std::string(__FUNCTION__)
 
 int hex2dec(char c);
 bool isalnumunder(int c);
