@@ -1,7 +1,8 @@
 int ext1;
 int ext2, ext3;
 
-int printi(int a);
+void printi(int a);
+int ext4;
 
 int fibonacci(int x) {
     if (x == 1 || x == 2)

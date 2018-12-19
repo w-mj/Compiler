@@ -175,22 +175,22 @@ bool NumericDFA::available(char c) {
 
 std::ostream &operator<<(std::ostream &out, const Number &s) {
     switch (s.type) {
-//        case Number::NumberType::UShort: out << s.value.us << " unsigned short";break;
-//        case Number::NumberType::Short: out << s.value.ss << " short"; break;
-//        case Number::NumberType::UInt: out << s.value.ui << " unsigned int"; break;
-//        case Number::NumberType::Int: out << s.value.si << " int"; break;
-//        case Number::NumberType::ULong: out << s.value.ul << " unsigned long"; break;
-//        case Number::NumberType::Long: out << s.value.sl << " long"; break;
-//        case Number::NumberType::Float: out << s.value.ft << " float"; break;
-//        case Number::NumberType::Double: out << s.value.db << " double"; break;
-        case Number::NumberType::UShort: out;break;
-        case Number::NumberType::Short: out; break;
-        case Number::NumberType::UInt: out; break;
-        case Number::NumberType::Int: out; break;
-        case Number::NumberType::ULong: out; break;
-        case Number::NumberType::Long: out; break;
-        case Number::NumberType::Float: out; break;
-        case Number::NumberType::Double: out; break;
+        case Number::NumberType::UShort: out << s.value.us << " unsigned short";break;
+        case Number::NumberType::Short: out << s.value.ss << " short"; break;
+        case Number::NumberType::UInt: out << s.value.ui << " unsigned int"; break;
+        case Number::NumberType::Int: out << s.value.si << " int"; break;
+        case Number::NumberType::ULong: out << s.value.ul << " unsigned long"; break;
+        case Number::NumberType::Long: out << s.value.sl << " long"; break;
+        case Number::NumberType::Float: out << s.value.ft << " float"; break;
+        case Number::NumberType::Double: out << s.value.db << " double"; break;
+//        case Number::NumberType::UShort: out;break;
+//        case Number::NumberType::Short: out; break;
+//        case Number::NumberType::UInt: out; break;
+//        case Number::NumberType::Int: out; break;
+//        case Number::NumberType::ULong: out; break;
+//        case Number::NumberType::Long: out; break;
+//        case Number::NumberType::Float: out; break;
+//        case Number::NumberType::Double: out; break;
     }
     return out;
 }

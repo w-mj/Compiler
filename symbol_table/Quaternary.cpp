@@ -12,7 +12,12 @@
 using namespace std;
 
 size_t type_uplift(size_t t1, size_t t2) {
-    return (size_t) max(ST.get_type_by_index(t1).t, ST.get_type_by_index(t2).t);
+    int t1t = ST.get_type_by_index(t1).t;
+    int t2t = ST.get_type_by_index(t2).t;
+    if (t1t > t2t)
+        return t1;
+    else
+        return t2;
 }
 
 bool is_basic_type(size_t t) {

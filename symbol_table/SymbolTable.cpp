@@ -45,14 +45,21 @@ SymbolTable::SymbolTable()
     add_symbol({"float", top_table->type_index[{FLOAT, FLOAT_SIZE, 0}], Cat_Type, 0});
     add_symbol({"double", top_table->type_index[{DOUBLE, DOUBLE_SIZE, 0}], Cat_Type, 0});
     Number True{};
-    True.type = Number::Int;
+    True.type = Number::Short;
     True.value.si = 1;
     add_constant_Symbol(True);
 }
 
 size_t SymbolTable::get_or_add_type(const Type& type) {
-    if (in_set(current_table->type_index, type))
-        return current_table->type_index[type];
+//    long t = find(type_list.begin(), type_list.end(), type) - type_list.begin();
+//    if (t < type_list.size())
+//        return static_cast<size_t>(t);
+    Table* t = current_table;
+    while (t != nullptr) {
+        if (in_set(t->type_index, type))
+            return t->type_index[type];
+        t = t->up;
+    }
     size_t i = type_list.size();
     type_list.push_back(type);
     if (type.t == ARRAY)
@@ -174,7 +181,7 @@ size_t SymbolTable::add_constant_Symbol(const Number &num) {
             case Number::ULong:temp_t.t = LONG; break;
             case Number::Long:temp_t.t = LONG; break;
             case Number::Float:temp_t.t = FLOAT; break;
-            case Number::Double:temp_t.t = FLOAT; break;
+            case Number::Double:temp_t.t = DOUBLE; break;
         }
         return add_symbol({"@const_" + num.str(), get_or_add_type(temp_t), Cat_Const, 0});
     }
@@ -323,23 +330,33 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
     // TODO: 检测类型名重复
     if (i->first == 'k') {
         // 内置类型
-        const auto& k = WA.key[i->second];
-        if (k == "int") {
-            ty->t = INT;
-            ty->size = INT_SIZE;
+        switch (i->second) {
+            case kint:
+                ty->t = INT;
+                ty->size = INT_SIZE;
+                break;
+            case kshort:
+                ty->t = SHORT;
+                ty->size = SHORT_SIZE;
+                break;
+            case klong:
+                ty->t = LONG;
+                ty->size = LONG_SIZE;
+                break;
+            case kfloat:
+                ty->t = FLOAT;
+                ty->size = FLOAT_SIZE;
+                break;
+            case kdouble:
+                ty->t = DOUBLE;
+                ty->size = DOUBLE_SIZE;
+                break;
+            case kvoid:
+                ty->t = VOID;
+                break;
+            default:
+                rterr("unsupported type " +  WA.key[i->second]);
         }
-        else if (k == "short") {
-            ty->t = SHORT;
-            ty->size = SHORT_SIZE;
-        } else if (k == "long") {
-            ty->t = LONG;
-            ty->size = LONG_SIZE;
-        }
-         else if (k == "float") {
-            ty->t = FLOAT;
-            ty->size = FLOAT_SIZE;
-        }
-        // TODO: OTHERS
     } else {
         // 自定义类型
         auto& defined_type = ST.get_type_by_symbol(i->second);  // 取类型
@@ -358,6 +375,7 @@ size_t SymbolTable::TempSymbol::insert_type_into_table(size_t ti) {
         case SHORT:
         case LONG:
         case DOUBLE:
+        case VOID:
             break;
         case ARRAY:
             tl[ti].data = insert_array_into_table(tl[ti].data);
@@ -515,9 +533,12 @@ int SymbolTable::TempSymbol::first_type_t() {
 
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s) {
     os << s.name;
-    if (oneof(s.cat, Cat_Var, Cat_Param)) {
+    if (oneof(s.cat, Cat_Var, Cat_Param, Cat_Temp)) {
         os << ":" << ST.type_list[s.type];
         os << "&" << s.offset;
+    }
+    if (oneof(s.cat, Cat_Func_Declaration, Cat_Func_Defination, Cat_Const)) {
+        os << ":" << ST.type_list[s.type];
     }
     if (s.cat == Cat_Type) {
         os << ":" << ST.type_list[s.type];
@@ -559,6 +580,9 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t) {
             break;
         case FUNCTION:
             os << ST.function_list[t.data];
+            break;
+        case VOID:
+            os << "void";
             break;
         default:
             os << "unknown type";
