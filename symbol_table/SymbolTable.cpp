@@ -55,6 +55,8 @@ size_t SymbolTable::get_or_add_type(const Type& type) {
         return current_table->type_index[type];
     size_t i = type_list.size();
     type_list.push_back(type);
+    if (type.t == ARRAY)
+        last_vec(type_list).size = array_list[type.data].len * type_list[array_list[type.data].type].size;
     current_table->type_index.emplace(type_list[i], i);
     return i;
 }
