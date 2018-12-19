@@ -19,6 +19,11 @@ bool is_basic_type(size_t t) {
     return oneof(ST.get_type_by_index(t), SHORT, INT, LONG, FLOAT, DOUBLE);
 }
 
+bool is_integer_type(size_t t) {
+    return oneof(ST.get_type_by_index(t), SHORT, INT, LONG);
+
+}
+
 size_t quat(OP op, size_t num1, size_t num2, size_t t) {
     switch (op) {
         // 生成临时变量的二元运算符
@@ -37,8 +42,11 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::MULTPLY:
         case OP::DIVIDE:
             if (!is_basic_type(ST[num1].type) || !ST[num2].type)
-                error("invalid operands to binary " + op_to_str(op) + " (" +
+                error("ERROR: Invalid operands to binary " + op_to_str(op) + " (" +
                  ST.get_top_type_name(num1) + " and " + ST.get_top_type_name(num2) + ")");
+        case OP::INDEX:
+            if (!is_integer_type(ST[num2].type))
+                error("Array index must be integer. (" + ST.get_top_type_name(num2) + ")");
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), type_uplift(ST[num1].type, ST[num2].type), Cat_Temp, 0});
             break;
         case OP::CALL:
@@ -195,6 +203,7 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::DEF_VAR:os << "(def_var, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::GOTO: os << "(goto, _, _, " << ST[t.tar] << ")" << endl; break;
             case OP::LABEL: os << "(label, " << ST[t.num1] << ", _, _)" << endl; break;
+            case OP::INDEX: os << "([], " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl; break;
 
             default:
                 os << debugpos << "unsupport quat" << endl;

@@ -160,8 +160,20 @@ size_t SymbolTable::add_constant_Symbol(const Number &num) {
     if (f >= constant_num_list.size())
         constant_num_list.push_back(num);
     int t = get_symbol_index_by_name_without_error("@const_" + num.str());
-    if (t == -1)
-        return add_symbol({"@const_" + num.str(), get_or_add_type({CONST, 0, f}), Cat_Const, 0});
+    if (t == -1) {
+        Type temp_t{0, 0, 0};
+        switch (num.type) {
+            case Number::Int: temp_t.t = INT; break;
+            case Number::Short: temp_t.t = SHORT; break;
+            case Number::UShort: temp_t.t = SHORT; break;
+            case Number::UInt:temp_t.t = INT; break;;
+            case Number::ULong:temp_t.t = LONG; break;;
+            case Number::Long:temp_t.t = LONG; break;;
+            case Number::Float:temp_t.t = FLOAT; break;;
+            case Number::Double:temp_t.t = FLOAT; break;;
+        }
+        return add_symbol({"@const_" + num.str(), get_or_add_type(temp_t), Cat_Const, 0});
+    }
     return static_cast<size_t>(t);
 }
 

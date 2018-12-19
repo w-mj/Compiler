@@ -5,10 +5,12 @@ int funchhh(int x, int y);
 int main(int b) {
     int a;
     int b[10];
-    int c;
+        int c;
+
+    b[5] = 7;
     X:
     goto L;
-    a = b + c;
+    a = c + c;
     L:
     a = 10;
     while (a < 0) {

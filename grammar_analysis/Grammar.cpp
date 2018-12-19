@@ -255,7 +255,7 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("postfix_expression")
     | "primary_expression"
-    | "postfix_expression [ expression ]"
+    | "postfix_expression [ expression ]"| ATTR{return NEW_S(quat(OP::INDEX, ITEM_V(0), ITEM_V(2)));}
     | "postfix_expression ( )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
     | "postfix_expression ( argument_expression_list )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
     | "postfix_expression . IDENTIFIER"
