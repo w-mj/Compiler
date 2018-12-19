@@ -81,6 +81,7 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::FUNC:
         case OP::EFUNC:
         case OP::RET:
+        case OP::RETN:
         case OP::GOTO:
         case OP::LABEL:
         case OP::CONTINUE:
@@ -213,6 +214,7 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::DEF_VAR:os << "(def_var, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::GOTO: os << "(goto, _, _, " << ST[t.tar] << ")" << endl; break;
             case OP::LABEL: os << "(label, " << ST[t.num1] << ", _, _)" << endl; break;
+            case OP::RETN: os << "(retn, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::INDEX: os << "([], " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl; break;
 
             default:
@@ -274,6 +276,8 @@ std::string op_to_str(OP op) {
         case OP::LABEL:return"LABEL";
         case OP::GOTO:return"goto";
         case OP::CONTINUE:return"continue";
+        case OP::INDEX:return "[]";
+        case OP::RETN:return "retn";
     }
     throw runtime_error(debugpos + " unknown op");
 }

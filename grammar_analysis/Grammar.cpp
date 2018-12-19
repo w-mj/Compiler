@@ -648,7 +648,7 @@ Generators Grammar::YACC_C_Grammar() {
     | "continue ;"| ATTR{quat(OP::CONTINUE, 0, 0, 0); return new size_t(QL.size() - 1);}
     | "break ;"| ATTR{quat(OP::BREAK, 0, 0, 0); return new size_t(QL.size() - 1);}
     | "return ;"| ATTR{quat(OP::RET, 0, 0, 0); return nullptr; }
-    | "return expression ;"
+    | "return expression ;" | ATTR{quat(OP::RETN, ITEM_V(1), 0, 0); return nullptr;}
             ;
 
     gen.add("translation_unit")
@@ -668,8 +668,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("function_definition_head")
-    | "declaration_specifiers declarator declaration_list"|attr_start_func
-    | "declaration_specifiers declarator"|attr_start_func
+    // | "declaration_specifiers declarator declaration_list"
+    | "declaration_specifiers declarator"| attr_start_func
 
 
             ;

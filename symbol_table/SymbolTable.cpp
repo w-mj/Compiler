@@ -533,11 +533,11 @@ int SymbolTable::TempSymbol::first_type_t() {
 
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s) {
     os << s.name;
-    if (oneof(s.cat, Cat_Var, Cat_Param, Cat_Temp)) {
+    if (oneof(s.cat, Cat_Var, Cat_Param)) {
         os << ":" << ST.type_list[s.type];
         os << "&" << s.offset;
     }
-    if (oneof(s.cat, Cat_Func_Declaration, Cat_Func_Defination, Cat_Const)) {
+    if (oneof(s.cat, Cat_Func_Declaration, Cat_Func_Defination, Cat_Const, Cat_Temp)) {
         os << ":" << ST.type_list[s.type];
     }
     if (s.cat == Cat_Type) {
