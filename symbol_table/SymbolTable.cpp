@@ -14,9 +14,9 @@
 
 #define SHORT_SIZE 1
 #define INT_SIZE 2
-#define LONG_SIZE 2
+#define LONG_SIZE 4
 #define POINTER_SIZE 4
-#define FLOAT_SIZE 4
+#define FLOAT_SIZE 2
 #define DOUBLE_SIZE 4
 
 #define SYM(x) (symbol_list[(x)])
@@ -161,16 +161,16 @@ size_t SymbolTable::add_constant_Symbol(const Number &num) {
         constant_num_list.push_back(num);
     int t = get_symbol_index_by_name_without_error("@const_" + num.str());
     if (t == -1) {
-        Type temp_t{0, 0, 0};
+        Type temp_t{0, 0, static_cast<size_t>(f), true};
         switch (num.type) {
             case Number::Int: temp_t.t = INT; break;
             case Number::Short: temp_t.t = SHORT; break;
             case Number::UShort: temp_t.t = SHORT; break;
-            case Number::UInt:temp_t.t = INT; break;;
-            case Number::ULong:temp_t.t = LONG; break;;
-            case Number::Long:temp_t.t = LONG; break;;
-            case Number::Float:temp_t.t = FLOAT; break;;
-            case Number::Double:temp_t.t = FLOAT; break;;
+            case Number::UInt:temp_t.t = INT; break;
+            case Number::ULong:temp_t.t = LONG; break;
+            case Number::Long:temp_t.t = LONG; break;
+            case Number::Float:temp_t.t = FLOAT; break;
+            case Number::Double:temp_t.t = FLOAT; break;
         }
         return add_symbol({"@const_" + num.str(), get_or_add_type(temp_t), Cat_Const, 0});
     }

@@ -79,10 +79,10 @@ public:
         bool cst;
         Type(int t, size_t size=0, size_t data=0, bool cst=false): t(t), size(size), data(data), cst(cst) {}
         bool operator==(const Type& an) const {
-            return t == an.t && data == an.data;
+            return t == an.t && data == an.data && cst == an.cst;
         }
         bool operator<(const Type& an) const {
-            return t + data < an.t + an.data;
+            return t + data + cst < an.t + an.data + an.cst;
         }
     };
 

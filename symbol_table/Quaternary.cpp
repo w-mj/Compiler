@@ -16,12 +16,11 @@ size_t type_uplift(size_t t1, size_t t2) {
 }
 
 bool is_basic_type(size_t t) {
-    return oneof(ST.get_type_by_index(t), SHORT, INT, LONG, FLOAT, DOUBLE);
+    return oneof(ST.get_type_by_index(t).t, SHORT, INT, LONG, FLOAT, DOUBLE);
 }
 
 bool is_integer_type(size_t t) {
-    return oneof(ST.get_type_by_index(t), SHORT, INT, LONG);
-
+    return oneof(ST.get_type_by_index(t).t, SHORT, INT, LONG);
 }
 
 size_t quat(OP op, size_t num1, size_t num2, size_t t) {
@@ -44,6 +43,8 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
             if (!is_basic_type(ST[num1].type) || !ST[num2].type)
                 error("ERROR: Invalid operands to binary " + op_to_str(op) + " (" +
                  ST.get_top_type_name(num1) + " and " + ST.get_top_type_name(num2) + ")");
+            if (!t) t = ST.add_symbol({ST.get_temp_var_name(), type_uplift(ST[num1].type, ST[num2].type), Cat_Temp, 0});
+            break;
         case OP::INDEX:
             if (!is_integer_type(ST[num2].type))
                 error("Array index must be integer. (" + ST.get_top_type_name(num2) + ")");

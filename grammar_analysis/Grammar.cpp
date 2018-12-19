@@ -260,7 +260,7 @@ Generators Grammar::YACC_C_Grammar() {
     | "postfix_expression ( argument_expression_list )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
     | "postfix_expression . IDENTIFIER"
     | "postfix_expression -> IDENTIFIER"
-    | "postfix_expression ++" | ATTR{quat(OP::INC, ITEM_V(0), NONE, ITEM_V(0)); return v[0];}  // TODO: 区分前后++
+    | "postfix_expression ++" | ATTR{quat(OP::INC, ITEM_V(0), NONE, ITEM_V(0)); return v[0];}
     | "postfix_expression --" | ATTR{quat(OP::DEC, ITEM_V(0), NONE, ITEM_V(0)); return v[0];}
             ;
 
