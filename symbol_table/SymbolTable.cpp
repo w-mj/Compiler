@@ -659,4 +659,34 @@ size_t SymbolTable::get_or_add_label(const std::string &name) {
     return 0;
 }
 
+SymbolTable::Type &SymbolTable::get_type_by_index(size_t t) {
+    return type_list[t];
+}
+
+std::string SymbolTable::get_top_type_name(size_t symbol) {
+    switch (TYPE(symbol).t) {
+        case INT:
+            return "int";
+        case SHORT:
+            return "short";
+        case CHAR:
+            return "char";
+        case LONG:
+            return "long";
+        case FLOAT:
+            return "float";
+        case DOUBLE:
+            return "double";
+        case FUNCTION:
+            return "function";
+        case ARRAY:
+            return "array";
+        case STRUCT:
+            return "struct";
+        case POINTER:
+            return "pointer";
+    }
+    rterr("unsupported type");
+}
+
 

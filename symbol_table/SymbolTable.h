@@ -41,10 +41,10 @@ typedef Token Item;
 #define POINTER 0x10
 
 #define CHAR 0x01
-#define LONG 0x02
+#define SHORT 0x02
 #define INT 0x03
-#define FLOAT 0x04
-#define SHORT 0x05
+#define LONG 0x04
+#define FLOAT 0x05
 #define DOUBLE 0x06
 #define VOID 0x07
 
@@ -192,8 +192,10 @@ public:
     int get_symbol_offset(size_t symbol);
     int get_func_param_num(size_t symbol);
     std::string get_type_name(size_t symbol);  // 数组返回基本类型
+    std::string get_top_type_name(size_t symbol);
 
     Type& get_type_by_symbol(size_t i);
+    Type& get_type_by_index(size_t);
 
     std::string get_temp_var_name(const std::string& suffix="");
 

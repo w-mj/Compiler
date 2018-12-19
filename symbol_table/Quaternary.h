@@ -65,5 +65,7 @@ size_t quat(OP op, size_t num1, size_t, size_t target=0);
 size_t make_unary_operator_quat(void* it, size_t num1);
 size_t make_assign_operator_quat(size_t l, size_t a, size_t r);
 
+std::string op_to_str(OP op);
+
 
 #endif //COMPLIE_QUATERNARY_H
