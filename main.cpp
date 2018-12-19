@@ -1,7 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
+#ifdef __linux__
 #include <zconf.h>
+#endif
+#ifdef _WIN32
+#include <io.h>
+#endif
+
 #include "word_analysis/WordAnalysis.h"
 #include "grammar_analysis/Generators.h"
 #include "grammar_analysis/LR1.h"

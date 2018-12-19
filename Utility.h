@@ -61,6 +61,17 @@ bool oneof(T a, Args... args) {
     return ((a == args) || ...);
 };
 
+#ifdef __linux__
+#define COLOR_RED 1
+#define COLOR_BLUE 2
+#endif
+
+#ifdef __WIN32
+#define COLOR_RED 0c
+#define COLOR_BLUE 09
+#endif
+
+void colorful_print(const std::string& s, int color, char end='\n');
 
 
 #endif //COMPLIE_UTILITY_H

@@ -3,6 +3,7 @@
 //
 
 #include "Utility.h"
+#include "error/Error.h"
 #include <cctype>
 #include <stdexcept>
 #include <iostream>
@@ -49,3 +50,46 @@ std::vector<std::string> split(const std::string &s, char delim) {
     }
     return elems;
 }
+
+#ifdef __linux__
+void colorful_print(const std::string& s, int color, char end) {
+    switch (color) {
+        case 1:
+            cout << "\033[1;31;40m" << s << "\033[0m" << end; break;
+        case 2:
+            cout << "\033[1;34;40m" << s << "\033[0m" << end; break;
+        default:
+            rterr("unsupported color" + to_string(color));
+    }
+}
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#include <cstdio>
+HANDLE hConsole = NULL;
+void initConsole(void)
+{
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hConsole == NULL) {
+        fprintf(stderr, "初始化错误：无法获取控制台句柄\n");
+        exit(1);
+    }
+    SetConsoleTitle("选课系统");
+    COORD size = {120, 9001};  // 设置控制台缓冲
+    SetConsoleScreenBufferSize(hConsole,size);
+    SMALL_RECT rc =  {0, 0, 119, 29};  // 长宽的最大值为缓冲区减1
+    SetConsoleWindowInfo(hConsole, true, &rc);
+    char tt[1000];
+    getcwd(tt, 1000);
+    fputs(tt, stderr);
+}
+void colorful_print(const std::string& s, int color, char end) {
+    if (hConsole == NULL) {
+        initConsole();
+    }
+    SetConsoleTextAttribute(hConsole, color);
+    cout << s << end;
+    SetConsoleTextAttribute(hConsole, 0x0f);
+}
+#endif

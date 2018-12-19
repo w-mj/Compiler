@@ -9,7 +9,8 @@
 using namespace std;
 
 void error(const std::string& s) {
-    cout << s << endl;
+    colorful_print(s, COLOR_RED);
+    // cout << s << endl;
     exit(100);
 }
 
