@@ -207,6 +207,9 @@ Generators Grammar::C_Exp() {
     return gen;
 }
 
+#define RELEASE(a, b) for (size_t i = a; i < b; i++) delete v[i];
+#define RELEASE_ONE(a) delete v[a];
+#define RELEASE_ALL(a) for (size_t i = a; i < v.size(); i++) delete v[i];
 Generators Grammar::YACC_C_Grammar() {
     Generators gen;
     gen.set_terminators(
@@ -579,25 +582,25 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("statement")
-    | "labeled_statement"
-    | "compound_statement"
-    | "expression_statement"
-    | "selection_statement"
-    | "iteration_statement"
-    | "jump_statement"
+    | "labeled_statement"| ATTR{return v[0] == nullptr? new vector<size_t*>(): new vector<size_t*>{((size_t*)v[0])};}
+    | "compound_statement"| ATTR{return v[0];}
+    | "expression_statement"| ATTR{return v[0] == nullptr? new vector<size_t*>(): new vector<size_t*>{((size_t*)v[0])};}
+    | "selection_statement"//| ATTR{return v[0] == nullptr? new vector<size_t>(): new vector<size_t>{*((size_t*)v[0])};}
+    | "iteration_statement"| ATTR{return v[0] == nullptr? new vector<size_t*>(): new vector<size_t*>{((size_t*)v[0])};}
+    | "jump_statement"| ATTR{return v[0] == nullptr? new vector<size_t*>(): new vector<size_t*>{((size_t*)v[0])};}
             ;
 
     gen.add("labeled_statement")
-    | "IDENTIFIER : statement"| ATTR{quat(OP::LABEL, ST.get_or_add_label(*((string*)v[0])), 0, 0);}
+    | "IDENTIFIER : statement"| ATTR{quat(OP::LABEL, ST.get_or_add_label(*((string*)v[0])), 0, 0); return nullptr;}
     | "case constant_expression : statement"
     | "default : statement"
             ;
 
     gen.add("compound_statement")
     | "{ }" // |ATTR{ quat(OP::NOP, 0, 0, 0); return new size_t(QL.size() - 1); }  // 生成空四元式占位
-    | "{ statement_list }"// | ATTR{ return v[1]; }
+    | "{ statement_list }" | ATTR{ return v[1]; }
     | "{ declaration_list }" // | ATTR{return v[1]; }
-    | "{ declaration_list statement_list }"// | ATTR{return v[1]; }
+    | "{ declaration_list statement_list }"| ATTR{return v[2]; }
             ;
 
     gen.add("declaration_list")
@@ -607,12 +610,13 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("statement_list")
     | "statement"
-    | "statement_list statement"
+    | "statement_list statement" | ATTR{if(v[1]!=nullptr)
+        ((vector<size_t>*)v[0])->insert(((vector<size_t>*)v[0])->begin(), ((vector<size_t>*)v[1])->begin(), ((vector<size_t>*)v[1])->end()); return v[0]; }
             ;
 
     gen.add("expression_statement")
-    | ";"
-    | "expression ;"
+    | ";"| ATTR{return nullptr;}
+    | "expression ;"| ATTR{return nullptr; }
             ;
 
     gen.add("selection_statement")
@@ -639,10 +643,10 @@ Generators Grammar::YACC_C_Grammar() {
     ;
 
     gen.add("jump_statement")
-    | "goto IDENTIFIER ;"| ATTR{quat(OP::GOTO, 0, 0, ST.get_or_add_label(*((string*)v[1])));}
-    | "continue ;"
-    | "break ;"
-    | "return ;"| ATTR{quat(OP::RET, 0, 0, 0);}
+    | "goto IDENTIFIER ;"| ATTR{quat(OP::GOTO, 0, 0, ST.get_or_add_label(*((string*)v[1]))); return nullptr; }
+    | "continue ;"| ATTR{quat(OP::CONTINUE, 0, 0, 0); return new size_t(QL.size() - 1);}
+    | "break ;"| ATTR{quat(OP::BREAK, 0, 0, 0); return new size_t(QL.size() - 1);}
+    | "return ;"| ATTR{quat(OP::RET, 0, 0, 0); return nullptr; }
     | "return expression ;"
             ;
 
@@ -658,14 +662,14 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("function_definition")
     | "declaration_specifiers declarator declaration_list compound_statement"
-    | "function_definition_head compound_statement" | ATTR{quat(OP::EFUNC, 0, 0, 0); return nullptr; }
+    | "function_definition_head compound_statement" | attr_end_func
     | "declarator declaration_list compound_statement"
     | "declarator compound_statement"
             ;
 
     gen.add("function_definition_head")
-    | "declaration_specifiers declarator"|
-        ATTR {return NEW_S(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table((SymbolTable::TempSymbol*)v[1], (SymbolTable::Type*)v[0], Cat_Func_Defination)); }
+    | "declaration_specifiers declarator"|attr_start_func
+
 
             ;
     return gen;

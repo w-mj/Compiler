@@ -9,8 +9,13 @@ int main(int b) {
     a += 1;
     L:
     a = 10;
-    while (a < 0)
+    while (a < 0) {
         a++;
+        if (a == 77)
+            break;
+        else
+            continue;
+    }
     for (; a; )
         a--;
     goto X;

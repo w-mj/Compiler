@@ -112,7 +112,14 @@ void* attr_endif(std::vector<void*>& v) {
     }
     attr_stmt_pos();
     // return new size_t(if_pos);
-    return nullptr;
+    if (v.size() == 7) {
+        auto x = static_cast<vector<size_t*>*>(v[4]);
+        auto y = static_cast<vector<size_t*>*>(v[6]);
+        x->insert(x->begin(), y->begin(), y->end());
+        delete y;
+        return x;
+    }
+    return v[4];
 }
 
 void* attr_builder_while() {
@@ -135,8 +142,17 @@ void* attr_endwhile(std::vector<void*>& v) {
     quat(OP::EW, 0, 0, while_pos);
     QL[do_pos].num1 = QL[do_pos - 1].tar;
     QL[do_pos].tar = QL.size();
+    auto * jmp_quat = static_cast<vector<size_t*> *>(v[4]);
+    for (auto x: *jmp_quat) {
+        if (x != nullptr) {
+            size_t t = *x;
+            if (QL[t].op == OP::BREAK)
+                QL[t].tar = QL.size();
+            else if (QL[t].op == OP::CONTINUE)
+                QL[t].tar = while_pos;
+        }
+    }
     return nullptr;
-    // return new size_t(while_pos);
 }
 
 void* attr_stmt_pos() {
@@ -180,5 +196,16 @@ void* attr_endfor(std::vector<void*>& v) {
     QL[do_pos].tar = QL.size();
     QL[jmp_pos].tar = for_pos;
     QL[do_pos + 1].tar = jmp_pos + 1;
+    return nullptr;
+}
+
+void* attr_start_func(std::vector<void*>& v) {
+    size_t quat_pos = SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(
+            (SymbolTable::TempSymbol*)v[1],(SymbolTable::Type*)v[0], Cat_Func_Defination);
+    return nullptr;
+}
+
+void* attr_end_func(std::vector<void*>& v) {
+    quat(OP::EFUNC, 0, 0, 0);
     return nullptr;
 }

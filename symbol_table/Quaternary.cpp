@@ -53,6 +53,8 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::RET:
         case OP::GOTO:
         case OP::LABEL:
+        case OP::CONTINUE:
+        case OP::BREAK:
             break;
         default:
             throw runtime_error(debugpos+ " not support " + to_string(static_cast<int>(op)) + " yet");
@@ -60,11 +62,6 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
     }
     QL.emplace_back(op, num1, num2, t);
     return t;
-}
-
-
-string op2str(OP& op) {
-
 }
 
 
@@ -178,6 +175,8 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::EW:os << "(end-while, _, _, " << t.tar << ")" << endl; break;
             case OP::EFOR:os << "(end-for, _, _, " << t.tar << ")" << endl; break;
             case OP::JMP:os << "(jmp, _, _, " << t.tar << ")" << endl; break;
+            case OP::CONTINUE:os << "(continue, _, _, " << t.tar << ")" << endl; break;
+            case OP::BREAK:os << "(break, _, _, " << t.tar << ")" << endl; break;
             case OP::EI:os << "(end-if, _, _, _)" << endl; break;
             case OP::DEF_FUN:os << "(def_fun, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::DEF_VAR:os << "(def_var, " << ST[t.num1] << ", _, _)" << endl; break;
