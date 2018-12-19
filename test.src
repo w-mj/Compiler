@@ -1,34 +1,16 @@
 int ext1;
 int ext2, ext3;
-int funchhh(int x, int y);
 
-int main(int b) {
-    int a;
-    int b[10];
-    int c, d, e;
+int printi(int a);
 
-    b[5] = 7;
-    X:
-    goto L;
-    a = c + c;
-    L:
-    a = 10;
-    while (a < 0) {
-        a++;
-        if (a == 77)
-            break;
-        else
-            continue;
-        while (a < 10) {
-            if (a == 66)
-                continue;
-            else
-                break;
-        }
-        a--;
+int fibonacci(int x) {
+    if (x == 1 || x == 2)
+        return 1;
+    return fibonacci(x - 1) + fibonacci(x - 2);
+}
+
+int main(int i) {
+    for (i = 0; i < 10; i++) {
+        printi(fibonacci(i));
     }
-    a = funchhh(1, a);
-    for (; a; )
-        a--;
-    goto X;
 }

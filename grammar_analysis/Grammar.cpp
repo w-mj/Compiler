@@ -605,8 +605,8 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("declaration_list")
-    | "declaration"
-    | "declaration_list declaration"
+    | "declaration"| ATTR{return new vector<size_t*>{(size_t*)v[0]}; }
+    | "declaration_list declaration"| ATTR{((vector<size_t*>*)v[0])->push_back((size_t*)v[1]); return v[0]; }
             ;
 
     gen.add("statement_list")
@@ -662,13 +662,13 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("function_definition")
-    | "declaration_specifiers declarator declaration_list compound_statement"
     | "function_definition_head compound_statement" | attr_end_func
     | "declarator declaration_list compound_statement"
     | "declarator compound_statement"
             ;
 
     gen.add("function_definition_head")
+    | "declaration_specifiers declarator declaration_list"|attr_start_func
     | "declaration_specifiers declarator"|attr_start_func
 
 

@@ -201,7 +201,14 @@ void* attr_endfor(std::vector<void*>& v) {
 
 void* attr_start_func(std::vector<void*>& v) {
     size_t quat_pos = SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(
-            (SymbolTable::TempSymbol*)v[1],(SymbolTable::Type*)v[0], Cat_Func_Defination);
+            (SymbolTable::TempSymbol*)v[1], (SymbolTable::Type*)v[0], Cat_Func_Defination);
+
+    auto temp = (SymbolTable::TempSymbol*)v[1];
+    map<string, size_t> index;
+    for (size_t i = 0; i < temp->fpl.size(); i++) {
+        index.emplace(temp->fpl[i]->s.name, ST.get_function_by_index(ST.get_type_by_index(temp->s.type).data).param_index + i);
+    }
+    ST.in(index);
     return nullptr;
 }
 

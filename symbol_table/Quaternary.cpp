@@ -40,6 +40,10 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::MINUS:
         case OP::MULTPLY:
         case OP::DIVIDE:
+        case OP::LOG_OR:
+        case OP::LOG_AND:
+        case OP::BIT_XOR:
+        case OP::BIT_OR:
             if (!is_basic_type(ST[num1].type) || !ST[num2].type)
                 error("ERROR: Invalid operands to binary " + op_to_str(op) + " (" +
                  ST.get_top_type_name(num1) + " and " + ST.get_top_type_name(num2) + ")");

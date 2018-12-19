@@ -72,18 +72,22 @@ const SymbolTable::Symbol *SymbolTable::get_symbol_by_name(const std::string &na
 }
 
 void SymbolTable::in() {
+    if (current_table->next_func) {
+        current_table->next_func = false;
+        return;
+    }
     auto c = new Table;
     c->up = current_table;
     current_table = c;
 
-
-    if (c->up->next_func) {
-        c->offset = 0;
-        c->up->next_func = false;
-    } else {
-        c->offset = c->up->offset;
-    }
+    c->offset = c->up->offset;
     // cout << "Symbol table in" << endl;
+}
+
+void SymbolTable::in(std::map<std::string, size_t> symbol_index) {
+    in();
+    current_table->symbol_index.insert(symbol_index.begin(), symbol_index.end());
+    current_table->offset = 0;
 }
 
 void SymbolTable::leave() {
@@ -119,7 +123,7 @@ size_t SymbolTable::add_symbol(const Symbol& s) {
         current_table->offset += type_list[s.type].size;
     }
     // 为类型和普通变量添加索引
-    if (oneof(s.cat, Cat_Type, Cat_Var, Cat_Const, Cat_Func_Declaration, Cat_Label))
+    if (oneof(s.cat, Cat_Type, Cat_Var, Cat_Const, Cat_Func_Declaration, Cat_Label, Cat_Func_Defination))
         current_table->symbol_index.emplace(s.name, t);
 
     return t;
@@ -379,7 +383,9 @@ size_t SymbolTable::TempSymbol::insert_function_into_table(size_t fi) {
         fpl[i]->s.type = fpl[i]->insert_type_into_table(fpl[i]->s.type);
         param_type.push_back(fpl[i]->s.type);
     }
-    return ST.get_or_add_function(fl[fi].ret_type, param_type);
+    size_t t = ST.get_or_add_function(fl[fi].ret_type, param_type);
+    fl[fi].param_index = ST.get_function_by_index(t).param_index;
+    return t;
 }
 
 size_t SymbolTable::TempSymbol::insert_symbol_into_table(int cat) {
@@ -700,5 +706,15 @@ std::string SymbolTable::get_top_type_name(size_t symbol) {
     }
     rterr("unsupported type");
 }
+
+SymbolTable::Function &SymbolTable::get_function_by_index(size_t i) {
+    return function_list[i];
+}
+
+SymbolTable::Function& SymbolTable::get_function_by_symbol(size_t symbol) {
+    return function_list[TYPE(symbol).data];
+}
+
+
 
 

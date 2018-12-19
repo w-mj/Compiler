@@ -179,6 +179,7 @@ public:
     size_t get_type_index_by_symbol(size_t symbol);
     size_t get_struct_field_by_symbol_filed(size_t s, size_t f);
     size_t get_array_element_type(size_t symbol);
+    Function& get_function_by_symbol(size_t symbol);
     size_t get_function_type(size_t symbol);
     size_t get_type_size(size_t symbol);
 
@@ -196,6 +197,7 @@ public:
 
     Type& get_type_by_symbol(size_t i);
     Type& get_type_by_index(size_t);
+    Function& get_function_by_index(size_t i);
 
     std::string get_temp_var_name(const std::string& suffix="");
 
@@ -241,6 +243,7 @@ public:
     };
 
     void in();
+    void in(std::map<std::string, size_t> symbol_index);
     void leave();
 
 
