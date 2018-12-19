@@ -55,6 +55,7 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::LABEL:
         case OP::CONTINUE:
         case OP::BREAK:
+        case OP::PUSH:
             break;
         default:
             throw runtime_error(debugpos+ " not support " + to_string(static_cast<int>(op)) + " yet");
@@ -182,6 +183,7 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::DEF_VAR:os << "(def_var, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::GOTO: os << "(goto, _, _, " << ST[t.tar] << ")" << endl; break;
             case OP::LABEL: os << "(label, " << ST[t.num1] << ", _, _)" << endl; break;
+
             default:
                 os << debugpos << "unsupport quat" << endl;
         }

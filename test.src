@@ -15,7 +15,15 @@ int main(int b) {
             break;
         else
             continue;
+        while (a < 10) {
+            if (a == 66)
+                continue;
+            else
+                break;
+        }
+        a--;
     }
+    funchhh(1, 2);
     for (; a; )
         a--;
     goto X;

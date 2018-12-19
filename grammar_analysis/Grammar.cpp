@@ -210,6 +210,7 @@ Generators Grammar::C_Exp() {
 #define RELEASE(a, b) for (size_t i = a; i < b; i++) delete v[i];
 #define RELEASE_ONE(a) delete v[a];
 #define RELEASE_ALL(a) for (size_t i = a; i < v.size(); i++) delete v[i];
+
 Generators Grammar::YACC_C_Grammar() {
     Generators gen;
     gen.set_terminators(
