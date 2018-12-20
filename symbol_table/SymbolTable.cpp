@@ -635,9 +635,11 @@ int SymbolTable::get_func_param_num(size_t symbol) {
 int SymbolTable::get_func_param_size(size_t symbol) {
     int a = 0;
     for (size_t i = 0; i < function_list[type_list[symbol_list[symbol].type].data].param_num; i++) {
-        a += type_list[symbol_list[function_list[type_list[symbol_list[symbol].type].data].param_index + i].type].size;
+        size_t t = type_list[symbol_list[function_list[type_list[symbol_list[symbol].type].data].param_index + i].type].size;
+        t += t&1;
+        a += t;
     }
-    return a;
+    return a / 2;
 }
 
 

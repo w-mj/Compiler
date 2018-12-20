@@ -69,9 +69,9 @@ int main() {
 
     cout << ST << endl;
 
-    cout << "optimized" << endl;
+    // cout << "optimized" << endl;
 
-    optimizer opti(QL.get_vector());
+    // optimizer opti(QL.get_vector());
 
     return 0;
 }
