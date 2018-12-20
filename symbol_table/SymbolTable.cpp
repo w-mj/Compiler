@@ -13,9 +13,10 @@
 #include "Quaternary.h"
 
 #define SHORT_SIZE 1
+#define CHAR_SIZE 1
 #define INT_SIZE 2
 #define LONG_SIZE 4
-#define POINTER_SIZE 4
+#define POINTER_SIZE 2
 #define FLOAT_SIZE 2
 #define DOUBLE_SIZE 4
 
@@ -611,7 +612,8 @@ std::string SymbolTable::get_symbol_name(size_t symbol) {
 }
 
 bool SymbolTable::is_temp_var(size_t symbol) {
-    return ST[symbol].name[0] == '@' && isdigit(ST[symbol].name[1]);
+    return ST[symbol].cat == Cat_Param ||
+        (ST[symbol].name[0] == '@' && isdigit(ST[symbol].name[1]));
 }
 
 void SymbolTable::set_symbol_addr(size_t symbol, size_t addr) {
@@ -627,8 +629,17 @@ int SymbolTable::get_symbol_offset(size_t symbol) {
 }
 
 int SymbolTable::get_func_param_num(size_t symbol) {
-    return ST.function_list[ST.type_list[ST[symbol].type].data].param_num;
+    return function_list[type_list[symbol_list[symbol].type].data].param_num;
 }
+
+int SymbolTable::get_func_param_size(size_t symbol) {
+    int a = 0;
+    for (size_t i = 0; i < function_list[type_list[symbol_list[symbol].type].data].param_num; i++) {
+        a += type_list[symbol_list[function_list[type_list[symbol_list[symbol].type].data].param_index + i].type].size;
+    }
+    return a;
+}
+
 
 std::string SymbolTable::get_type_name(size_t symbol) {
     switch(get_basic_symbol_type(symbol)) {
@@ -744,6 +755,11 @@ SymbolTable::Function& SymbolTable::get_function_by_symbol(size_t symbol) {
 bool SymbolTable::is_define_var(size_t symbol) {
     return oneof(ST[symbol].cat, Cat_Var, Cat_Param) && !is_temp_var(symbol);
 }
+
+bool SymbolTable::is_const(size_t symbol) {
+    return type_list[symbol_list[symbol].type].cst;
+}
+
 
 
 

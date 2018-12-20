@@ -5,6 +5,7 @@
 #include "Quaternary.h"
 #include "../word_analysis/WordAnalysis.h"
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include "../Utility.h"
 #include "../error/Error.h"
@@ -161,8 +162,10 @@ size_t QuatList::size() {
 }
 
 std::ostream& operator<<(std::ostream& os, QuatList& ql) {
-
+    ofstream off;
+    off.open("siyuan.txt");
     for (int i = 0; i < ql.size(); i++) {
+        off << static_cast<int>(ql[i].op) << " " << ql[i].num1 << " " << ql[i].num2 << " " <<  ql[i].tar << endl;
         auto& t = ql[i];
         os << i << "# ";
         switch (t.op) {
@@ -221,6 +224,7 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
                 os << debugpos << "unsupport quat" << endl;
         }
     }
+    off.close();
     return os;
 }
 
@@ -278,6 +282,7 @@ std::string op_to_str(OP op) {
         case OP::CONTINUE:return"continue";
         case OP::INDEX:return "[]";
         case OP::RETN:return "retn";
+        case OP::ASM:return "ASM";
     }
     throw runtime_error(debugpos + " unknown op");
 }

@@ -57,7 +57,7 @@ typedef Token Item;
 #define insertaddr(a, b) ST.set_symbol_addr((a), (b))
 #define getaddr(a) ST.get_symbol_addr(a)
 #define getoffset(a) ST.get_symbol_offset(a)
-#define getparamnum(a) ST.get_func_param_num(a)
+#define getparamnum(a) ST.get_func_param_size(a)
 #define getvalue(a) ST.get_basic_symbol_type(a)
 #define isterm(a) ST.is_temp_var(a)
 #define getname(a) ST.get_symbol_name(a)
@@ -200,8 +200,10 @@ public:
     size_t get_symbol_addr(size_t symbol);
     int get_symbol_offset(size_t symbol);
     int get_func_param_num(size_t symbol);
+    int get_func_param_size(size_t symbol);
     std::string get_type_name(size_t symbol);  // 数组返回基本类型
     std::string get_top_type_name(size_t symbol);
+    bool is_const(size_t symbol);
 
     Type& get_type_by_symbol(size_t i);
     Type& get_type_by_index(size_t);
