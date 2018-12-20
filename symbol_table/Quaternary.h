@@ -51,6 +51,9 @@ public:
     }
     Quat& operator[](size_t i);
     size_t size();
+    void clear();
+
+    std::vector<Quat>& get_vector();
 
     friend std::ostream& operator<<(std::ostream& os, QuatList& ql);
 };

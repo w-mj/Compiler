@@ -34,4 +34,6 @@ add_executable(Complie main.cpp
         error/Error.h
         symbol_table/Quaternary.cpp
         symbol_table/Quaternary.h
+        optimizer/optimizer.h
+        optimizer/optimizer.cpp
 )

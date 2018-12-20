@@ -228,6 +228,14 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
     return os;
 }
 
+std::vector<Quat> &QuatList::get_vector() {
+    return quat_list;
+}
+
+void QuatList::clear() {
+    quat_list.clear();
+}
+
 std::string op_to_str(OP op) {
     switch (op) {
         case OP::PUSH: return "push";

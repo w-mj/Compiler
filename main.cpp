@@ -17,6 +17,7 @@
 #include "Utility.h"
 #include "symbol_table/SymbolTable.h"
 #include "symbol_table/Quaternary.h"
+#include "optimizer/optimizer.h"
 
 using namespace std;
 
@@ -67,6 +68,10 @@ int main() {
     cout << QL << endl << endl;
 
     cout << ST << endl;
+
+    cout << "optimized" << endl;
+
+    optimizer opti(QL.get_vector());
 
     return 0;
 }

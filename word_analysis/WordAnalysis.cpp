@@ -187,7 +187,19 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
     string::iterator start;
     string line;
     bool in_commit = false;
+    bool in_asm = false;
     while (getline(file, line)) {
+        if (!in_commit && line == "#asm") {
+            in_asm = true;
+            continue;
+        }
+        if (in_asm && line == "#endasm") {
+            in_asm = false;
+            continue;
+        }
+//        if (in_asm) {
+//            tokenList.
+//        }
         size_t start_tk = tokenList.size();
         if (print)
             cout << endl << "in line: " << line << endl;

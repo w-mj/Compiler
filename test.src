@@ -1,4 +1,4 @@
-
+/*
 void printi(int a);
 
 int fibonacci(int x) {
@@ -12,4 +12,14 @@ int main(void) {
     for (i = 0; i < 10; i++) {
         printi(fibonacci(i));
     }
+}*/
+
+int main(void) {
+    int a = 10;
+    int b = 10;
+    int c, d, e;
+    c = a + b;
+    d = a + b;
+    e = a + b;
+    e = c + d;
 }

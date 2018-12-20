@@ -15,6 +15,7 @@
 #define TOKEN_STR 's'
 #define TOKEN_KEY 'k'
 #define TOKEN_BOUND 'p'
+#define TOKEN_ASM 'a'
 
 struct Token {
     Token(char c, size_t i);
