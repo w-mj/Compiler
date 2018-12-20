@@ -239,7 +239,7 @@ Generators Grammar::YACC_C_Grammar() {
             "type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement "
             "labeled_statement compound_statement declaration_list statement_list expression_statement "
             "selection_statement iteration_statement jump_statement translation_unit external_declaration "
-            "function_definition function_definition_head for_init for_cond for_inc");
+            "function_definition function_definition_head for_init for_cond for_inc new_struct_or_union");
 
     gen.set_start("translation_unit");
 
@@ -247,37 +247,53 @@ Generators Grammar::YACC_C_Grammar() {
 
 
     gen.add("primary_expression")
-    | "IDENTIFIER"| ATTR{ return NEW_S(ST.get_symbol_index_by_name(*((string*)v[0])));}
-    | "CONSTANT"| ATTR{ return NEW_S(ST.add_constant_Symbol(SL.get_number(ITEM_V(0))));}
+    | "IDENTIFIER" | ATTR { return NEW_S(ST.get_symbol_index_by_name(*((string *) v[0]))); }
+    | "CONSTANT" | ATTR { return NEW_S(ST.add_constant_Symbol(SL.get_number(ITEM_V(0)))); }
     | "STRING_LITERAL"
-    | "( expression )" | ATTR{return v[1];}
-            ;
+    | "( expression )" | ATTR { return v[1]; };
 
     gen.add("postfix_expression")
     | "primary_expression"
-    | "postfix_expression [ expression ]"| ATTR{return NEW_S(quat(OP::INDEX, ITEM_V(0), ITEM_V(2)));}
-    | "postfix_expression ( )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
-    | "postfix_expression ( argument_expression_list )" | ATTR{return NEW_S(quat(OP::CALL, ITEM_V(0), NONE));}
+    | "postfix_expression [ expression ]" | ATTR { return NEW_S(quat(OP::INDEX, ITEM_V(0), ITEM_V(2))); }
+    | "postfix_expression ( )" | ATTR { return NEW_S(quat(OP::CALL, ITEM_V(0), NONE)); }
+    | "postfix_expression ( argument_expression_list )" | ATTR { return NEW_S(quat(OP::CALL, ITEM_V(0), NONE)); }
     | "postfix_expression . IDENTIFIER"
     | "postfix_expression -> IDENTIFIER"
-    | "postfix_expression ++" | ATTR{quat(OP::INC, ITEM_V(0), NONE, ITEM_V(0)); return v[0];}
-    | "postfix_expression --" | ATTR{quat(OP::DEC, ITEM_V(0), NONE, ITEM_V(0)); return v[0];}
-            ;
+    | "postfix_expression ++" | ATTR {
+        quat(OP::INC, ITEM_V(0), NONE, ITEM_V(0));
+        return v[0];
+    }
+    | "postfix_expression --" | ATTR {
+        quat(OP::DEC, ITEM_V(0), NONE, ITEM_V(0));
+        return v[0];
+    };
 
     // 调用函数时的参数列表
     gen.add("argument_expression_list")
-    | "assignment_expression" | ATTR{quat(OP::PUSH, ITEM_V(0), NONE); return nullptr;}
-    | "argument_expression_list , assignment_expression"| ATTR{quat(OP::PUSH, ITEM_V(2), NONE); return nullptr;}
-            ;
+    | "assignment_expression" | ATTR {
+        quat(OP::PUSH, ITEM_V(0), NONE);
+        return nullptr;
+    }
+    | "argument_expression_list , assignment_expression" | ATTR {
+        quat(OP::PUSH, ITEM_V(2), NONE);
+        return nullptr;
+    };
 
     gen.add("unary_expression")
     | "postfix_expression"
-    | "++ unary_expression" | ATTR{quat(OP::INC, ITEM_V(1), NONE, ITEM_V(0)); return v[1];}
-    | "-- unary_expression" | ATTR{quat(OP::DEC, ITEM_V(1), NONE, ITEM_V(0)); return v[1];}
-    | "unary_operator cast_expression" | ATTR{return NEW_S(make_unary_operator_quat(v[0], ITEM_V(1)));}
-    | "sizeof unary_expression" | ATTR{return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))}));}
-    | "sizeof ( type_name )" | ATTR{return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))}));}
-            ;
+    | "++ unary_expression" | ATTR {
+        quat(OP::INC, ITEM_V(1), NONE, ITEM_V(0));
+        return v[1];
+    }
+    | "-- unary_expression" | ATTR {
+        quat(OP::DEC, ITEM_V(1), NONE, ITEM_V(0));
+        return v[1];
+    }
+    | "unary_operator cast_expression" | ATTR { return NEW_S(make_unary_operator_quat(v[0], ITEM_V(1))); }
+    | "sizeof unary_expression" |
+    ATTR { return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))})); }
+    | "sizeof ( type_name )" |
+    ATTR { return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))})); };
 
     gen.add("unary_operator")
     | "&"
@@ -285,82 +301,76 @@ Generators Grammar::YACC_C_Grammar() {
     | "+"
     | "-"
     | "~"
-    | "!"
-            ;
+    | "!";
 
     gen.add("cast_expression")
     | "unary_expression"
-    | "( type_name ) cast_expression"| ATTR{ST[ITEM_V(3)].type = ST[ITEM_V(1)].type; return v[3];}
-            ;
+    | "( type_name ) cast_expression" | ATTR {
+        ST[ITEM_V(3)].type = ST[ITEM_V(1)].type;
+        return v[3];
+    };
 
     gen.add("multiplicative_expression")
     | "cast_expression"
-    | "multiplicative_expression * cast_expression"| ATTR{return NEW_S(quat(OP::MULTPLY, ITEM_V(0), ITEM_V(2)));}
-    | "multiplicative_expression / cast_expression"| ATTR{return NEW_S(quat(OP::DIVIDE, ITEM_V(0), ITEM_V(2)));}
-    | "multiplicative_expression % cast_expression"| ATTR{return NEW_S(quat(OP::MOD, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "multiplicative_expression * cast_expression" | ATTR { return NEW_S(quat(OP::MULTPLY, ITEM_V(0), ITEM_V(2))); }
+    | "multiplicative_expression / cast_expression" | ATTR { return NEW_S(quat(OP::DIVIDE, ITEM_V(0), ITEM_V(2))); }
+    | "multiplicative_expression % cast_expression" | ATTR { return NEW_S(quat(OP::MOD, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("additive_expression")
     | "multiplicative_expression"
-    | "additive_expression + multiplicative_expression"| ATTR{return NEW_S(quat(OP::PLUS, ITEM_V(0), ITEM_V(2)));}
-    | "additive_expression - multiplicative_expression"| ATTR{return NEW_S(quat(OP::MINUS, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "additive_expression + multiplicative_expression" | ATTR { return NEW_S(quat(OP::PLUS, ITEM_V(0), ITEM_V(2))); }
+    | "additive_expression - multiplicative_expression" | ATTR { return NEW_S(quat(OP::MINUS, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("shift_expression")
     | "additive_expression"
-    | "shift_expression << additive_expression"| ATTR{return NEW_S(quat(OP::SHIFT_LEFT, ITEM_V(0), ITEM_V(2)));}
-    | "shift_expression >> additive_expression"| ATTR{return NEW_S(quat(OP::SHIFT_RIGHT, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "shift_expression << additive_expression" | ATTR { return NEW_S(quat(OP::SHIFT_LEFT, ITEM_V(0), ITEM_V(2))); }
+    | "shift_expression >> additive_expression" | ATTR { return NEW_S(quat(OP::SHIFT_RIGHT, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("relational_expression")
     | "shift_expression"
-    | "relational_expression < shift_expression"| ATTR{return NEW_S(quat(OP::LESS_THAN, ITEM_V(0), ITEM_V(2)));}
-    | "relational_expression > shift_expression"| ATTR{return NEW_S(quat(OP::GREATER_THEN, ITEM_V(0), ITEM_V(2)));}
-    | "relational_expression <= shift_expression"| ATTR{return NEW_S(quat(OP::LESS_EQUAL, ITEM_V(0), ITEM_V(2)));}
-    | "relational_expression >= shift_expression"| ATTR{return NEW_S(quat(OP::GREATER_EQUAL, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "relational_expression < shift_expression" | ATTR { return NEW_S(quat(OP::LESS_THAN, ITEM_V(0), ITEM_V(2))); }
+    | "relational_expression > shift_expression" | ATTR { return NEW_S(quat(OP::GREATER_THEN, ITEM_V(0), ITEM_V(2))); }
+    | "relational_expression <= shift_expression" | ATTR { return NEW_S(quat(OP::LESS_EQUAL, ITEM_V(0), ITEM_V(2))); }
+    | "relational_expression >= shift_expression" |
+    ATTR { return NEW_S(quat(OP::GREATER_EQUAL, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("equality_expression")
     | "relational_expression"
-    | "equality_expression == relational_expression"| ATTR{return NEW_S(quat(OP::EQUAL, ITEM_V(0), ITEM_V(2)));}
-    | "equality_expression != relational_expression"| ATTR{return NEW_S(quat(OP::NOT_EQUAL, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "equality_expression == relational_expression" | ATTR { return NEW_S(quat(OP::EQUAL, ITEM_V(0), ITEM_V(2))); }
+    | "equality_expression != relational_expression" |
+    ATTR { return NEW_S(quat(OP::NOT_EQUAL, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("and_expression")
     | "equality_expression"
-    | "and_expression & equality_expression"| ATTR{return NEW_S(quat(OP::BIT_AND, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "and_expression & equality_expression" | ATTR { return NEW_S(quat(OP::BIT_AND, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("exclusive_or_expression")
     | "and_expression"
-    | "exclusive_or_expression ^ and_expression"| ATTR{return NEW_S(quat(OP::BIT_XOR, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "exclusive_or_expression ^ and_expression" | ATTR { return NEW_S(quat(OP::BIT_XOR, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("inclusive_or_expression")
     | "exclusive_or_expression"
-    | "inclusive_or_expression | exclusive_or_expression"| ATTR{return NEW_S(quat(OP::BIT_OR, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "inclusive_or_expression | exclusive_or_expression" |
+    ATTR { return NEW_S(quat(OP::BIT_OR, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("logical_and_expression")
     | "inclusive_or_expression"
-    | "logical_and_expression && inclusive_or_expression"| ATTR{return NEW_S(quat(OP::LOG_AND, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "logical_and_expression && inclusive_or_expression" |
+    ATTR { return NEW_S(quat(OP::LOG_AND, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("logical_or_expression")
     | "logical_and_expression"
-    | "logical_or_expression || logical_and_expression"| ATTR{return NEW_S(quat(OP::LOG_OR, ITEM_V(0), ITEM_V(2)));}
-            ;
+    | "logical_or_expression || logical_and_expression" |
+    ATTR { return NEW_S(quat(OP::LOG_OR, ITEM_V(0), ITEM_V(2))); };
 
     gen.add("conditional_expression")
     | "logical_or_expression"
-    | "logical_or_expression ? expression : conditional_expression"
-            ;
+    | "logical_or_expression ? expression : conditional_expression";
 
     gen.add("assignment_expression")
     | "conditional_expression"
-    | "unary_expression assignment_operator assignment_expression"|
-        ATTR{return NEW_S(make_assign_operator_quat(ITEM_V(0), ITEM_V(1), ITEM_V(2)));}
-            ;
+    | "unary_expression assignment_operator assignment_expression" |
+    ATTR { return NEW_S(make_assign_operator_quat(ITEM_V(0), ITEM_V(1), ITEM_V(2))); };
 
     gen.add("assignment_operator")
     | "="
@@ -373,54 +383,53 @@ Generators Grammar::YACC_C_Grammar() {
     | ">>="
     | "&="
     | "^="
-    | "|="
-            ;
+    | "|=";
 
     gen.add("expression")
     | "assignment_expression"
-    | "expression , assignment_expression"| ATTR{return v[2];} // 逗号运算符？
+    | "expression , assignment_expression" | ATTR { return v[2]; } // 逗号运算符？
             ;
 
     gen.add("constant_expression")
-    | "conditional_expression"
-            ;
+    | "conditional_expression";
 
     gen.add("declaration")
     | "declaration_specifiers ;"
     | "declaration_specifiers init_declarator_list ;" |
-    ATTR {return new size_t(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(*((vector<SymbolTable::TempSymbol*>*)v[1]),
-                                                                                     ((SymbolTable::Type*)v[0]), Cat_Var)); }
-            ;
+    ATTR {
+        return new size_t(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(
+                *((vector<SymbolTable::TempSymbol *> *) v[1]),
+                ((SymbolTable::Type *) v[0]), Cat_Var));
+    };
 
     // 类型名: [const|validate] [typedef|extern|static|auto|register] [int|float|...]
     // TODO: 任何类型标志都只能出现一次, sturct定义也一样
     gen.add("declaration_specifiers")
-    | "storage_class_specifier"| ATTR{return TypeBuilder::add_storage(ITEM_V(0));}
-    | "storage_class_specifier declaration_specifiers" | ATTR{return TypeBuilder::add_storage(ITEM_V(0), v[1]);}
-    | "type_specifier"| ATTR{return TypeBuilder::add_speicifer(v[0]); }
-    | "type_specifier declaration_specifiers"| ATTR{return TypeBuilder::add_speicifer(v[0], v[1]); }
-    | "type_qualifier"| ATTR{return TypeBuilder::add_qulifier(ITEM_V(0));}
-    | "type_qualifier declaration_specifiers"| ATTR{return TypeBuilder::add_qulifier(ITEM_V(0), v[1]);}
-            ;
+    | "storage_class_specifier" | ATTR { return TypeBuilder::add_storage(ITEM_V(0)); }
+    | "storage_class_specifier declaration_specifiers" | ATTR { return TypeBuilder::add_storage(ITEM_V(0), v[1]); }
+    | "type_specifier" | ATTR { return TypeBuilder::add_speicifer(v[0]); }
+    | "type_specifier declaration_specifiers" | ATTR { return TypeBuilder::add_speicifer(v[0], v[1]); }
+    | "type_qualifier" | ATTR { return TypeBuilder::add_qulifier(ITEM_V(0)); }
+    | "type_qualifier declaration_specifiers" | ATTR { return TypeBuilder::add_qulifier(ITEM_V(0), v[1]); };
 
     gen.add("init_declarator_list")
-    | "init_declarator" | ATTR{ return new vector<SymbolTable::TempSymbol*>{(SymbolTable::TempSymbol*)v[0]};}
-    | "init_declarator_list , init_declarator"| ATTR{((vector<SymbolTable::TempSymbol*>*)v[0])->push_back((SymbolTable::TempSymbol*)v[2]); return v[0]; }
-            ;
+    | "init_declarator" | ATTR { return new vector<SymbolTable::TempSymbol *>{(SymbolTable::TempSymbol *) v[0]}; }
+    | "init_declarator_list , init_declarator" | ATTR {
+        ((vector<SymbolTable::TempSymbol *> *) v[0])->push_back((SymbolTable::TempSymbol *) v[2]);
+        return v[0];
+    };
 
     // TODO: 检测初始化类型匹配
     gen.add("init_declarator")
     | "declarator"// | ATTR{return NEW_S(((SymbolTable::TempSymbol*)v[0])->insert_symbol_into_table(Cat_Var));}
-    | "declarator = initializer"| ATTR{return ((TEMP_S*)v[0])->set_initializer_list(*((vector<size_t>*)v[2]));}
-            ;
+    | "declarator = initializer" | ATTR { return ((TEMP_S *) v[0])->set_initializer_list(*((vector<size_t> *) v[2])); };
 
     gen.add("storage_class_specifier")
     | "typedef"
     | "extern"
     | "static"
     | "auto"
-    | "register"
-            ;
+    | "register";
 
     gen.add("type_specifier")
     | "void"
@@ -434,27 +443,33 @@ Generators Grammar::YACC_C_Grammar() {
     | "unsigned"
     | "struct_or_union_specifier"
     | "enum_specifier"
-    | "TYPE_NAME"
-            ;
+    | "TYPE_NAME";
 
     gen.add("struct_or_union_specifier")
-    | "struct_or_union IDENTIFIER { struct_declaration_list }" | ATTR{return NEW_S(ST.add_struct_or_union(ITEM_V(0),v[1], ITEM_V(3)));}
-    | "struct_or_union { struct_declaration_list }" | ATTR{return NEW_S(ST.add_struct_or_union(ITEM_V(0), ITEM_V(2)));}
-    | "struct_or_union IDENTIFIER"
-            ;
+    | "struct_or_union IDENTIFIER new_struct_or_union struct_declaration_list }"
+    | ATTR { return NEW_S(ST.add_struct_or_union(ITEM_V(0), v[1], (size_t *) v[3], (size_t*)v[2])); }
+    | "struct_or_union new_struct_or_union struct_declaration_list }"
+    | ATTR { return NEW_S(ST.add_struct_or_union(ITEM_V(0), (size_t *) v[2], (size_t*)v[1])); }
+    | "struct_or_union IDENTIFIER";
+
+    gen.add("new_struct_or_union")
+    | "{" | ATTR{quat(OP::DEF_STRU, 0, 0, 0);  return new size_t(QL.size() - 1);}
+    ;
 
     gen.add("struct_or_union")
     | "struct"
     | "union"
             ;
 
+
     gen.add("struct_declaration_list")
-    | "struct_declaration"
-    | "struct_declaration_list struct_declaration"
+    | "struct_declaration"//| ATTR{return new vector<size_t*>{(size_t*)v[0]};}
+    | "struct_declaration_list struct_declaration"//| ATTR{((vector<size_t*>*)v[0])->push_back((size_t*)v[1]); return v[0];}
             ;
 
     gen.add("struct_declaration")
     | "specifier_qualifier_list struct_declarator_list ;"
+    | ATTR{return new size_t(TEMP_S::add_basic_type_and_insert_into_table(*((vector<TEMP_S*>*)v[1]), (SymbolTable::Type*)v[0], Cat_Stru_ele));}
             ;
 
     gen.add("specifier_qualifier_list")

@@ -1,15 +1,13 @@
 
 void printi(int a) {
-
-
 #asm
     MOV AH, 0
     MOV AL, 18H
+    LABEL:
     PUSH AL
     INT 21H
 #endasm
-
-
+    goto LABEL;
 }
 
 int fibonacci(int x) {
@@ -18,16 +16,18 @@ int fibonacci(int x) {
     return fibonacci(x - 1) + fibonacci(x - 2);
 }
 
-int main(void) {
-    int i;
-    int a = 10;
-    int b = 10;
-    int c, d, e;
+struct Stru {
+    int a, f;
+    char b;
+    long c, d, e;
+};
 
-    c = a + b;
-    d = a + b;
-    e = a + b;
-    e = c + d;
+int main(void) {
+    int a[10], i;
+    int b = 1;
+
+    a[3] = b;
+    a[3] = a[1] + a[2];
 
     for (i = 0; i < 10; i++) {
         printi(fibonacci(i));

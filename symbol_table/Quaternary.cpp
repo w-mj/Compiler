@@ -58,7 +58,8 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::INDEX:
             if (!is_integer_type(ST[num2].type))
                 error("Array index must be integer. (" + ST.get_top_type_name(num2) + ")");
-            if (!t) t = ST.add_symbol({ST.get_temp_var_name(), type_uplift(ST[num1].type, ST[num2].type), Cat_Temp, 0});
+            if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST.get_basic_symbol_type(num1), Cat_Temp, 0});
+            ST[t].is_addr = true;
             break;
         case OP::CALL:
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST.get_function_type(num1), Cat_Temp, 0});
@@ -89,6 +90,9 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::BREAK:
         case OP::PUSH:
         case OP::ASM:
+        case OP::EDEF_STRU:
+        case OP::DEF_STRU_ELE:
+        case OP::DEF_STRU:
             break;
         default:
             throw runtime_error(debugpos+ " not support " + to_string(static_cast<int>(op)) + " yet");
@@ -214,8 +218,11 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::CONTINUE:os << "(continue, _, _, " << t.tar << ")" << endl; break;
             case OP::BREAK:os << "(break, _, _, " << t.tar << ")" << endl; break;
             case OP::EI:os << "(end-if, _, _, _)" << endl; break;
-            case OP::DEF_FUN:os << "(def_fun, " << ST[t.num1] << ", _, _)" << endl; break;
-            case OP::DEF_VAR:os << "(def_var, " << ST[t.num1] << ", _, _)" << endl; break;
+            case OP::DEF_FUN:os << "(def-fun, " << ST[t.num1] << ", _, _)" << endl; break;
+            case OP::DEF_STRU_ELE:os << "(def-struct-ele, " << ST[t.num1] << ", _, _)" << endl; break;
+            case OP::DEF_STRU:os << "(def-struct, " << ST[t.num1] << ", _, _)" << endl; break;
+            case OP::EDEF_STRU:os << "(end-def-struct, _, _, _)" << endl; break;
+            case OP::DEF_VAR:os << "(def-var, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::GOTO: os << "(goto, _, _, " << ST[t.tar] << ")" << endl; break;
             case OP::LABEL: os << "(label, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::RETN: os << "(retn, " << ST[t.num1] << ", _, _)" << endl; break;

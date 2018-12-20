@@ -72,7 +72,7 @@ int main() {
 
     cout << endl;
     cout << endl;
-    make_8086();
+    // make_8086();
 
     // cout << "optimized" << endl;
 

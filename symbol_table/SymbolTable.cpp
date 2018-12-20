@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by wmj on 18-11-29.
 //
@@ -257,30 +259,36 @@ size_t SymbolTable::set_variables_type(void *tv, void *vv, int cat) {
     return (*variable_list)[0];
 }
 
-size_t SymbolTable::add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list) {
+size_t SymbolTable::add_struct_or_union(size_t struct_or_union, void* name, size_t* declaration_list, size_t*pos) {
     bool is_struct = WA.key[struct_or_union] == "struct";
-    int symbol = get_symbol_index_by_name(*((string*)name));  // TODO: 重定义错误
-    if (symbol == -1)
-        symbol = add_symbol({*((string*)name), 0, Cat_Var});
-
-    TYPE(symbol).data = struct_list.size();
-    struct_list.emplace_back(current_table->symbol_index.size(), declaration_list);
-
-    if (is_struct) {
-        for (auto i = 0; i < STRU(symbol).num_fields; i++)
-            TYPE(symbol).size += TYPE(i + declaration_list).size;
-        TYPE(symbol).t = STRUCT;
-    } else {
-        for (auto i = 0; i < STRU(symbol).num_fields; i++)
-            TYPE(symbol).size = max(TYPE(symbol).size, TYPE(i + declaration_list).size);
-        TYPE(symbol).t = UNION;
+    int symbol = get_symbol_index_by_name_without_error(*((string*)name));
+    if (symbol == -1) {
+        size_t slt = struct_list.size();
+        struct_list.emplace_back(QL.size() - *declaration_list, *declaration_list);
+        size_t size = 0;
+        int offset = 0;
+        for (size_t i = *declaration_list; i < QL.size(); i++) {
+            size_t x = QL[i].num1;
+            if (is_struct) {
+                size += type_list[symbol_list[x].type].size;
+                symbol_list[x].offset = offset;
+                offset += type_list[symbol_list[x].type].size;
+            }
+            else
+                size = max(size, type_list[symbol_list[x].type].size);
+        }
+        symbol = static_cast<int>(add_symbol({*((string *) name),
+                                              get_or_add_type({is_struct?STRUCT:UNION, size, slt}), Cat_Type}));
+        QL[*pos].num1 = static_cast<size_t>(symbol);
     }
-    return symbol;
+    quat(OP::EDEF_STRU, 0, 0, 0);
+    return static_cast<size_t>(symbol);
 }
 
-size_t SymbolTable::add_struct_or_union(size_t struct_or_union, size_t declaration_list) {
-    string name = get_temp_var_name();
-    return add_struct_or_union(struct_or_union, &name, declaration_list);
+size_t SymbolTable::add_struct_or_union(size_t struct_or_union, size_t* declaration_list, size_t*pos) {
+    static int cnt = 0;
+    string name = "@anonymous_struct_or_union_" + to_string(cnt++);
+    return add_struct_or_union(struct_or_union, &name, declaration_list, pos);
 }
 
 size_t SymbolTable::get_or_add_array(const SymbolTable::Array &array) {
@@ -357,6 +365,10 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
             case kvoid:
                 ty->t = VOID;
                 break;
+            case kchar:
+                ty->t = CHAR;
+                ty->size = CHAR_SIZE;
+                break;
             default:
                 rterr("unsupported type " +  WA.key[i->second]);
         }
@@ -378,7 +390,9 @@ size_t SymbolTable::TempSymbol::insert_type_into_table(size_t ti) {
         case SHORT:
         case LONG:
         case DOUBLE:
+        case CHAR:
         case VOID:
+        case STRUCT:
             break;
         case ARRAY:
             tl[ti].data = insert_array_into_table(tl[ti].data);
@@ -487,30 +501,36 @@ SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_basic_type(SymbolTable::Ty
 size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(vector<SymbolTable::TempSymbol *> v,
                                                                      SymbolTable::Type *t, int cat) {
     auto k = static_cast<size_t>(-1);
-    int tcat;
     for (auto x = v.rbegin(); x != v.rend(); x++) {
-        k = add_basic_type_and_insert_into_table(*x, t, cat);
+        if (k == -1)
+            k = add_basic_type_and_insert_into_table(*x, t, cat);
+        else
+            add_basic_type_and_insert_into_table(*x, t, cat);
     }
     assert(k != -1);
     return k;
 }
 size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable::TempSymbol* v,
                                                                             SymbolTable::Type* t, int cat) {
-    size_t s, q;
+    size_t s;
     if (cat != Cat_Func_Defination && v->tl[v->s.type].t == FUNCTION)
         cat = Cat_Func_Declaration;
     v->add_basic_type(*t);
     s = v->insert_symbol_into_table(cat);
+    auto& biu = ST;
     switch (cat) {
         case Cat_Func_Declaration:
-            q = quat(OP::DEF_FUN, s, 0, 0);
+            quat(OP::DEF_FUN, s, 0, 0);
             break;
         case Cat_Var:
-            q = quat(OP::DEF_VAR, s, 0, 0);
+            quat(OP::DEF_VAR, s, 0, 0);
             break;
         case Cat_Func_Defination:
-            q = quat(OP::FUNC, s, 0, 0);
+            quat(OP::FUNC, s, 0, 0);
             // ST.current_table->next_func = true;
+            break;
+        case Cat_Stru_ele:
+            quat(OP::DEF_STRU_ELE, s, 0, 0);
             break;
         default:
             throw runtime_error(debugpos + "don't make quat.");
@@ -521,7 +541,7 @@ size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable
             quat(OP::ASSIGN, v->initializer_list[0], 0, s);
         }
     }
-    return q;
+    return QL.size() - 1;
 }
 
 SymbolTable::TempSymbol *SymbolTable::TempSymbol::set_initializer_list(std::vector<size_t> &list) {
@@ -548,6 +568,9 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t) {
     if (t.cst)
         os << "const ";
     switch (t.t) {
+        case CHAR:
+            os << "char ";
+            break;
         case INT:
             os << "int ";
             break;
@@ -575,6 +598,9 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Type& t) {
         case VOID:
             os << "void";
             break;
+        case STRUCT:
+            os << "struct ";
+            break;
         default:
             os << "unknown type";
     }
@@ -590,9 +616,12 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Function& f) {
 
 std::ostream& operator<<(std::ostream& os, SymbolTable& st) {
     for (size_t i = 0; i < st.symbol_list.size(); i++) {
-        os << i << "#" << st.symbol_list[i];
+        os << i << "# " << st.symbol_list[i];
         auto& s = st.symbol_list[i];
-        if (oneof(s.cat, Cat_Var, Cat_Param)) {
+        if (s.cat == Cat_Stru_ele) {
+            os << ": stru ele ";
+        }
+        if (oneof(s.cat, Cat_Var, Cat_Param, Cat_Stru_ele)) {
             os << ":" << ST.type_list[s.type];
             os << "&" << s.offset;
         }
@@ -603,6 +632,8 @@ std::ostream& operator<<(std::ostream& os, SymbolTable& st) {
             os << ":" << ST.type_list[s.type];
             os << "*" << ST.type_list[s.type].size;
         }
+        if (s.cat == Cat_Label)
+            os << ": LABEL";
         os << endl;
     }
     return os;

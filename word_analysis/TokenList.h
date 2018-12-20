@@ -18,8 +18,8 @@
 #define TOKEN_ASM 'a'
 
 struct Token {
-    Token(char c, size_t i);
-    char first;
+    Token(size_t c, size_t i);
+    size_t first;
     size_t second;
     int x, y;
     friend std::ostream& operator<<(std::ostream& out, const Token& s);

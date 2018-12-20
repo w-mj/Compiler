@@ -100,6 +100,7 @@ public:
         int cat = 0;
         int offset;
         size_t addr=0;
+        bool is_addr = false;
 
         Symbol(std::string name, size_t type, int cat, int offset=0): name(std::move(name)), type(type), cat(cat), offset(offset) {}
     };
@@ -146,7 +147,6 @@ public:
 
         Table* up = nullptr;
         int offset = 0;
-        size_t param_start_pos = 0;
         bool next_func = false;
     };
 
@@ -175,7 +175,7 @@ public:
 
     size_t get_or_add_type(const Type& type);
     size_t get_or_add_array(const Array& array);
-    size_t get_or_add_function(const size_t return_type, const std::vector<size_t>& param_type);
+    size_t get_or_add_function(size_t return_type, const std::vector<size_t>& param_type);
     const Symbol* get_symbol_by_name(const std::string& name);
 
     size_t add_symbol(const Symbol& s);
@@ -217,8 +217,8 @@ public:
     // param: TypeBuilder*, vector<size_t>* v;
     size_t set_variables_type(void* tv, void* vv, int cat=Cat_Var);
 
-    size_t add_struct_or_union(size_t struct_or_union, size_t declaration_list);
-    size_t add_struct_or_union(size_t struct_or_union, void* name, size_t declaration_list);
+    size_t add_struct_or_union(size_t struct_or_union, size_t* declaration_list, size_t* pos);
+    size_t add_struct_or_union(size_t struct_or_union, void* name, size_t* declaration_list, size_t* pos);
 
     bool is_symbol_exists(const std::string& name);
 

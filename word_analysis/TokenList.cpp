@@ -15,7 +15,7 @@ ostream& operator<<(ostream& out, const Token& s)
     return out;
 }
 
-Token::Token(char c, size_t i): first(c), second(i) {
+Token::Token(size_t c, size_t i): first(c), second(i) {
 
 }
 
