@@ -63,6 +63,7 @@ public:
     bool process_char(std::string::iterator& iter, const std::string::iterator& end);
     bool process_constant(std::string::iterator& iter, const std::string::iterator &end);
     bool process_bound(std::string::iterator& iter, const std::string::iterator &end);
+    bool process_pre_compile(std::string::iterator& iter, const std::string::iterator &end);
 
     void process_file(std::ifstream &file, bool print=false);
     TokenList get_tokenList() const;  //TODO: 引用TokenList

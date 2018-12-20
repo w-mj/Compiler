@@ -7,7 +7,8 @@ int fibonacci(int x) {
     return fibonacci(x - 1) + fibonacci(x - 2);
 }
 
-int main(int i) {
+int main(void) {
+    int i;
     for (i = 0; i < 10; i++) {
         printi(fibonacci(i));
     }

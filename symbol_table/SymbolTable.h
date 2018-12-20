@@ -225,6 +225,10 @@ public:
             // std::cout << "temp symbol " << s << std::endl;
             tl.emplace_back(0, 0, 0);
         }
+        TempSymbol(): s("@anonymous", 0, Cat_Var, 0) {
+            // std::cout << "temp symbol " << s << std::endl;
+            tl.emplace_back(0, 0, 0);
+        }
 
         TempSymbol* add_array(size_t len);
         TempSymbol* add_array();

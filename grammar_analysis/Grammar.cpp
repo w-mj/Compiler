@@ -540,7 +540,7 @@ Generators Grammar::YACC_C_Grammar() {
 //      ATTR {return NEW_S(SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(
 //              (SymbolTable::TempSymbol*)v[1], (SymbolTable::Type*)v[0], Cat_Param));}
     | "declaration_specifiers abstract_declarator"
-    | "declaration_specifiers"
+    | "declaration_specifiers"| ATTR {return (new TEMP_S)->add_basic_type(*((SymbolTable::Type*)v[0]));}
             ;
 
     gen.add("identifier_list")

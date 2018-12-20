@@ -211,6 +211,8 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
                 iter++;
                 continue;  // skip space characters
             }
+
+
             try {
                 start = iter;
                 if (isalpha(*iter)) {
