@@ -534,18 +534,6 @@ int SymbolTable::TempSymbol::first_type_t() {
 
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s) {
     os << s.name;
-    if (oneof(s.cat, Cat_Var, Cat_Param)) {
-        os << ":" << ST.type_list[s.type];
-        os << "&" << s.offset;
-    }
-    if (oneof(s.cat, Cat_Func_Declaration, Cat_Func_Defination, Cat_Const, Cat_Temp)) {
-        os << ":" << ST.type_list[s.type];
-    }
-    if (s.cat == Cat_Type) {
-        os << ":" << ST.type_list[s.type];
-        os << "*" << ST.type_list[s.type].size;
-    }
-
     return os;
 }
 
@@ -600,7 +588,20 @@ std::ostream& operator<<(std::ostream& os, SymbolTable::Function& f) {
 
 std::ostream& operator<<(std::ostream& os, SymbolTable& st) {
     for (size_t i = 0; i < st.symbol_list.size(); i++) {
-        os << i << "#" << st.symbol_list[i] << endl;
+        os << i << "#" << st.symbol_list[i];
+        auto& s = st.symbol_list[i];
+        if (oneof(s.cat, Cat_Var, Cat_Param)) {
+            os << ":" << ST.type_list[s.type];
+            os << "&" << s.offset;
+        }
+        if (oneof(s.cat, Cat_Func_Declaration, Cat_Func_Defination, Cat_Const, Cat_Temp)) {
+            os << ":" << ST.type_list[s.type];
+        }
+        if (s.cat == Cat_Type) {
+            os << ":" << ST.type_list[s.type];
+            os << "*" << ST.type_list[s.type].size;
+        }
+        os << endl;
     }
     return os;
 }
