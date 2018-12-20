@@ -75,6 +75,12 @@ void TokenList::add_bound(const std::string &a) {
     list.emplace_back('p', find(bound.begin(), bound.end(), a) - bound.begin());
 }
 
+void TokenList::add_asm(const string &a) {
+    // cout << "**add asm**  " << a << endl;
+    list.emplace_back(TOKEN_ASM, ST.add_asm(a));
+}
+
+
 void TokenList::set_bound_list(const std::vector<std::string> &l) {
     bound.clear();
     bound.insert(bound.end(), l.begin(), l.end());
@@ -117,6 +123,9 @@ void TokenList::print_token(long s, long e) const{
                 cout << ("bound: ");
                 cout << (bound[t.second]);
                 break;
+            case 'a':
+                cout << "asm: ";
+                cout << ST.get_asm(t.second);
             default:break;
         }
         cout << endl;
@@ -135,7 +144,7 @@ TokenList::iterator TokenList::end() {
     return list.end();
 }
 
-std::string TokenList::get_grammar_token(Token&& it) {
+std::string TokenList::get_grammar_token(const Token& it) {
     if (it.first == '#')
         return "#";
     if (it.first == 'k') {
@@ -166,6 +175,8 @@ std::string TokenList::get_token_str(Token t) const {
             return key[t.second];
         case 'p':
             return bound[t.second];
+        case 'a':
+            return ST.get_asm(t.second);
         default:break;
     }
     return "";
@@ -187,10 +198,6 @@ std::string TokenList::get_key(size_t t) {
     return key[t];
 }
 
-void TokenList::add_asm(const string &a) {
-    list.emplace_back(TOKEN_ASM, ST.add_asm(a));
-}
-
 TokenGetter::TokenGetter(TokenList &tkl): tkl(tkl) {
     it = tkl.begin();
     end = tkl.end();
@@ -203,12 +210,21 @@ Token TokenGetter::get() {
 }
 
 Token TokenGetter::next() {
-    while (it != end && it->first == TOKEN_ASM) {
-        quat(OP::ASM, it->second, 0, 0);
-        it++;
+    if (it->first == TOKEN_ASM) {
+        while (it != end && it->first == TOKEN_ASM) {
+            quat(OP::ASM, it->second, 0, 0);
+            it++;
+        }
+        if (it != end)
+            return *it;
     }
+
     if (it != end) {
         it++;
+        while (it != end && it->first == TOKEN_ASM) {
+            quat(OP::ASM, it->second, 0, 0);
+            it++;
+        }
         return *it;
     }
     return {'#', 0};

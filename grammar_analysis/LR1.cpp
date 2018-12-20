@@ -12,6 +12,7 @@
 #include <stack>
 #include <memory>
 #include <ctime>
+#include <cassert>
 
 using namespace std;
 
@@ -85,9 +86,13 @@ bool LR1::process(TokenGetter& getter) {
     try {
         while (true) {
             size_t state = state_stack.top();
+            Token tk = getter.get();
 
-            string alpha = tokenList.get_grammar_token(getter.get());
-            string str = tokenList.get_token_str(getter.get());
+            assert(tk.first != 'a');
+
+            string alpha = tokenList.get_grammar_token(tk);
+            string str = tokenList.get_token_str(tk);
+            // cout << str << endl;
 
             const auto &action = table[state][index[alpha]];
             switch (action.first) {

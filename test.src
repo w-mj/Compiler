@@ -1,6 +1,15 @@
 
 void printi(int a) {
 
+
+#asm
+    MOV AH, 0
+    MOV AL, 18H
+    PUSH AL
+    INT 21H
+#endasm
+
+
 }
 
 int fibonacci(int x) {

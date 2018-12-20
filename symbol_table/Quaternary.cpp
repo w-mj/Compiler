@@ -88,6 +88,7 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::CONTINUE:
         case OP::BREAK:
         case OP::PUSH:
+        case OP::ASM:
             break;
         default:
             throw runtime_error(debugpos+ " not support " + to_string(static_cast<int>(op)) + " yet");
@@ -218,6 +219,7 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::GOTO: os << "(goto, _, _, " << ST[t.tar] << ")" << endl; break;
             case OP::LABEL: os << "(label, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::RETN: os << "(retn, " << ST[t.num1] << ", _, _)" << endl; break;
+            case OP::ASM: os << "(ASM, " << ST.get_asm(t.num1) << " , _, _)" << endl; break;
             case OP::INDEX: os << "([], " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl; break;
             case OP::NOP: os << "(nop, _, _, _)" << endl; break;
             default:

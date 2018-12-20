@@ -90,7 +90,7 @@ void SymbolTable::in() {
     current_table = c;
 
     c->offset = c->up->offset;
-    cout << "Symbol table in" << endl;
+    // cout << "Symbol table in" << endl;
 }
 
 void SymbolTable::in(std::map<std::string, size_t> symbol_index) {
@@ -104,7 +104,7 @@ void SymbolTable::leave() {
     auto t = current_table;
     current_table = current_table->up;
     delete t;
-    cout << "Symbol table leave" << endl;
+    // cout << "Symbol table leave" << endl;
 }
 
 SymbolTable::~SymbolTable() {

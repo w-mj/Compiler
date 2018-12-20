@@ -70,7 +70,7 @@ public:
 
     void print_token(long s, long e) const;
 
-    std::string get_grammar_token(Token&&);
+    std::string get_grammar_token(const Token&);
 
 };
 
