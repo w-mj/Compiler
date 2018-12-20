@@ -90,11 +90,12 @@ void SymbolTable::in() {
     current_table = c;
 
     c->offset = c->up->offset;
-    // cout << "Symbol table in" << endl;
+    cout << "Symbol table in" << endl;
 }
 
 void SymbolTable::in(std::map<std::string, size_t> symbol_index) {
     in();
+    current_table->next_func = true;
     current_table->symbol_index.insert(symbol_index.begin(), symbol_index.end());
     current_table->offset = 0;
 }
@@ -103,7 +104,7 @@ void SymbolTable::leave() {
     auto t = current_table;
     current_table = current_table->up;
     delete t;
-    // cout << "Symbol table leave" << endl;
+    cout << "Symbol table leave" << endl;
 }
 
 SymbolTable::~SymbolTable() {
@@ -447,8 +448,8 @@ SymbolTable::TempSymbol *SymbolTable::TempSymbol::add_function(std::vector<Symbo
 SymbolTable::TempSymbol *
 SymbolTable::TempSymbol::merge_pointer(std::vector<SymbolTable::Type> *pointer_ype_list) {
     auto t = s.type;
-    if (tl[t].t == FUNCTION)
-        ST.current_table->next_func = true;
+//    if (tl[t].t == FUNCTION)
+//        ST.current_table->next_func = true;
     while (t != 0) {
         switch (tl[t].t) {
             case ARRAY:
@@ -509,7 +510,7 @@ size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable
             break;
         case Cat_Func_Defination:
             q = quat(OP::FUNC, s, 0, 0);
-            ST.current_table->next_func = true;
+            // ST.current_table->next_func = true;
             break;
         default:
             throw runtime_error(debugpos + "don't make quat.");
@@ -760,6 +761,16 @@ bool SymbolTable::is_define_var(size_t symbol) {
 
 bool SymbolTable::is_const(size_t symbol) {
     return type_list[symbol_list[symbol].type].cst;
+}
+
+size_t SymbolTable::add_asm(const string &s) {
+    size_t t = asm_list.size();
+    asm_list.push_back(s);
+    return t;
+}
+
+std::string SymbolTable::get_asm(size_t i) {
+    return asm_list[i];
 }
 
 

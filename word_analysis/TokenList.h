@@ -21,6 +21,7 @@ struct Token {
     Token(char c, size_t i);
     char first;
     size_t second;
+    int x, y;
     friend std::ostream& operator<<(std::ostream& out, const Token& s);
 };
 
@@ -34,6 +35,7 @@ class TokenList {
     std::vector<Number> constants;  // c
     std::vector<std::string> key;  // k
     std::vector<std::string> bound;  // p
+
 
     std::vector<Token> list;
 
@@ -50,6 +52,7 @@ public:
     void add_num(const Number& a);
     void add_key(const std::string& a);
     void add_bound(const std::string& a);
+    void add_asm(const std::string& a);
 
     void set_bound_list(const std::vector<std::string>& l);
     void set_key_list(const std::vector<std::string>& l);

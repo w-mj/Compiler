@@ -3,6 +3,7 @@
 //
 
 #include "TokenList.h"
+#include "../symbol_table/Quaternary.h"
 #include <iostream>
 #include <algorithm>
 
@@ -186,6 +187,10 @@ std::string TokenList::get_key(size_t t) {
     return key[t];
 }
 
+void TokenList::add_asm(const string &a) {
+    list.emplace_back(TOKEN_ASM, ST.add_asm(a));
+}
+
 TokenGetter::TokenGetter(TokenList &tkl): tkl(tkl) {
     it = tkl.begin();
     end = tkl.end();
@@ -198,6 +203,10 @@ Token TokenGetter::get() {
 }
 
 Token TokenGetter::next() {
+    while (it != end && it->first == TOKEN_ASM) {
+        quat(OP::ASM, it->second, 0, 0);
+        it++;
+    }
     if (it != end) {
         it++;
         return *it;

@@ -1,4 +1,7 @@
-void printi(int a);
+
+void printi(int a) {
+
+}
 
 int fibonacci(int x) {
     if (x == 1 || x == 2)
@@ -16,6 +19,7 @@ int main(void) {
     d = a + b;
     e = a + b;
     e = c + d;
+
     for (i = 0; i < 10; i++) {
         printi(fibonacci(i));
     }

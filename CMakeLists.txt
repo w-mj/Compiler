@@ -36,4 +36,4 @@ add_executable(Complie main.cpp
         symbol_table/Quaternary.h
         optimizer/optimizer.h
         optimizer/optimizer.cpp
-)
+        object_code/8086.cpp object_code/8086.h)

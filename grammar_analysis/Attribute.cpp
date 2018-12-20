@@ -13,7 +13,10 @@ using C_GramData = Token;
 using namespace std;
 void* default_builder(const Token& tk) {
     static stack <string> brackets_stack;
-
+    if (tk.first == TOKEN_ASM) {
+        quat(OP::ASM, tk.second, 0, 0);
+        return nullptr;
+    }
     if (tk.first == TOKEN_ID) {
         return new string(SL.get_identification(tk.second));
     }

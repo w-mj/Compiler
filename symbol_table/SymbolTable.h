@@ -165,10 +165,13 @@ private:
 
     std::vector<Number> constant_num_list;
     std::vector<Label> label_list;
+    std::vector<std::string> asm_list;
 
     size_t recursive_type(size_t type);
 
 public:
+    size_t add_asm(const std::string& s);
+    std::string get_asm(size_t i);
 
     size_t get_or_add_type(const Type& type);
     size_t get_or_add_array(const Array& array);

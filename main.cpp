@@ -18,6 +18,7 @@
 #include "symbol_table/SymbolTable.h"
 #include "symbol_table/Quaternary.h"
 #include "optimizer/optimizer.h"
+#include "object_code/8086.h"
 
 using namespace std;
 
@@ -68,6 +69,10 @@ int main() {
     cout << QL << endl << endl;
 
     cout << ST << endl;
+
+    cout << endl;
+    cout << endl;
+    make_8086();
 
     // cout << "optimized" << endl;
 

@@ -197,9 +197,10 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
             in_asm = false;
             continue;
         }
-//        if (in_asm) {
-//            tokenList.
-//        }
+        if (in_asm) {
+            tokenList.add_asm(line);
+            continue;
+        }
         size_t start_tk = tokenList.size();
         if (print)
             cout << endl << "in line: " << line << endl;
@@ -274,5 +275,76 @@ const std::map<std::string, int> &WordAnalysis::get_key_map() {
 
 const std::map<std::string, int> &WordAnalysis::get_bound_map() {
     return bound_map;
+}
+
+void WordAnalysis::bind_file(std::string fname) {
+    ifstream file;
+    file.open(fname);
+    file_content = string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+    file.close();
+    file_iter = file_content.begin();
+}
+
+Token WordAnalysis::next() {
+//    static bool in_asm = false, in_commit = false;
+//
+//
+//    size_t start_tk = tokenList.size();
+//
+//    string::iterator iter = file_iter;
+//    while (iter != file_content.end()) {
+//        if (!in_commit && *iter == '/' && *(iter + 1) == '/')  // inline commit
+//            break;
+//        if ((*iter == '/' && *(iter + 1) == '*'))  // block commit
+//            in_commit = true;
+//
+//        if (in_commit) {
+//            while (*iter != '\n' && !(*iter == '*' && *(iter + 1) == '/'))
+//                iter++;
+//            if (*iter == '*' && *(iter + 1) == '/') {
+//                in_commit = false;
+//                iter += 2;
+//            }
+//            continue;
+//        }
+//        if (isspace(*iter)) {
+//            iter++;
+//            continue;  // skip space characters
+//        }
+//
+//
+//        try {
+//            string::iterator start = iter;
+//            if (isalpha(*iter)) {
+//                if (process_key(iter, file_content.end())) {
+//
+//                } else if (process_id(iter, file_content.end())) {
+//
+//                } else
+//                    iter++;
+//            } else if (isdigit(*iter) || (*iter == '.' && isdigit(*(iter + 1)))) {
+//                process_constant(iter, file_content.end());
+//                // token2str(-1);
+//            } else if (*iter == '"') {
+//                process_str(iter, file_content.end());
+//            } else if (*iter == '\'') {
+//                process_char(iter, file_content.end());
+//            } else {
+//                if (process_bound(iter, file_content.end()));
+//                else
+//                    iter++;
+//            }
+//        } catch (runtime_error &e) {
+//            cout << endl << "ERROR:" << endl << line << endl;
+//            for (int i = 0; i < start - line.begin(); i++)
+//                cout << ' ';
+//            for (int i = 0; i < iter - start; i++)
+//                cout << '~';
+//            cout << "^" << endl;
+//            cout << e.what() << endl;
+//            exit(100);
+//        }
+//    }
+    return Token(0, 0);
 }
 

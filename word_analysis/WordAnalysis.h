@@ -41,6 +41,9 @@ private:
     int getEscape(std::string::iterator s, std::string::iterator e);
     explicit WordAnalysis();
 
+    std::string file_content;
+    std::string::iterator file_iter;
+
 public:
     WordAnalysis(WordAnalysis&) = delete;
     WordAnalysis& operator=(WordAnalysis&) = delete;
@@ -52,6 +55,9 @@ public:
 
     std::vector<std::string> key;
     std::vector<std::string> bound;
+
+    void bind_file(std::string fname);
+    Token next();
 
     const std::map<std::string, int>& get_key_map();
     const std::map<std::string, int>& get_bound_map();
