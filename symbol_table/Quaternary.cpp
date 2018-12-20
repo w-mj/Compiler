@@ -216,7 +216,7 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::LABEL: os << "(label, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::RETN: os << "(retn, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::INDEX: os << "([], " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl; break;
-
+            case OP::NOP: os << "(nop, _, _, _)" << endl; break;
             default:
                 os << debugpos << "unsupport quat" << endl;
         }

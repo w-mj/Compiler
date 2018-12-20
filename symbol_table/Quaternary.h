@@ -34,7 +34,7 @@ struct Quat {
 };
 
 class QuatList {
-    std::vector<Quat> quat_list;
+    std::vector<Quat> quat_list {Quat(OP::NOP, 0 ,0, 0)};
     QuatList() = default;;
 public:
     QuatList(QuatList& q) = delete;

@@ -39,6 +39,7 @@ SymbolTable::SymbolTable()
     get_or_add_type({FLOAT, FLOAT_SIZE, 0});
     get_or_add_type({DOUBLE, DOUBLE_SIZE, 0});
     get_or_add_type({POINTER, POINTER_SIZE, 0});
+    add_symbol({"@@nothing", 0, Cat_Label, 0});
     add_symbol({"int", top_table->type_index[{INT, INT_SIZE, 0}], Cat_Type, 0});
     add_symbol({"short", top_table->type_index[{SHORT, SHORT_SIZE, 0}], Cat_Type, 0});
     add_symbol({"long", top_table->type_index[{LONG, LONG_SIZE, 0}], Cat_Type, 0});
@@ -737,6 +738,10 @@ SymbolTable::Function &SymbolTable::get_function_by_index(size_t i) {
 
 SymbolTable::Function& SymbolTable::get_function_by_symbol(size_t symbol) {
     return function_list[TYPE(symbol).data];
+}
+
+bool SymbolTable::is_define_var(size_t symbol) {
+    return oneof(ST[symbol].cat, Cat_Var, Cat_Param) && !is_temp_var(symbol);
 }
 
 

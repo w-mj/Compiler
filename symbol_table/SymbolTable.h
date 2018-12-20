@@ -54,7 +54,13 @@ typedef Token Item;
 #define UNION 0x0E
 #define ENUM 0x0F
 
-
+#define insertaddr(a, b) ST.set_symbol_addr((a), (b))
+#define getaddr(a) ST.get_symbol_addr(a)
+#define getoffset(a) ST.get_symbol_offset(a)
+#define getparamnum(a) ST.get_func_param_num(a)
+#define getvalue(a) ST.get_basic_symbol_type(a)
+#define isterm(a) ST.is_temp_var(a)
+#define getname(a) ST.get_symbol_name(a)
 
 
 class SymbolTable {
@@ -188,6 +194,7 @@ public:
 
     std::string get_symbol_name(size_t symbol);
     bool is_temp_var(size_t symbol);
+    bool is_define_var(size_t symbol);
     void set_symbol_addr(size_t symbol, size_t addr);
     void set_symbol_offset(size_t symbol, int off);
     size_t get_symbol_addr(size_t symbol);
