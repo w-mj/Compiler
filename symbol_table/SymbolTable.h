@@ -209,6 +209,7 @@ public:
     std::string get_type_name(size_t symbol);  // 数组返回基本类型
     std::string get_top_type_name(size_t symbol);
     bool is_const(size_t symbol);
+    bool is_array(size_t symbol);
 
     Type& get_type_by_symbol(size_t i);
     Type& get_type_by_index(size_t);

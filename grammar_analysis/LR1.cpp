@@ -159,7 +159,18 @@ bool LR1::process(TokenGetter& getter) {
                     }
                     cout << endl;
                     cout << "current alpha:  " << alpha << endl;
+                    cout << state << " expected ";
+                    int k = 0;
+                    for (size_t i = 0; i < table[state].size(); i++) {
+                        auto& x = table[state][i];
+                        if (x.first != 'e') {
+                            cout << rindex[i] << " ";
+                            k++;
+                        }
+                    }
+                    cout << " before " << alpha << endl << k << endl;
                     throw runtime_error("ERROR at LR1 analysis. ");
+                    break;
             }
         }
      }
@@ -198,6 +209,9 @@ void LR1::build(bool show_dfa) {
     if (show_dfa)
         dfa.show();
     table = dfa.get_table(index);
+    for (auto i: index) {
+        rindex.emplace(i.second, i.first);
+    }
 }
 
 void LR1::load(std::string fname) {
@@ -212,6 +226,7 @@ void LR1::load(std::string fname) {
     auto index_vec = split(buffer);
     for (size_t i = 0; i < index_vec.size(); i += 2) {
         index.emplace(index_vec[i], stoi(index_vec[i + 1]));
+        rindex.emplace(stoi(index_vec[i + 1]), index_vec[i]);
     }
     int cnt = 0;
     while (getline(f, buffer)) {

@@ -4,6 +4,7 @@
 
 #include "TokenList.h"
 #include "../symbol_table/Quaternary.h"
+#include "../Utility.h"
 #include <iostream>
 #include <algorithm>
 
@@ -196,6 +197,13 @@ std::string TokenList::get_bound(size_t t) {
 
 std::string TokenList::get_key(size_t t) {
     return key[t];
+}
+
+void TokenList::set_last_token_pos(int line, int start, int end) {
+    last_vec(list).line = line;
+    last_vec(list).start = start;
+    last_vec(list).end = end;
+
 }
 
 TokenGetter::TokenGetter(TokenList &tkl): tkl(tkl) {

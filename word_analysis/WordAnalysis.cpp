@@ -186,9 +186,11 @@ int WordAnalysis::getEscape(string::iterator s, string::iterator e) {
 void WordAnalysis::process_file(std::ifstream &file, bool print) {
     string::iterator start;
     string line;
+    int line_cnt = 0;
     bool in_commit = false;
     bool in_asm = false;
     while (getline(file, line)) {
+        line_cnt++;
         if (!in_commit && line == "#asm") {
             in_asm = true;
             continue;
@@ -199,6 +201,7 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
         }
         if (in_asm) {
             tokenList.add_asm(line);
+            tokenList.set_last_token_pos(line_cnt, 0, line.size());
             continue;
         }
         size_t start_tk = tokenList.size();
@@ -247,6 +250,7 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
                     else
                         iter++;
                 }
+                tokenList.set_last_token_pos(line_cnt, start - line.begin(), iter - line.begin());
             } catch (runtime_error &e) {
                 cout << endl << "ERROR:" << endl << line << endl;
                 for (int i = 0; i < start - line.begin(); i++)

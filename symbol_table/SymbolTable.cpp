@@ -824,6 +824,10 @@ size_t SymbolTable::get_array_length(size_t symbol) {
     return array_list[TYPE(symbol).data].len;
 }
 
+bool SymbolTable::is_array(size_t symbol) {
+    return TYPE(symbol).t == ARRAY;
+}
+
 
 
 

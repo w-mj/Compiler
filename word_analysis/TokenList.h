@@ -21,7 +21,7 @@ struct Token {
     Token(size_t c, size_t i);
     size_t first;
     size_t second;
-    int x, y;
+    int line, start, end;
     friend std::ostream& operator<<(std::ostream& out, const Token& s);
 };
 
@@ -56,6 +56,7 @@ public:
 
     void set_bound_list(const std::vector<std::string>& l);
     void set_key_list(const std::vector<std::string>& l);
+    void set_last_token_pos(int line, int start, int end);
 
     char get_token_char(const Token &t) const;
     Number get_token_num(const Token &t) const;

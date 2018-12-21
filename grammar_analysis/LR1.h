@@ -12,6 +12,7 @@ class LR1 {
     Generators generators;
     std::vector<std::vector<std::pair<char, size_t>>> table;
     std::map<std::string, size_t> index;
+    std::map<size_t, std::string> rindex;
     TokenList& tokenList;
 public:
 
