@@ -102,6 +102,8 @@ public:
         size_t addr=0;
         bool is_addr = false;
 
+        int line=0, s=0, e=0;
+
         Symbol(std::string name, size_t type, int cat, int offset=0): name(std::move(name)), type(type), cat(cat), offset(offset) {}
     };
 

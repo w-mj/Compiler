@@ -762,6 +762,7 @@ SymbolTable::Type &SymbolTable::get_type_by_index(size_t t) {
 }
 
 std::string SymbolTable::get_top_type_name(size_t symbol) {
+    int t = TYPE(symbol).t;
     switch (TYPE(symbol).t) {
         case INT:
             return "int";

@@ -20,6 +20,8 @@ Token::Token(size_t c, size_t i): first(c), second(i) {
 
 }
 
+extern int fline, fstart_pos, fend_pos;
+
 
 std::string TokenList::get_token(const Token& t) const{
     switch (t.first) {
@@ -223,8 +225,12 @@ Token TokenGetter::next() {
             quat(OP::ASM, it->second, 0, 0);
             it++;
         }
-        if (it != end)
+        if (it != end) {
+            fline = it->line;
+            fstart_pos = it->start;
+            fend_pos = it->end;
             return *it;
+        }
     }
 
     if (it != end) {
@@ -233,6 +239,9 @@ Token TokenGetter::next() {
             quat(OP::ASM, it->second, 0, 0);
             it++;
         }
+        fline = it->line;
+        fstart_pos = it->start;
+        fend_pos = it->end;
         return *it;
     }
     return {'#', 0};

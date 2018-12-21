@@ -9,6 +9,8 @@
 
 void error(const std::string& s);
 void warring(const std::string& s);
+void print_file(int line, int s1, int e1);
+void print_file(int line, int s1, int e1, int s2, int e2);
 #define rterr(s) (throw runtime_error(debugpos + " " + (s)))
 
 

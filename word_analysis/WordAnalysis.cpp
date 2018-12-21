@@ -12,9 +12,6 @@
 
 using namespace std;
 
-
-
-
 WordAnalysis::WordAnalysis() :
         key{"char", "double", "enum", "float", "int", "long", "short", "signed", "struct",
             "union", "unsigned", "void", "for", "do", "while", "break", "continue", "if",

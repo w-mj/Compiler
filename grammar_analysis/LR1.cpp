@@ -6,6 +6,7 @@
 #include "LR1_DFA.h"
 #include "../Utility.h"
 #include "GrammarTree.h"
+#include "../error/Error.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -13,6 +14,7 @@
 #include <memory>
 #include <ctime>
 #include <cassert>
+#include <sstream>
 
 using namespace std;
 
@@ -159,16 +161,19 @@ bool LR1::process(TokenGetter& getter) {
                     }
                     cout << endl;
                     cout << "current alpha:  " << alpha << endl;
-                    cout << state << " expected ";
+                    stringstream error_msg;
+                    error_msg << "Grammar ERROR: ";
+                    error_msg << "expected ";
                     int k = 0;
                     for (size_t i = 0; i < table[state].size(); i++) {
                         auto& x = table[state][i];
                         if (x.first != 'e') {
-                            cout << rindex[i] << " ";
+                            error_msg << rindex[i] << " ";
                             k++;
                         }
                     }
-                    cout << " before " << alpha << endl << k << endl;
+                    error_msg << " before " << str;
+                    error(error_msg.str());
                     throw runtime_error("ERROR at LR1 analysis. ");
                     break;
             }

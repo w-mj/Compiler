@@ -62,17 +62,22 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
             ST[t].is_addr = true;
             break;
         case OP::MEMBER:
-        case OP::PMEMBER:
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), 0, Cat_Temp, 0});
             ST[t].is_addr = true;
+        case OP::PMEMBER:
             break;
         case OP::CALL:
+            // if (ST.get_type_by_symbol(num1).t != FUNCTION)
+
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST.get_function_type(num1), Cat_Temp, 0});
             break;
+
         // 不需要生成临时变量, 无目标或后填充
+        case OP::ASSIGN:
         case OP::INC:
         case OP::DEC:
-        case OP::ASSIGN:
+            if (!is_basic_type(ST[num1].type) || !is_basic_type(ST[t].type))
+                error("ERROR: Invalid operands to = (" + ST.get_top_type_name(num1) + " and " + ST.get_top_type_name(t) + ")");
         case OP::IF:
         case OP::EL:
         case OP::EI:

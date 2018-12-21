@@ -19,7 +19,7 @@ int fibonacci(int x) {
 struct Stru {
     int a, f;
     char b;
-    long c, d, e
+    long c, d, e;
 };
 
 int main(void) {
@@ -32,6 +32,7 @@ int main(void) {
     d = c.c;
 
     a[3] = b;
+    a = b;
     // a[3] = a[1] + a[2];
 
     for (i = 0; i < 10; i++) {

@@ -21,6 +21,8 @@
 #include "object_code/8086.h"
 
 using namespace std;
+string fname;
+int fline, fstart_pos, fend_pos;
 
 int main() {
     char path[100];
@@ -29,7 +31,7 @@ int main() {
     if (ps.find("cmake-build-debug"))
         chdir("../");
 
-    string fname = "test.src";
+    fname = "test.src";
     ifstream file;
     file.open(fname);
     string line;
