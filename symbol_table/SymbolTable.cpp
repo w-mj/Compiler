@@ -623,6 +623,8 @@ std::ostream& operator<<(std::ostream& os, SymbolTable& st) {
     for (size_t i = 0; i < st.symbol_list.size(); i++) {
         os << i << "# " << st.symbol_list[i];
         auto& s = st.symbol_list[i];
+        if (s.is_addr)
+            os << "[ADDR]";
         if (s.cat == Cat_Stru_ele) {
             os << ": stru ele ";
         }
