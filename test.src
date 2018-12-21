@@ -28,6 +28,9 @@ int main(void) {
     struct Stru c;
     int d;
 
+    c.a = a[0];
+    d = c.c;
+
     a[3] = b;
     a[3] = a[1] + a[2];
 

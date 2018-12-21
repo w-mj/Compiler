@@ -61,6 +61,11 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST.get_basic_symbol_type(num1), Cat_Temp, 0});
             ST[t].is_addr = true;
             break;
+        case OP::MEMBER:
+        case OP::PMEMBER:
+            if (!t) t = ST.add_symbol({ST.get_temp_var_name(), 0, Cat_Temp, 0});
+            ST[t].is_addr = true;
+            break;
         case OP::CALL:
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST.get_function_type(num1), Cat_Temp, 0});
             break;
@@ -228,6 +233,9 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::RETN: os << "(retn, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::ASM: os << "(ASM, " << ST.get_asm(t.num1) << " , _, _)" << endl; break;
             case OP::INDEX: os << "([], " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl; break;
+            case OP::MEMBER: os << "(., " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl; break;
+            case OP::PMEMBER: os << "(->, " << ST[t.num1] << ", " << ST[t.num2] << ", " << ST[t.tar] << ")" << endl; break;
+
             case OP::NOP: os << "(nop, _, _, _)" << endl; break;
             default:
                 os << debugpos << "unsupport quat" << endl;
@@ -300,6 +308,11 @@ std::string op_to_str(OP op) {
         case OP::INDEX:return "[]";
         case OP::RETN:return "retn";
         case OP::ASM:return "ASM";
+        case OP::DEF_STRU:return "def-stru";
+        case OP::DEF_STRU_ELE:return "def-stru_element";
+        case OP::EDEF_STRU:return "end-def-stru";
+        case OP::MEMBER:return ".";
+        case OP::PMEMBER:return "->";
     }
     throw runtime_error(debugpos + " unknown op");
 }
@@ -314,7 +327,9 @@ size_t make_struct_member_quat(size_t str, std::string* member) {
             Number c{};
             c.type = Number::Int;
             c.value.si = ST[stru.data + i].offset;
-            return quat(OP::MEMBER, str, ST.get_or_add_constant(c));
+            size_t temp_var = quat(OP::MEMBER, str, ST.get_or_add_constant(c));
+            ST[temp_var].type = ST[stru.data + i].type;
+            return temp_var;
         }
     }
     error("struct " + ST[str].name + " doesn't have member " + *member);

@@ -264,7 +264,7 @@ size_t SymbolTable::add_struct_or_union(size_t struct_or_union, void* name, size
     int symbol = get_symbol_index_by_name_without_error(*((string*)name));
     if (symbol == -1) {
         size_t slt = struct_list.size();
-        struct_list.emplace_back(QL.size() - *declaration_list, *declaration_list);
+        struct_list.emplace_back(QL.size() - *declaration_list, QL[*declaration_list].num1);
         size_t size = 0;
         int offset = 0;
         for (size_t i = *declaration_list; i < QL.size(); i++) {
@@ -512,6 +512,7 @@ size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(vector<Symb
             add_basic_type_and_insert_into_table(*x, t, cat);
     }
     assert(k != -1);
+    // cout << "return k: " << k << endl;
     return k;
 }
 size_t SymbolTable::TempSymbol::add_basic_type_and_insert_into_table(SymbolTable::TempSymbol* v,
@@ -729,12 +730,14 @@ size_t SymbolTable::get_basic_symbol_type(size_t symbol) {
             return get_symbol_by_name("long")->type;
         case DOUBLE:
             return get_symbol_by_name("double")->type;
+        case STRUCT:
+            return 0;
         case ARRAY:
             return recursive_type(ARR(symbol).type);
         case FUNCTION:
             return recursive_type(FUNC(symbol).ret_type);
         default:
-            throw runtime_error("<SymbolTable.cpp get_basic_symbol_type> not support type " + TYPE(symbol).t);
+            rterr("<SymbolTable.cpp get_basic_symbol_type> not support type " + to_string(TYPE(symbol).t));
     }
 }
 
@@ -778,6 +781,7 @@ std::string SymbolTable::get_top_type_name(size_t symbol) {
             return "struct";
         case POINTER:
             return "pointer";
+        default:break;
     }
     rterr("unsupported type");
 }
