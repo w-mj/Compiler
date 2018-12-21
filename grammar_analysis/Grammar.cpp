@@ -248,7 +248,7 @@ Generators Grammar::YACC_C_Grammar() {
 
     gen.add("primary_expression")
     | "IDENTIFIER" | ATTR { return NEW_S(ST.get_symbol_index_by_name(*((string *) v[0]))); }
-    | "CONSTANT" | ATTR { return NEW_S(ST.add_constant_Symbol(SL.get_number(ITEM_V(0)))); }
+    | "CONSTANT" | ATTR { return NEW_S(ST.get_or_add_constant(SL.get_number(ITEM_V(0)))); }
     | "STRING_LITERAL"
     | "( expression )" | ATTR { return v[1]; };
 
@@ -257,7 +257,7 @@ Generators Grammar::YACC_C_Grammar() {
     | "postfix_expression [ expression ]" | ATTR { return NEW_S(quat(OP::INDEX, ITEM_V(0), ITEM_V(2))); }
     | "postfix_expression ( )" | ATTR { return NEW_S(quat(OP::CALL, ITEM_V(0), NONE)); }
     | "postfix_expression ( argument_expression_list )" | ATTR { return NEW_S(quat(OP::CALL, ITEM_V(0), NONE)); }
-    | "postfix_expression . IDENTIFIER"
+    | "postfix_expression . IDENTIFIER"| ATTR{return NEW_S(make_struct_member_quat(ITEM_V(0), (string*)v[2])); }
     | "postfix_expression -> IDENTIFIER"
     | "postfix_expression ++" | ATTR {
         quat(OP::INC, ITEM_V(0), NONE, ITEM_V(0));
@@ -291,9 +291,9 @@ Generators Grammar::YACC_C_Grammar() {
     }
     | "unary_operator cast_expression" | ATTR { return NEW_S(make_unary_operator_quat(v[0], ITEM_V(1))); }
     | "sizeof unary_expression" |
-    ATTR { return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))})); }
+    ATTR { return NEW_S(ST.get_or_add_constant({Number::ULong, ST.get_type_size(ITEM_V(1))})); }
     | "sizeof ( type_name )" |
-    ATTR { return NEW_S(ST.add_constant_Symbol({Number::ULong, ST.get_type_size(ITEM_V(1))})); };
+    ATTR { return NEW_S(ST.get_or_add_constant({Number::ULong, ST.get_type_size(ITEM_V(1))})); };
 
     gen.add("unary_operator")
     | "&"

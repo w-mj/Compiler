@@ -51,7 +51,7 @@ SymbolTable::SymbolTable()
     Number True{};
     True.type = Number::Short;
     True.value.si = 1;
-    add_constant_Symbol(True);
+    get_or_add_constant(True);
 }
 
 size_t SymbolTable::get_or_add_type(const Type& type) {
@@ -171,7 +171,7 @@ size_t SymbolTable::get_function_type(size_t symbol) {
     return FUNC(symbol).ret_type;
 }
 
-size_t SymbolTable::add_constant_Symbol(const Number &num) {
+size_t SymbolTable::get_or_add_constant(const Number &num) {
     long f = find(constant_num_list.begin(), constant_num_list.end(), num) - constant_num_list.begin();
     if (f >= constant_num_list.size())
         constant_num_list.push_back(num);
@@ -802,6 +802,10 @@ size_t SymbolTable::add_asm(const string &s) {
 
 std::string SymbolTable::get_asm(size_t i) {
     return asm_list[i];
+}
+
+SymbolTable::Struct &SymbolTable::get_struct_by_symbol(size_t symbol) {
+    return struct_list[type_list[symbol_list[symbol].type].data];
 }
 
 

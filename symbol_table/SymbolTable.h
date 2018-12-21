@@ -179,7 +179,7 @@ public:
     const Symbol* get_symbol_by_name(const std::string& name);
 
     size_t add_symbol(const Symbol& s);
-    size_t add_constant_Symbol(const Number& num);
+    size_t get_or_add_constant(const Number &num);
     size_t get_or_add_label(const std::string& name);
 
     Symbol& operator[](size_t i);
@@ -190,6 +190,7 @@ public:
     size_t get_struct_field_by_symbol_filed(size_t s, size_t f);
     size_t get_array_element_type(size_t symbol);
     Function& get_function_by_symbol(size_t symbol);
+    Struct& get_struct_by_symbol(size_t symbol);
     size_t get_function_type(size_t symbol);
     size_t get_type_size(size_t symbol);
 

@@ -303,3 +303,20 @@ std::string op_to_str(OP op) {
     }
     throw runtime_error(debugpos + " unknown op");
 }
+
+
+size_t make_struct_member_quat(size_t str, std::string* member) {
+    if (ST.get_type_by_symbol(str).t != STRUCT)
+        error("member operator (.) must operated on struct. (" + ST.get_top_type_name(str) + ")");
+    auto& stru = ST.get_struct_by_symbol(str);
+    for (size_t i = 0; i < stru.num_fields; i++) {
+        if (ST[stru.data + i].name == *member) {
+            Number c{};
+            c.type = Number::Int;
+            c.value.si = ST[stru.data + i].offset;
+            return quat(OP::MEMBER, str, ST.get_or_add_constant(c));
+        }
+    }
+    error("struct " + ST[str].name + " doesn't have member " + *member);
+    return 0;
+}

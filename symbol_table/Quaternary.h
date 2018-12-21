@@ -22,7 +22,7 @@ enum class OP {
     LESS_THAN=23, GREATER_THEN, LESS_EQUAL, GREATER_EQUAL, EQUAL, NOT_EQUAL, LOG_AND, LOG_OR,
     FUNC=31, EFUNC, IF, EI, EL, WH=36, DO, EW, FOR, JIF, EFOR,
     NOP=42, JMP, DEF_FUN, DEF_VAR, LABEL, GOTO, CONTINUE, BREAK,
-    INDEX=50, RETN, ASM, DEF_STRU, DEF_STRU_ELE, EDEF_STRU
+    INDEX=50, RETN, ASM, DEF_STRU, DEF_STRU_ELE, EDEF_STRU, MEMBER, PMEMBER
 };
 
 struct Quat {
@@ -68,6 +68,7 @@ size_t quat(OP op, size_t num1, size_t, size_t target=0);
 
 size_t make_unary_operator_quat(void* it, size_t num1);
 size_t make_assign_operator_quat(size_t l, size_t a, size_t r);
+size_t make_struct_member_quat(size_t str, std::string* menber);
 
 std::string op_to_str(OP op);
 
