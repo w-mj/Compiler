@@ -818,6 +818,12 @@ SymbolTable::Struct &SymbolTable::get_struct_by_symbol(size_t symbol) {
     return struct_list[type_list[symbol_list[symbol].type].data];
 }
 
+size_t SymbolTable::get_array_length(size_t symbol) {
+    if (TYPE(symbol).t != ARRAY)
+        rterr(to_string(symbol) + " is not a array");
+    return array_list[TYPE(symbol).data].len;
+}
+
 
 
 

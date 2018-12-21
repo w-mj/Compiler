@@ -189,6 +189,7 @@ public:
     size_t get_type_index_by_symbol(size_t symbol);
     size_t get_struct_field_by_symbol_filed(size_t s, size_t f);
     size_t get_array_element_type(size_t symbol);
+    size_t get_array_length(size_t symbol);
     Function& get_function_by_symbol(size_t symbol);
     Struct& get_struct_by_symbol(size_t symbol);
     size_t get_function_type(size_t symbol);
