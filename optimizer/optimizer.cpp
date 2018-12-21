@@ -170,17 +170,10 @@ int dag_graph::find(int op,int oprend_1,int oprend_2){
     return -1;
 }
 void dag_graph::treat(quat_node a) {
-    if(find(a.var)>=0){//当前赋值变量是否存在节点
-        vector<int>::iterator be=node_set[find(a.var)].additional.begin();
-        for(;be!=node_set[find(a.var)].additional.end();be++){//如果不是主标记则删除
-            if(*be==a.var){
-                node_set[find(a.var)].additional.erase(be);
-                break;
-            }
-        }
-    }
     if(a.op==(int)OP::NOP ){ return;}
-    else if(a.op==(int) OP::IF || a.op==(int) OP::DO || a.op==(int) OP::JMP|| a.op==(int) OP::CALL){
+    else if(a.op==(int) OP::IF || a.op==(int) OP::DO || a.op==(int) OP::JMP|| a.op==(int) OP::CALL
+          || a.op==(int) OP::CONTINUE || a.op==(int) OP::BREAK || a.op==(int) OP::EW ||a.op==(int) OP::GOTO
+           || a.op==(int) OP::EFOR){
         dag_node node;
         node.op = a.op;
         node.main=a.var;
@@ -201,13 +194,22 @@ void dag_graph::treat(quat_node a) {
         insert_node(node);
         hash_map[a.oprend_1] = node_num-1;
         return;
-    } else if(a.op==(int) OP::EI || a.op==(int) OP::EW || a.op==(int) OP::FOR||
-              a.op==(int) OP::WH || a.op==(int) OP::EFOR || a.op==(int) OP::EFUNC ||a.op==(int) OP::EDEF_STRU) {
+    } else if(a.op==(int) OP::EI || a.op==(int) OP::FOR||
+              a.op==(int) OP::WH  || a.op==(int) OP::EFUNC ||a.op==(int) OP::EDEF_STRU) {
         dag_node node;
         node.op = a.op;
         node.main = 0;
         insert_node(node);
         return;
+    }
+    if(find(a.var)>=0){//当前赋值变量是否存在节点
+        vector<int>::iterator be=node_set[find(a.var)].additional.begin();
+        for(;be!=node_set[find(a.var)].additional.end();be++){//如果不是主标记则删除
+            if(*be==a.var){
+                node_set[find(a.var)].additional.erase(be);
+                break;
+            }
+        }
     }
     dag_node node;
     node.op=a.op;
@@ -347,7 +349,7 @@ void block_graph::get_adj(){
 
         }else if(is_jmp(quat_list[pre->end].op)){//判断是否为跳转语句
             vector<block_node>::iterator a = node_set.begin();
-            int p = quat_list[pre->end].var-1;
+            int p = quat_list[pre->end].var;
             int i=0;
 //            cout << p << endl;
 //            cout << "p:" <<quat_list[p].op <<','
@@ -411,7 +413,7 @@ void block_graph::get_block() {//分块函数根据入口进行分块
     if(flag==1){//针对于结束节点特殊处理
         new_node.end = i-1;
         new_node.quat_list.insert(new_node.quat_list.begin(),
-                                  quat_list.begin()+new_node.begin,quat_list.begin()+new_node.end+1);
+                                  quat_list.begin()+new_node.begin,quat_list.begin()+new_node.end);
         node_set.push_back(new_node);
         node_num++;
         flag = 0;
@@ -428,7 +430,7 @@ void block_graph::get_entry() {//根据四元式信息分出入口
     entry->is_entry = true;
     while (now != exit){
         while(is_jmp(now->op)){//判断当前语句是否是跳转语句
-            quat_list[now->var-1].is_entry = true;
+            quat_list[now->var].is_entry = true;
             (++now)->is_entry = true;
         }
         now++;
@@ -489,6 +491,7 @@ void block_graph::set_jmp_line() {
 
 optimizer::optimizer():block_graph(){
     dag();
+    show_block();
     new_quat_list.clear();
     for(int i=0;i<node_set.size();i++){
         new_quat_list.insert(new_quat_list.begin()
@@ -502,17 +505,16 @@ void optimizer::dag() {
     vector<block_node>::iterator first=node_set.begin(),last=node_set.end();
     new_quat_list.assign(quat_list.begin(),quat_list.end());
     while (first!=last){
-        int now=first->begin;
+        int now=0;
         dag_graph a;
-        while (now<=first->end){
-            a.treat(quat_list[now]);
+        while (now<first->quat_list.size()){
+            a.treat(first->quat_list[now]);
             now++;
         }
-        a.showgraph();
         generate_quat(a,first);
         first++;
     }
-    show_block();
+//    show_block();
 }//dag图优化
 void optimizer::loop_optimize() {
 
@@ -532,8 +534,8 @@ void optimizer::generate_quat(const dag_graph &a,vector<block_node>::iterator no
                     begin++;
                 }
             }
-        } else if(a.node_set[i].op==(int)OP::EI || a.node_set[i].op==(int)OP::EW||a.node_set[i].op==(int) OP::EDEF_STRU
-                  || a.node_set[i].op==(int)OP::EFOR || a.node_set[i].op==(int)OP::EFUNC) {
+        } else if(a.node_set[i].op==(int)OP::EI ||a.node_set[i].op==(int) OP::EDEF_STRU
+                   || a.node_set[i].op==(int)OP::EFUNC) {
             new_quat_list[begin].op = a.node_set[i].op;
             new_quat_list[begin].var = 0;
             new_quat_list[begin].oprend_1 = 0;
@@ -548,6 +550,14 @@ void optimizer::generate_quat(const dag_graph &a,vector<block_node>::iterator no
             new_quat_list[begin].op = a.node_set[i].op;
             new_quat_list[begin].var = 0;
             new_quat_list[begin].oprend_1 = a.node_set[i].main;
+            new_quat_list[begin].oprend_2 = 0;
+            begin++;
+        }else if(a.node_set[i].op==(int) OP::GOTO|| a.node_set[i].op==(int) OP::JMP
+                 || a.node_set[i].op==(int)OP::IF|| a.node_set[i].op==(int)OP::EW || a.node_set[i].op==(int)OP::BREAK
+                 || a.node_set[i].op==(int)OP::CONTINUE|| a.node_set[i].op==(int)OP::EFOR){
+            new_quat_list[begin].op = a.node_set[i].op;
+            new_quat_list[begin].var = a.node_set[i].main;
+            new_quat_list[begin].oprend_1 = 0;
             new_quat_list[begin].oprend_2 = 0;
             begin++;
         }else{
@@ -611,6 +621,8 @@ void optimizer::show_block(){
         cout << "block:" << i+1 << endl;
         for(int j=0;j<node_set[i].quat_list.size();j++){
             cout << "quat_number:" << j+1;
+            cout << "begin:" << node_set[i].begin << ' ';
+            cout << "end:" << node_set[i].end << ' ';
             cout << "  (" ;
             show_op(OP(node_set[i].quat_list[j].op)) ;
             cout << ',' ;
@@ -697,9 +709,15 @@ vector<quat_node>& optimizer::gennerate_new_quat() {
         for(int j=0;j<node_set[i].quat_list.size();j++){
             if(j==0){
                 old_new_in[node_set[i].begin] = line;
+                if(old_new.find(node_set[i].begin)!=old_new.end()){
+                    for(int m=0;m<old_new[node_set[i].begin].size();m++){
+                        new_list[old_new[node_set[i].begin][m]].var = line;
+                    }
+                }
             } else if(j==node_set[i].quat_list.size()-1){
                 if(old_new_in.find(node_set[i].quat_list[j].var)!=old_new_in.end()){
-                    node_set[i].quat_list[j].var = old_new_in[node_set[i].quat_list[j].var];
+                    if(node_set[i].quat_list[j].op != (int)OP::GOTO)
+                        node_set[i].quat_list[j].var = old_new_in[node_set[i].quat_list[j].var];
                 } else{
                     old_new[node_set[i].quat_list[j].var].emplace_back(line);
                 }
@@ -708,18 +726,10 @@ vector<quat_node>& optimizer::gennerate_new_quat() {
             line++;
         }
     }
+    ofstream a("youhua.txt");
     QL.clear();
     for(int i=0;i<new_list.size();i++){
-//        cout << "(";
-//        show_op((OP)new_list[i].op);
-//        cout << ",";
-//        cout << new_list[i].oprend_1;
-//        cout << ",";
-//        cout << new_list[i].oprend_2;
-//        cout << ",";
-//        cout << new_list[i].var;
-//        cout << ")" << endl;
-
+        a << new_list[i].op << ' ' << new_list[i].oprend_1 << ' ' << new_list[i].oprend_2 << ' ' << new_list[i].var << endl;
         QL.emplace_back((OP)new_list[i].op, new_list[i].oprend_1, new_list[i].oprend_2, new_list[i].var);
     }
 

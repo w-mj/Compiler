@@ -42,13 +42,21 @@ int main(void) {
 }*/
 
 int main() {
-    int a, b, c, d, e, f;
+    int a, b, c, d, e, f, i;
     a = b + c;
     d = b + c;
     L:
     //printi(d);
     e = b + c;
     f = b + c;
+    while(a<1){
+        a=10;
+        b=20;
+        c=a+b;
+    }
+
+    for (i = 10; i < 100; i++)
+        printi(i);
     //printi(100);
     a = a;
         goto L;
