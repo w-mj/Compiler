@@ -374,6 +374,10 @@ void *TypeBuilder::add_speicifer(void *it, void *t) {
         }
     } else {
         // 自定义类型
+        if (ST[i->second].cat != Cat_Type) {
+            error(ST[i->second].name + " is not a type.");
+            return nullptr;
+        }
         auto& defined_type = ST.get_type_by_symbol(i->second);  // 取类型
         ty->t = defined_type.t;
         ty->size = defined_type.size;

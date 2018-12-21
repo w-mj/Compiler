@@ -450,7 +450,9 @@ Generators Grammar::YACC_C_Grammar() {
     | ATTR { return NEW_S(ST.add_struct_or_union(ITEM_V(0), v[1], (size_t *) v[3], (size_t*)v[2])); }
     | "struct_or_union new_struct_or_union struct_declaration_list }"
     | ATTR { return NEW_S(ST.add_struct_or_union(ITEM_V(0), (size_t *) v[2], (size_t*)v[1])); }
-    | "struct_or_union IDENTIFIER";
+    | "struct_or_union IDENTIFIER"
+    | ATTR{ return NEW_S(ST.get_symbol_index_by_name(*((string*)v[1])));}
+    ;
 
     gen.add("new_struct_or_union")
     | "{" | ATTR{quat(OP::DEF_STRU, 0, 0, 0);  return new size_t(QL.size() - 1);}

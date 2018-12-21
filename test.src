@@ -25,6 +25,8 @@ struct Stru {
 int main(void) {
     int a[10], i;
     int b = 1;
+    struct Stru c;
+    int d;
 
     a[3] = b;
     a[3] = a[1] + a[2];

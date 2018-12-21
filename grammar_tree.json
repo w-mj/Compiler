@@ -1420,6 +1420,12 @@
 {"name":"declaration_list"
 ,
 "children": [
+{"name":"declaration_list"
+,
+"children": [
+{"name":"declaration_list"
+,
+"children": [
 {"name":"declaration"
 ,
 "children": [
@@ -1706,6 +1712,111 @@
 ]
 }
 ]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":";"
+}
+]
+}
+]
+}
+,
+{"name":"declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"struct_or_union_specifier"
+,
+"children": [
+{"name":"struct_or_union"
+,
+"children": [
+{"name":"struct"
+}
+]
+}
+,
+{"name":"Stru"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"init_declarator_list"
+,
+"children": [
+{"name":"init_declarator"
+,
+"children": [
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"c"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":";"
+}
+]
+}
+]
+}
+,
+{"name":"declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"int"
+}
+]
+}
+]
+}
+,
+{"name":"init_declarator_list"
+,
+"children": [
+{"name":"init_declarator"
+,
+"children": [
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"d"
 }
 ]
 }
