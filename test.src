@@ -23,16 +23,16 @@ struct Stru {
 };
 
 int main(void) {
-    int a[10], i;
+    int a[10][20], i;
     int b = 1;
     struct Stru c;
     int d;
 
-    c.a = a[0];
+    c.a = a[3][4];
     d = c.c;
 
     a[3] = b;
-    a[3] = a[1] + a[2];
+    // a[3] = a[1] + a[2];
 
     for (i = 0; i < 10; i++) {
         printi(fibonacci(i));
