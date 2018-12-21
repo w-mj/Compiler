@@ -18,6 +18,16 @@ void error(const std::string& s) {
     exit(100);
 }
 
+void error(const std::string& s, int line, int s1, int e1) {
+    error(s);
+    print_file(line, s1, e1);
+}
+
+void error(const std::string& s, int line, int s1, int e1, int s2, int e2) {
+    error(s);
+    print_file(line, s1, e1, s2, e2);
+}
+
 void print_file(int line, int s1, int e1) {
     cout << "\033[1mat " << fname << " " << fline << ":" << fstart_pos << endl;
     ifstream fs;
@@ -31,9 +41,9 @@ void print_file(int line, int s1, int e1) {
         if (i == s1)
             cout << "^";
         else if (i > s1 && i < e1)
-            cout << "~";
+            cout << "^";
         else
-            cout << '_';
+            cout << '~';
     }
     cout << endl << "\033[0m";
     fs.close();
@@ -52,9 +62,9 @@ void print_file(int line, int s1, int e1, int s2, int e2) {
         if ((i == s1 && i != e1) || (i == s2 && i != e2))
             cout << "^";
         else if ((i > s1 && i < e1) || (i > s2 && i < e2))
-            cout << "~";
+            cout << "^";
         else
-            cout << '_';
+            cout << '~';
     }
     cout << endl << "\033[0m";
     fs.close();
@@ -62,4 +72,14 @@ void print_file(int line, int s1, int e1, int s2, int e2) {
 
 void warring(const std::string& s) {
     cout << s << endl;
+}
+
+void warring(const std::string& s, int line, int s1, int e1) {
+    warring(s);
+    print_file(line, s1, e1);
+}
+
+void warring(const std::string& s, int line, int s1, int e1, int s2, int e2) {
+    warring(s);
+    print_file(line, s1, e1, s2, e2);
 }

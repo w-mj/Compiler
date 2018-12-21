@@ -30,7 +30,7 @@
 
 #define cant_be_duplicate(x) (x.cat == Cat_Type || x.cat == Cat_Var)
 
-
+extern int fline, fstart_pos, fend_pos;
 using namespace std;
 SymbolTable::SymbolTable()
 {
@@ -558,6 +558,14 @@ int SymbolTable::TempSymbol::first_type_t() {
     return tl[s.type].t;
 }
 
+SymbolTable::TempSymbol::TempSymbol(const std::string &s) : s(s, 0, Cat_Var, 0) {
+    // std::cout << "temp symbol " << s << std::endl;
+    tl.emplace_back(0, 0, 0);
+    this->s.line = fline;
+    this->s.s = fstart_pos;
+    this->s.e = fend_pos;
+}
+
 
 std::ostream& operator<<(std::ostream& os, SymbolTable::Symbol& s) {
     os << s.name;
@@ -828,6 +836,53 @@ size_t SymbolTable::get_array_length(size_t symbol) {
 bool SymbolTable::is_array(size_t symbol) {
     return TYPE(symbol).t == ARRAY;
 }
+
+int SymbolTable::get_arr_size(int a, int b) {
+    if (TYPE(a).t != ARRAY)
+        rterr(get_top_type_name(a) + " not a array");
+    return symbol_list[a].offset + b * type_list[ARR(a).type].size;
+}
+
+size_t SymbolTable::get_symbol_size(size_t symbol) {
+    return TYPE(symbol).size;
+}
+
+std::string SymbolTable::get_basic_type_names(size_t symbol) {
+    size_t t = get_basic_symbol_type(symbol);
+    switch (t) {
+        case INT: return "LONG";
+        case SHORT: return "SHORT";
+        case LONG: return "LONG";
+        case FLOAT: return "FLOAT";
+        case DOUBLE: return "DOUBLE";
+        case CHAR: return "CHAR";
+        case STRUCT: return "struct";
+    }
+    return "";
+}
+
+size_t SymbolTable::get_basic_type_size(size_t symbol) {
+    return type_list[get_basic_symbol_type(symbol)].size;
+}
+
+bool SymbolTable::is_symbol_arr(size_t symbol) {
+    return TYPE(symbol).t == ARRAY;
+}
+
+bool SymbolTable::is_symbol_const(size_t symbol) {
+    return TYPE(symbol).cst || SYM(symbol).cat == Cat_Const;
+}
+
+int SymbolTable::get_constant_number(size_t symbol) {
+    if (!is_symbol_const(symbol))
+        rterr("not a constant");
+    Number& n = constant_num_list[TYPE(symbol).data];
+    switch (n.type) {
+        case Number::Int: return n.value.si;
+        case Number::Short: return n.value.ss;
+    }
+}
+
 
 
 

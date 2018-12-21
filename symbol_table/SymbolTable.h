@@ -58,9 +58,20 @@ typedef Token Item;
 #define getaddr(a) ST.get_symbol_addr(a)
 #define getoffset(a) ST.get_symbol_offset(a)
 #define getparamnum(a) ST.get_func_param_size(a)
-#define getvalue(a) ST.get_basic_symbol_type(a)
-#define isterm(a) ST.is_temp_var(a)
+#define getvalue(a) ST.get_basic_type_size(a)
+#define istem(a) ST.is_temp_var(a)
 #define getname(a) ST.get_symbol_name(a)
+#define getarrsize(a, b) ST.get_arr_size(a, b)
+#define getasm(a) ST.get_asm(a)
+#define getsize(a) ST.get_symbol_size(a)
+#define isarr(a) ST.is_symbol_arr(a)
+#define isconst(a) ST.is_symbol_const(a)
+#define getnumber(a) ST.get_constant_number(a)
+#define getlength(a) (ST.get_symbol_size(a) / getvalue(a))
+#define getparanum(a) ST.get_func_param_num(a)
+
+#define istempvar(a) ST.is_temp_var(a)
+#define isdefinevar(a) ST.is_define_var(a)
 
 
 class SymbolTable {
@@ -192,12 +203,22 @@ public:
     size_t get_struct_field_by_symbol_filed(size_t s, size_t f);
     size_t get_array_element_type(size_t symbol);
     size_t get_array_length(size_t symbol);
+    size_t get_symbol_size(size_t symbol);
     Function& get_function_by_symbol(size_t symbol);
     Struct& get_struct_by_symbol(size_t symbol);
     size_t get_function_type(size_t symbol);
     size_t get_type_size(size_t symbol);
 
+    bool is_symbol_arr(size_t symbol);
+    bool is_symbol_const(size_t symbol);
+
+    int get_arr_size(int a,int b);  //
+
+    int get_constant_number(size_t symbol);
+
     size_t get_basic_symbol_type(size_t symbol);
+    size_t get_basic_type_size(size_t symbol);
+    std::string get_basic_type_names(size_t symbol);
 
     std::string get_symbol_name(size_t symbol);
     bool is_temp_var(size_t symbol);
@@ -238,10 +259,7 @@ public:
 
         size_t insert_symbol_into_table(int cat);
 
-        explicit TempSymbol(const std::string& s): s(s, 0, Cat_Var, 0) {
-            // std::cout << "temp symbol " << s << std::endl;
-            tl.emplace_back(0, 0, 0);
-        }
+        explicit TempSymbol(const std::string& s);
         TempSymbol(): s("@anonymous", 0, Cat_Var, 0) {
             // std::cout << "temp symbol " << s << std::endl;
             tl.emplace_back(0, 0, 0);

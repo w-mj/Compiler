@@ -1,5 +1,5 @@
 
-void printi(int a) {
+void printi(int a) {/*
 #asm
     MOV AH, 0
     MOV AL, 18H
@@ -7,9 +7,9 @@ void printi(int a) {
     PUSH AL
     INT 21H
 #endasm
-    goto LABEL;
+    goto LABEL;*/
 }
-
+/*
 int fibonacci(int x) {
     if (x == 1 || x == 2)
         return 1;
@@ -26,17 +26,32 @@ int main(void) {
     int a[10][20], i;
     int b = 1;
     struct Stru c;
-    int d;
+    int d, e, f;
+
 
     c.a = a[3][4];
     d = c.c;
 
     a[3] = b;
-    a = b;
-    // a[3] = a[1] + a[2];
+    a[3] = a[1] + a[2];
 
     for (i = 0; i < 10; i++) {
         printi(fibonacci(i));
     }
     return i;
+}*/
+
+int main() {
+    int a, b, c, d, e, f;
+    a = b + c;
+    d = b + c;
+    L:
+    //printi(d);
+    e = b + c;
+    f = b + c;
+    //printi(100);
+    a = a;
+        goto L;
+    b = b;
+
 }

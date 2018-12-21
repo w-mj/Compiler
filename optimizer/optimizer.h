@@ -10,9 +10,8 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <algorithm>
-#include "../symbol_table/SymbolTable.h"
-#include "../symbol_table/Quaternary.h"
+#include <fstream>
+#include<algorithm>
 
 using namespace std;
 
@@ -21,9 +20,6 @@ struct quat_node{//四元式
     int oprend_1,oprend_2;//操作数
     int var;//变量
     bool is_entry;//判断是否是入口地址
-};
-struct active_info{//活跃信息
-    bool op1_acinfo,op2_acinfo,var_acinfo;
 };
 struct block_node{//块节点
     int begin,end;//指向块开始四元式和结束四元式
@@ -55,12 +51,11 @@ protected:
     vector<block_node> node_set;//图节点集合
     int node_num;//节点数量
     set<int> jmp_line;//跳转语句集合
-    vector<active_info> quat_info;//活跃信息
     vector<quat_node> quat_list;//四元式列表
 public:
-    block_graph(vector<Quat> a);//构造函数
+    block_graph();//构造函数
     void set_jmp_line();//设置跳转语句标号
-    void init_quat_list(vector<Quat> a);//初始化四元式列表
+    void init_quat_list();//初始化四元式列表
     void get_entry();//根据跳转语句对程序块进行入口信息赋值
     void get_block();//对四元式进行分块
     void get_adj();//构造块之间的邻接关系
@@ -74,7 +69,7 @@ private:
     vector<vector<int>> loop_set;
 public:
     void show_block();
-    optimizer(vector<Quat>& a);
+    optimizer();
     void dag();//构造DAG图对块内进行局部优化
     void identifyloop();//识别自然循环
     void loop_optimize();//循环优化定值代码外提
@@ -89,6 +84,8 @@ public:
 
     //删除无用变量
     void delete_useless_var();
+    //生成新的四元式
+    vector<quat_node>& gennerate_new_quat();
 };
 
 

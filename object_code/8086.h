@@ -5,6 +5,6 @@
 #ifndef COMPLIE_8086_H
 #define COMPLIE_8086_H
 
-int make_8086();
+int makeasm();
 
 #endif //COMPLIE_8086_H

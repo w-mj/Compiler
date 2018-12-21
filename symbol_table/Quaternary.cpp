@@ -10,6 +10,8 @@
 #include "../Utility.h"
 #include "../error/Error.h"
 
+#define POS1(x) ST[x].line, ST[x].s, ST[x].e
+
 using namespace std;
 
 size_t type_uplift(size_t t1, size_t t2) {
@@ -67,8 +69,8 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::PMEMBER:
             break;
         case OP::CALL:
-            // if (ST.get_type_by_symbol(num1).t != FUNCTION)
-
+            if (ST.get_type_by_symbol(num1).t != FUNCTION)
+                error(ST[num1].name + " is not a function.");
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), ST.get_function_type(num1), Cat_Temp, 0});
             break;
 

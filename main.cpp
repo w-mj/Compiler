@@ -74,9 +74,11 @@ int main() {
 
     cout << endl;
     cout << endl;
-    // make_8086();
 
-    // cout << "optimized" << endl;
+    // makeasm();
+
+    cout << "optimized" << endl;
+    optimizer o;
 
     // optimizer opti(QL.get_vector());
 
