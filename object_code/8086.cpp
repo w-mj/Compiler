@@ -314,10 +314,10 @@ void long_cal(string s,int x)
     if(isparam(x)){
         x=getoffset(x);
         printf("\tAX,");
-        printf("SS:[BP+2+"),from10to16(-x),printf("]\n");
+        printf("SS:[BP+6+"),from10to16(-x),printf("]\n");
         cout << s;
         printf("\tDX,");
-        printf("SS:[BP+1+"),from10to16(-x),printf("]\n");
+        printf("SS:[BP+4+"),from10to16(-x),printf("]\n");
     } else {
 
         x=getoffset(x);
@@ -351,9 +351,9 @@ void long_sto(int x)///存储long型数据
     if(isparam(x)){
         x=getoffset(x);
         printf("\tMOV\t");
-        printf("SS:[BP+2+"),from10to16(-x),printf("],AX\n");
+        printf("SS:[BP+6+"),from10to16(-x),printf("],AX\n");
         printf("\tMOV\t");
-        printf("SS:[BP+1+"),from10to16(-x),printf("],DX\n");
+        printf("SS:[BP+4+"),from10to16(-x),printf("],DX\n");
     } else {
         x=getoffset(x);
         printf("\tMOV\t");
@@ -397,9 +397,9 @@ void long_mov(int x)///存储int型数据
     if(isparam(x)){
         x=getoffset(x);
         printf("MOV\tAX,");
-        printf("SS:[BP+2+"),from10to16(-x),printf("]\n");
+        printf("SS:[BP+6+"),from10to16(-x),printf("]\n");
         printf("MOV\tDX,");
-        printf("SS:[BP+1+"),from10to16(-x),printf("]\n");
+        printf("SS:[BP+4+"),from10to16(-x),printf("]\n");
     } else {
         x=getoffset(x);
         printf("MOV\tAX,");
@@ -444,7 +444,7 @@ void pin(int x)
     }
     if(isparam(x)){
         x=getoffset(x);
-        printf("SS:[BP+2+"),from10to16(-x),printf("]");
+        printf("SS:[BP+4+"),from10to16(-x),printf("]");
     }
     else {
         x=getoffset(x);
@@ -475,7 +475,7 @@ void makeasm()
     getmark();///label信息
 
     for(int i=0;i<=n;i++){
-        printf("s[%d]=%d\n",i,s[i]);
+//        printf("s[%d]=%d\n",i,s[i]);
 
         if((ax!=-1||al!=-1||aa!=-1)&&alive){///若a中变量活跃，先存起来
             if(ax!=-1){
