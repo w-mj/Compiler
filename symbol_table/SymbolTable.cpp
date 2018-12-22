@@ -43,6 +43,7 @@ SymbolTable::SymbolTable()
     get_or_add_type({DOUBLE, DOUBLE_SIZE, 0});
     get_or_add_type({POINTER, POINTER_SIZE, 0});
     add_symbol({"@@nothing", 0, Cat_Label, 0});
+    // quat(OP::DEF_VAR, add_symbol({"@for_eles_flag", top_table->type_index[{SHORT, SHORT_SIZE, 0}], Cat_Var, 0}), 0, 0);
     add_symbol({"int", top_table->type_index[{INT, INT_SIZE, 0}], Cat_Type, 0});
     add_symbol({"short", top_table->type_index[{SHORT, SHORT_SIZE, 0}], Cat_Type, 0});
     add_symbol({"long", top_table->type_index[{LONG, LONG_SIZE, 0}], Cat_Type, 0});
@@ -51,6 +52,8 @@ SymbolTable::SymbolTable()
     Number True{};
     True.type = Number::Short;
     True.value.si = 1;
+    get_or_add_constant(True);
+    True.value.si = 0;
     get_or_add_constant(True);
 }
 

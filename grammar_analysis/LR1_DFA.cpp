@@ -121,13 +121,20 @@ vector<vector<pair<char, size_t>>> LR1_DFA::get_table(map<string, size_t>& index
     for (size_t i = 0; i < all_nodes.size(); i++) {
         Node* cn = all_nodes[i];
         for (const LR1_Generator& gen: cn->generator_list) {
-            if (gen.dot == gen.gen->second.size())
+            if (gen.dot == gen.gen->second.size()) {
                 if (new_table[i][index[gen.outlook]].first == 'e') {
                     new_table[i][index[gen.outlook]].first = 'r';
                     new_table[i][index[gen.outlook]].second = gen.gen_index;
+                } else {
+                    // throw runtime_error("Conflict when reduction at status I" + to_string(i));
+                    cout << "Conflict when reduction at status I" + to_string(i) << endl;
+                    cout << "I" << to_string(i) << " " << gen.outlook << " origin:"
+                    << new_table[i][index[gen.outlook]].first << new_table[i][index[gen.outlook]].second
+                    << " new : r" << gen.gen_index << " select new. " << endl;
+                    new_table[i][index[gen.outlook]].first = 'r';
+                    new_table[i][index[gen.outlook]].second = gen.gen_index;
                 }
-                else
-                    throw runtime_error("Conflict when reduction at status I" + to_string(i));
+            }
         }
         for (const auto& t: cn->transfer) {
             if (new_table[i][index[t.first]].first != 'e') {

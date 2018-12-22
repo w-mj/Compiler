@@ -240,7 +240,7 @@ Generators Grammar::YACC_C_Grammar() {
             "labeled_statement compound_statement declaration_list statement_list expression_statement "
             "selection_statement iteration_statement jump_statement translation_unit external_declaration "
             "function_definition function_definition_head for_init for_cond for_inc new_struct_or_union "
-            "make_label_quat");
+            "make_label_quat for_else_init for_else_inc for_else_else for_else_cond");
 
     gen.set_start("translation_unit");
 
@@ -653,7 +653,27 @@ Generators Grammar::YACC_C_Grammar() {
     | "do statement while ( expression ) ;"
     | "for ( for_init for_cond for_inc statement"| attr_endfor
     | "for ( for_init for_cond expression for_inc statement"| attr_endfor
+    // | "for ( for_else_init for_else_cond for_else_inc statement for_else_else statement"| attr_endfor_else
+    // | "for ( for_else_init for_else_cond expression for_else_inc statement for_else_else statement"| attr_endfor_else
             ;
+
+    gen.add("for_else_init")
+    | "expression_statement" | ATTR{ return attr_builder_for_else_init(); }
+    ;
+
+    gen.add("for_else_cond")
+    | "expression ;" | ATTR{return attr_builder_for_cond(ITEM_V(0)); }
+    | ";"| ATTR{return attr_builder_for_cond(ST.get_symbol_index_by_name("@const_1")); }
+    ;
+
+    gen.add("for_else_else")
+    | "else"| ATTR{ return attr_builder_for_else_else(); }
+    ;
+
+    gen.add("for_else_inc")
+    | ")" | ATTR{return attr_builder_for_else_inc(); }
+    ;
+
     gen.add("for_init")
     | "expression_statement" | ATTR{ return attr_builder_for_init(); }
     ;

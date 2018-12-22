@@ -38,6 +38,12 @@ void* attr_builder_for_cond(size_t cond);
 void* attr_builder_for_inc();
 void* attr_endfor(std::vector<void*>& v);
 
+void* attr_builder_for_else_init();
+void* attr_builder_for_else_else();
+void* attr_builder_for_else_inc();
+void* attr_endfor_else(std::vector<void*>& v);
+
+
 void* attr_start_func(std::vector<void*>& v);
 void* attr_end_func(std::vector<void*>& v);
 

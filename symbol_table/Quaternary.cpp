@@ -219,7 +219,7 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::INV:os << "(~, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
             case OP::IF:os << "(if, "<< ST[t.num1] << ", _ , " << t.tar << ")" << endl; break;
             case OP::FUNC:os << "(func, " << ST[t.num1] << ", _, _)" << endl; break;
-            case OP::EFUNC:os << "(end-func, _, _, _)" << endl; break;
+            case OP::EFUNC:os << "(end-func, " << ST[t.num1] << ", _, _)" << endl; break;
             case OP::EL:os << "(else, " << ", _ ," << t.tar << ")" << endl; break;
             case OP::WH:os << "(while, _, _, _)" << endl; break;
             case OP::FOR:os << "(for, _, _, _)" << endl; break;

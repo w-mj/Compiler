@@ -212,10 +212,49 @@ void* attr_start_func(std::vector<void*>& v) {
         index.emplace(temp->fpl[i]->s.name, ST.get_function_by_index(ST.get_type_by_index(temp->s.type).data).param_index + i);
     }
     ST.in(index);
-    return nullptr;
+    return new size_t(quat_pos);
 }
 
 void* attr_end_func(std::vector<void*>& v) {
-    quat(OP::EFUNC, 0, 0, 0);
+    quat(OP::EFUNC, QL[*((size_t*)v[0])].num1, 0, 0);
+    return nullptr;
+}
+
+void* attr_builder_for_else_init() {
+    size_t t = QL.size();
+    quat(OP::FOR, 0, 0, 0);
+    quat(OP::ASSIGN, ST.get_symbol_index_by_name("@const_1"), 0, 1);
+    return new size_t(t);
+}
+
+void* attr_builder_for_else_else() {
+    size_t t = QL.size();
+    quat(OP::IF, 0, 0, 0);
+    return new size_t(t);
+}
+
+void* attr_builder_for_else_inc() {
+    size_t t = QL.size();
+    quat(OP::JMP, 0, 0, 0);
+    quat(OP::ASSIGN, ST.get_symbol_index_by_name("@const_0"), 0, 1);
+    return new size_t(t);
+}
+
+void* attr_endfor_else(std::vector<void*>& v) {
+    size_t for_pos = *((size_t*)v[2]);
+    size_t do_pos = *((size_t*)v[3]);
+    size_t jmp_pos = v.size() == 6? *((size_t*)v[4]): *((size_t*)v[5]);
+    size_t else_pos = v.size() == 6? *((size_t*)v[6]): *((size_t*)v[7]);
+    quat(OP::EFOR, 0, 0, do_pos + 2);
+//    if (do_pos == for_pos + 1)
+//        QL[do_pos].num1 = ST.get_symbol_index_by_name("@const_1");
+//    else
+//        QL[do_pos].num1 = QL[do_pos - 1].tar;
+    QL[do_pos].tar = QL.size();
+    QL[jmp_pos].tar = for_pos;
+    QL[do_pos + 1].tar = jmp_pos + 1;
+    QL[else_pos].num1 = 1;
+    QL[else_pos].tar = QL.size();
+    quat(OP::EI, 0, 0, 0);
     return nullptr;
 }
