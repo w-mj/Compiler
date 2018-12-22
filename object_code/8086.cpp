@@ -15,7 +15,7 @@ using namespace std;
 //int getvalue(int a){return 2;}///返回符号表中a号函数的返回值类型或者a号变量的类型
 //
 //bool istem(int a){return false;}///返回符号表a号变量是否是临时变量
-//std::string getname(int a){if(a==29)return "MAIN";else return "gcd";}///返回符号表a号变量的名字
+//std::string getname(int a){if(a==29)return "main";else return "gcd";}///返回符号表a号变量的名字
 //bool isconst(int a){return 1;}///符号表中a号变量是不是常数
 //int getnumber(int a){return 1000;}///返回符号表中a号变量的常数
 //int getsize(int a){return 1;}///返回符号表中a号数组的总空间大小
@@ -96,7 +96,7 @@ void globalinit(){
     for(int i=1;i<=n;i++){
         if(s[i]==31)
         {
-            if(getname(a[i][0])=="MAIN"){
+            if(getname(a[i][0])=="main"){
                 preout();
                 return ;
             }
@@ -176,22 +176,27 @@ void getalive(){///配置变量活跃信息
         if(block[i+1]==1){
             alive_init();
         }
-        else if(s[i]==0||s[i]==1||s[i]==2||s[i]==3||s[i]==7||s[i]==8||s[i]==22||s[i]==9){
-            huoyue[a[i][2]]^=1;
+        else if(s[i]==0||s[i]==1||s[i]==2||s[i]==3||s[i]==7||s[i]==8||s[i]==22||s[i]==9||s[i]==12){
             c[i][2]=huoyue[a[i][2]];
+            huoyue[a[i][2]]^=1;
 
-            huoyue[a[i][0]]=1;
             c[i][0]=huoyue[a[i][0]];
             huoyue[a[i][1]]=1;
             c[i][1]=huoyue[a[i][1]];
+            huoyue[a[i][0]]=1;
+//            printf("c[%d][%d]=%d\n",i,0,c[i][0]);
+//            printf("c[%d][%d]=%d\n",i,1,c[i][1]);
+//            printf("c[%d][%d]=%d\n",i,2,c[i][2]);
 
         }
         else if(s[i]==14||s[i]==13){
-            huoyue[a[i][2]]^=1;
             c[i][2]=huoyue[a[i][2]];
+            huoyue[a[i][2]]^=1;
 
-            huoyue[a[i][0]]=1;
             c[i][0]=huoyue[a[i][0]];
+            huoyue[a[i][0]]=1;
+//            printf("c[%d][%d]=%d\n",i,0,c[i][0]);
+//            printf("c[%d][%d]=%d\n",i,2,c[i][2]);
         }
     }
 }
@@ -232,7 +237,7 @@ void init()
     memset(block,0,sizeof(block));
     num=0;
     for(int i=0;i<=100000;i++)
-        temp[i]=-1;
+        temp[i]=-2;
     temp_off=0;
     seg=0;
     off=0;
@@ -418,12 +423,13 @@ void getmark()
 
 void pin(int x)
 {
+
     if(isconst(x)){
         from10to16(getnumber(x));
         return ;
     }
     if(istem(x)){
-        if(temp[x]==-1)///不是数组指针
+        if(temp[x]!=-1)///不是数组指针
             printf("ES:["),from10to16(temp[x]),printf("]");
         else///是数组指针
             printf("DS:[DI+"),from10to16(getaddr(x)),printf("]");
@@ -441,7 +447,7 @@ void pin(int x)
 void makeasm()
 {
     init();
-    freopen("4yuan.txt","r",stdin);
+    freopen("siyuan.txt","r",stdin);
 //    freopen("huibian.txt","w",stdout);
     n=-1;
     int tem;
@@ -461,7 +467,24 @@ void makeasm()
     getmark();///label信息
 
     for(int i=0;i<=n;i++){
-//        printf("s[%d]=%d\n",i,s[i]);
+        printf("s[%d]=%d\n",i,s[i]);
+
+        if((ax!=-1||al!=-1||aa!=-1)&&alive){///若a中变量活跃，先存起来
+            if(ax!=-1){
+                long_sto(ax);
+            }
+            else if(aa!=-1){
+                printf("\tMOV\t");
+                pin(aa);
+                printf(",AL\n");
+            }
+            else {
+                printf("\tMOV\t");
+                pin(al);
+                printf(",AX\n");
+            }
+
+        }
         if(s[i]==42)
             continue;
         if(label[i]!="")
@@ -528,9 +551,9 @@ void makeasm()
         else if(s[i]==31){///函数定义
 
             paranum=getparanum(a[i][0]);
-            if(name=="MAIN"){///是主函数
+            if(name=="main"){///是主函数
                 flag=1;
-                cout << "MAIN"  << endl;
+                cout << "main"  << endl;
                 printf("\tXOR\tDI,DI\n");///DI初始化
             }
             else {///不是主函数
@@ -549,7 +572,7 @@ void makeasm()
             }
         }
         else if(s[i]==32){///函数定义结束
-            if(name=="MAIN"){///是主函数
+            if(name=="main"){///是主函数
                 flag=0;
 
             }
@@ -589,27 +612,11 @@ void makeasm()
         else if(s[i]==0||s[i]==1||s[i]==2||s[i]==3||s[i]==7||s[i]==8||s[i]==22||s[i]==9||s[i]==14||s[i]==13||s[i]==5||s[i]==6||s[i]==4||s[i]==10||s[i]==11){///操作符还没写全
 
             if(istem(a[i][2])){///如果结果是临时变量，为其分配地址
-                if(temp[a[i][2]]==-1)
+                if(temp[a[i][2]]==-2)
                     temp[a[i][2]]=temp_off,temp_off+=getvalue(a[i][2]);///将临时变量存起来并将ES段偏移量加上size
             }
 
 
-            if((ax!=-1||al!=-1||aa!=-1)&&alive){///若a中变量活跃，先存起来
-                if(ax!=-1){
-                    long_sto(ax);
-                }
-                else if(aa!=-1){
-                    printf("\tMOV\t");
-                    pin(aa);
-                    printf(",AL\n");
-                }
-                else {
-                    printf("\tMOV\t");
-                    pin(al);
-                    printf(",AX\n");
-                }
-
-            }
             if(s[i]==22){
                 if(getvalue(a[i][0])==4){
                     long_mov(a[i][0]);
@@ -618,7 +625,7 @@ void makeasm()
                 }else {
                     char s1[10];s1[0]='A',s1[2]='\0';
                     if(getvalue(a[i][0])==1)s1[1]='L';
-                    else s1[1]='L';
+                    else s1[1]='X';
                     printf("\tMOV\t%s,",s1);
                     pin(a[i][0]);
                     printf("\n");
@@ -647,7 +654,7 @@ void makeasm()
                 else {
                     char s1[10];s1[0]='A',s1[2]='\0';
                     if(getvalue(a[i][0])==1)s1[1]='L';
-                    else s1[1]='L';
+                    else s1[1]='X';
                     printf("\tMOV\t%s,",s1);
                     pin(a[i][0]);
                     printf("\n");
@@ -709,10 +716,12 @@ void makeasm()
                     pin(a[i][1]);
                     printf("\n");
 
+                    printf("\t");
                     cout << op[s[i]];
                     printf("\tA%s,B%s\n",s1,s1);
 
                     alive=c[i][2];
+                    cout << "alive=" << alive << endl;
                     if(s1[0]=='L')
                         aa=a[i][2],al=-1,ax=-1;
                     else if(s1[0]=='X')
@@ -811,9 +820,10 @@ void makeasm()
                 continue;
             }
 
+
             char s1[10];s1[0]='B',s1[2]='\0';
             if(getvalue(a[i][0])==1)s1[1]='L';
-            else s1[1]='L';
+            else s1[1]='X';
 
             printf("\tMOV\t%s,",s1);
             pin(a[i][0]);
@@ -887,7 +897,7 @@ void makeasm()
         else if(s[i]==27||s[i]==28||s[i]==23||s[i]==25||s[i]==24||s[i]==26||s[i]==29||s[i]==30||s[i]==21){///关系算符
 
             if(istem(a[i][2])){///如果结果是临时变量，为其分配地址
-                if(temp[a[i][2]]==-1)
+                if(temp[a[i][2]]==-2)
                     temp[a[i][2]]=temp_off,temp_off+=1;///将临时变量存起来并将ES段偏移量加上size
             }
             if((ax!=-1||al!=-1||aa!=-1)&&alive){///若a中变量活跃，先存起来
@@ -1011,8 +1021,11 @@ void makeasm()
         }
         else if(s[i]==50||s[i]==54){
             if(istem(a[i][2])){
-                if(temp[a[i][2]]==-1)
-                    temp[a[i][2]]=temp_off,temp_off+=2;///将临时变量存起来并将ES段偏移量加上size
+                if(temp[a[i][2]]==-1){
+//                    temp[a[i][2]]=temp_off;
+                    temp_off+=2;///将临时变量存起来并将ES段偏移量加上size
+                }
+
             }
             int to=a[i][2];
             if(s[i]==50){
