@@ -70,16 +70,14 @@ void preout(){///在生成主函数之前的前置输出
     for(map<pair<string,int>,int>::iterator it=global.begin();it!=global.end();it++){
         cout << (*it).first.first;
         printf("\t");
+        if((*it).first.second==1)
+            printf("DB");
         if((*it).first.second==2)
             printf("DW");
         else if((*it).first.second==4)
             printf("DD");
-        else if((*it).first.second>4){
-            printf("DW %dDUP(0)\n",(*it).first.second/2);
-            continue;
-        }
         if((*it).second!=-1)
-            printf("%dDUP(0)\n",(*it).second);
+            printf(" %d DUP(0)\n",(*it).second);
         else
             printf("\n");
 
@@ -93,6 +91,7 @@ void preout(){///在生成主函数之前的前置输出
 
 void globalinit(){
     int f1=0;
+    off=0;
     for(int i=1;i<=n;i++){
         if(s[i]==31)
         {
@@ -116,13 +115,17 @@ void globalinit(){
             if(isarr(a[i][0])){///为数组
 
                 if(flag==0){
-                    global.insert(make_pair(make_pair(name,type),a[i][2]));
+                    global.insert(make_pair(make_pair(name,type),getlength(a[i][0])));
+                    insertaddr(a[i][0],off);
+                    off+=getsize(a[i][0]);
                     num++;
                 }
             }
             else {///为单个变量
                 if(flag==0){
                     global.insert(make_pair(make_pair(name,type),-1));
+                    insertaddr(a[i][0],off);
+                    off+=getsize(a[i][0]);
                     num++;
                 }
             }
@@ -308,14 +311,16 @@ void long_cal(string s,int x)
         return ;
     }
     x=getoffset(x);
-    if(x<0){
+    if(isparam(x)){
+        x=getoffset(x);
         printf("\tAX,");
-        printf("SS:[SI+2+"),from10to16(-x),printf("]\n");
+        printf("SS:[BP+6+"),from10to16(-x),printf("]\n");
         cout << s;
         printf("\tDX,");
-        printf("SS:[SI+1+"),from10to16(-x),printf("]\n");
+        printf("SS:[BP+4+"),from10to16(-x),printf("]\n");
     } else {
 
+        x=getoffset(x);
         printf("\tAX,");
         printf("[DI+"),from10to16(x),printf("]\n");
         cout << s;
@@ -343,13 +348,14 @@ void long_sto(int x)///存储long型数据
         return ;
     }
     x=getoffset(x);
-    if(x<0){
+    if(isparam(x)){
+        x=getoffset(x);
         printf("\tMOV\t");
-        printf("SS:[SI+2+"),from10to16(-x),printf("],AX\n");
+        printf("SS:[BP+6+"),from10to16(-x),printf("],AX\n");
         printf("\tMOV\t");
-        printf("SS:[SI+1+"),from10to16(-x),printf("],DX\n");
+        printf("SS:[BP+4+"),from10to16(-x),printf("],DX\n");
     } else {
-
+        x=getoffset(x);
         printf("\tMOV\t");
         printf("[DI+"),from10to16(x),printf("],AX\n");
         printf("\tMOV\t");
@@ -388,13 +394,14 @@ void long_mov(int x)///存储int型数据
         return ;
     }
     x=getoffset(x);
-    if(x<0){
+    if(isparam(x)){
+        x=getoffset(x);
         printf("MOV\tAX,");
-        printf("SS:[SI+2+"),from10to16(-x),printf("]\n");
+        printf("SS:[BP+6+"),from10to16(-x),printf("]\n");
         printf("MOV\tDX,");
-        printf("SS:[SI+1+"),from10to16(-x),printf("]\n");
+        printf("SS:[BP+4+"),from10to16(-x),printf("]\n");
     } else {
-
+        x=getoffset(x);
         printf("MOV\tAX,");
         printf("[DI+"),from10to16(x),printf("]\n");
         printf("MOV\tDX,");
@@ -423,7 +430,7 @@ void getmark()
 
 void pin(int x)
 {
-
+//    printf("istem(%d)=%d\n",x,istem(x));
     if(isconst(x)){
         from10to16(getnumber(x));
         return ;
@@ -435,11 +442,12 @@ void pin(int x)
             printf("DS:[DI+"),from10to16(getaddr(x)),printf("]");
         return ;
     }
-    x=getoffset(x);
-    if(x<0){
-        printf("SS:[SI+2+"),from10to16(-x),printf("]");
+    if(isparam(x)){
+        x=getoffset(x);
+        printf("SS:[BP+4+"),from10to16(-x),printf("]");
     }
     else {
+        x=getoffset(x);
         printf("[DI+"),from10to16(x),printf("]");
     }
 }
@@ -467,7 +475,7 @@ void makeasm()
     getmark();///label信息
 
     for(int i=0;i<=n;i++){
-        printf("s[%d]=%d\n",i,s[i]);
+//        printf("s[%d]=%d\n",i,s[i]);
 
         if((ax!=-1||al!=-1||aa!=-1)&&alive){///若a中变量活跃，先存起来
             if(ax!=-1){
@@ -483,6 +491,8 @@ void makeasm()
                 pin(al);
                 printf(",AX\n");
             }
+            alive=0,
+            al=-1,ax=-1,aa=-1;
 
         }
         if(s[i]==42)
@@ -529,6 +539,7 @@ void makeasm()
                 if(flag==0){
                     global.insert(make_pair(make_pair(name,type),getlength(a[i][0])));
                     num++;
+                    continue;
                 }
                 off+=size1;
             }
@@ -544,8 +555,9 @@ void makeasm()
                 if(flag==0){
                     global.insert(make_pair(make_pair(name,type),-1));
                     num++;
+                    continue;
                 }
-                off+=type;
+                off+=size1;
             }
         }
         else if(s[i]==31){///函数定义
@@ -553,8 +565,16 @@ void makeasm()
             paranum=getparanum(a[i][0]);
             if(name=="main"){///是主函数
                 flag=1;
-                cout << "main"  << endl;
-                printf("\tXOR\tDI,DI\n");///DI初始化
+                cout << "main:"  << endl;
+                printf("\tMOV\tAX,0H\n\tMOV\tDS,AX\n");
+
+                printf("\tMOV\tAX,");
+                from10to16(60000);
+                       printf("\n\tMOV\tES,AX\n");
+                printf("\tMOV\tDI,");///DI初始化
+                from10to16(off);
+                printf("\n");
+                off=0;
             }
             else {///不是主函数
                 flag=2;
@@ -568,7 +588,7 @@ void makeasm()
                 from10to16(off);
                 printf("\n");
                 off=0;
-                printf("\tMOV\tSI,SP\n");
+                printf("\tMOV\tBP,SP\n");
             }
         }
         else if(s[i]==32){///函数定义结束
@@ -721,7 +741,7 @@ void makeasm()
                     printf("\tA%s,B%s\n",s1,s1);
 
                     alive=c[i][2];
-                    cout << "alive=" << alive << endl;
+//                    cout << "alive=" << alive << endl;
                     if(s1[0]=='L')
                         aa=a[i][2],al=-1,ax=-1;
                     else if(s1[0]=='X')
@@ -838,20 +858,40 @@ void makeasm()
             printf(",%s\n",s1);
         }
         else if(s[i]==17){///参数入栈
-            printf("\tPUSH\t");
-            pin(a[i][0]);
-            printf("\n");
+            if(getvalue(a[i][0])==4){
+                long_mov(a[i][0]);
+                printf("\tPUSH\tAX\n");
+                printf("\tPUSH\tDX\n");
+            }
+            else if(getvalue(a[i][0])==1){
+                printf("\tMOV\tAL,");
+                pin(a[i][0]);
+                printf("\n");
+                printf("\tXOR\tAH,AH\n");
+                printf("\tPUSH\tAX\n");
+            }
+            else if(getvalue(a[i][0])==2){
+                printf("\tMOV\tAX,");
+                pin(a[i][0]);
+                printf("\n");
+                printf("\tPUSH\tAX\n");
+            }
         }
         else if(s[i]==15){///调用函数
             printf("\tCALL\t");
             cout << name;
             printf("\n");
-            if(getvalue(a[i][0])==4)
+            if(istem(a[i][2])){
+                if(temp[a[i][2]]==-2)
+                    temp[a[i][2]]=temp_off,temp_off+=getvalue(a[i][2]);
+            }
+
+            if(getvalue(a[i][2])==4)
                 long_sto(a[i][2]);
-            else if(getvalue(a[i][0])==2)
-                printf("\tMOV\t"),pin(a[i][0]),printf(",AX\n");
-            else if(getvalue(a[i][0])==1)
-                printf("\tMOV\t"),pin(a[i][0]),printf(",AL\n");
+            else if(getvalue(a[i][2])==2)
+                printf("\tMOV\t"),pin(a[i][2]),printf(",AX\n");
+            else if(getvalue(a[i][2])==1)
+                printf("\tMOV\t"),pin(a[i][2]),printf(",AL\n");
 
 
             for(int i=1;i<=getparanum(a[i][0]);i++)
@@ -898,7 +938,7 @@ void makeasm()
 
             if(istem(a[i][2])){///如果结果是临时变量，为其分配地址
                 if(temp[a[i][2]]==-2)
-                    temp[a[i][2]]=temp_off,temp_off+=1;///将临时变量存起来并将ES段偏移量加上size
+                    temp[a[i][2]]=temp_off,temp_off+=getvalue(a[i][2]);///将临时变量存起来并将ES段偏移量加上size
             }
             if((ax!=-1||al!=-1||aa!=-1)&&alive){///若a中变量活跃，先存起来
                 if(ax!=-1){
@@ -935,7 +975,7 @@ void makeasm()
                     printf(",01H\n\tJMP\t");
                     cout << s2 << endl;
                     cout << s1 ;
-                    printf("\tMOV\t");
+                    printf(":\tMOV\t");
                     pin(a[i][2]);
                     printf(",00H\n");
 
@@ -967,7 +1007,7 @@ void makeasm()
                     printf(",01H\n\tJMP\t");
                     cout << s2 << endl;
                     cout << s1 ;
-                    printf("\tMOV\t");
+                    printf(":\tMOV\t");
                     pin(a[i][2]);
                     printf(",00H\n");
                 }
@@ -992,7 +1032,7 @@ void makeasm()
                 printf(",01H\n\tJMP\t");
                 cout << s2 << endl;
                 cout << s1 ;
-                printf("\tMOV\t");
+                printf(":\tMOV\t");
                 pin(a[i][2]);
                 printf(",00H\n");
 
@@ -1013,7 +1053,7 @@ void makeasm()
                 printf(",00H\n\tJMP\t");
                 cout << s2 << endl;
                 cout << s1 ;
-                printf("\tMOV\t");
+                printf(":\tMOV\t");
                 pin(a[i][2]);
                 printf(",01H\n");
 
@@ -1058,7 +1098,7 @@ void makeasm()
             cout << s1 << endl;
         }
     }
-    printf("\tMOV\tAH,4CH\n\tINT\t21H\nCSEG\tENDS\nEND MAIN\n");
+    printf("\tMOV\tAH,4CH\n\tINT\t21H\nCSEG\tENDS\nEND main\n");
 
 }
 
