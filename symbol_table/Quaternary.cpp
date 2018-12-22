@@ -24,7 +24,7 @@ size_t type_uplift(size_t t1, size_t t2) {
 }
 
 bool is_basic_type(size_t t) {
-    return oneof(ST.get_type_by_index(t).t, SHORT, INT, LONG, FLOAT, DOUBLE);
+    return oneof(ST.get_type_by_index(t).t, SHORT, INT, LONG, FLOAT, DOUBLE, CHAR);
 }
 
 bool is_integer_type(size_t t) {
@@ -34,16 +34,17 @@ bool is_integer_type(size_t t) {
 size_t quat(OP op, size_t num1, size_t num2, size_t t) {
     switch (op) {
         // 生成临时变量的二元运算符
-        case OP::BIT_AND:
-        case OP::POS:
-        case OP::NEG:
-        case OP::INV:
-        case OP::NOT:
         case OP::GREATER_THEN:
         case OP::GREATER_EQUAL:
         case OP::LESS_EQUAL:
         case OP::LESS_THAN:
         case OP::EQUAL:
+            if (!is_basic_type(ST[num1].type) || !ST[num2].type)
+                error("ERROR: Invalid operands to binary " + op_to_str(op) + " (" +
+                      ST.get_top_type_name(num1) + " and " + ST.get_top_type_name(num2) + ")");
+            if (!t) t = ST.add_symbol({ST.get_temp_var_name(), type_uplift(ST[num1].type, ST[num2].type), Cat_Temp, 0});
+            break;
+        case OP::BIT_AND:
         case OP::PLUS:
         case OP::MINUS:
         case OP::MULTPLY:
@@ -54,6 +55,9 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
         case OP::BIT_OR:
             if (!is_basic_type(ST[num1].type) || !ST[num2].type)
                 error("ERROR: Invalid operands to binary " + op_to_str(op) + " (" +
+                 ST.get_top_type_name(num1) + " and " + ST.get_top_type_name(num2) + ")");
+            if (ST[num1].type != ST[num2].type)
+                warring("WARRING: Different type on operands to binary " + op_to_str(op) + " (" +
                  ST.get_top_type_name(num1) + " and " + ST.get_top_type_name(num2) + ")");
             if (!t) t = ST.add_symbol({ST.get_temp_var_name(), type_uplift(ST[num1].type, ST[num2].type), Cat_Temp, 0});
             break;
@@ -75,11 +79,16 @@ size_t quat(OP op, size_t num1, size_t num2, size_t t) {
             break;
 
         // 不需要生成临时变量, 无目标或后填充
+
         case OP::ASSIGN:
         case OP::INC:
         case OP::DEC:
             if (!is_basic_type(ST[num1].type) || !is_basic_type(ST[t].type))
                 error("ERROR: Invalid operands to = (" + ST.get_top_type_name(num1) + " and " + ST.get_top_type_name(t) + ")");
+        case OP::POS:
+        case OP::NEG:
+        case OP::INV:
+        case OP::NOT:
         case OP::IF:
         case OP::EL:
         case OP::EI:

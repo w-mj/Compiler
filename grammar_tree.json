@@ -1,6 +1,154 @@
 {"name":"translation_unit"
 ,
 "children": [
+{"name":"translation_unit"
+,
+"children": [
+{"name":"external_declaration"
+,
+"children": [
+{"name":"declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"int"
+}
+]
+}
+]
+}
+,
+{"name":"init_declarator_list"
+,
+"children": [
+{"name":"init_declarator"
+,
+"children": [
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"d"
+}
+]
+}
+,
+{"name":"["
+}
+,
+{"name":"constant_expression"
+,
+"children": [
+{"name":"conditional_expression"
+,
+"children": [
+{"name":"logical_or_expression"
+,
+"children": [
+{"name":"logical_and_expression"
+,
+"children": [
+{"name":"inclusive_or_expression"
+,
+"children": [
+{"name":"exclusive_or_expression"
+,
+"children": [
+{"name":"and_expression"
+,
+"children": [
+{"name":"equality_expression"
+,
+"children": [
+{"name":"relational_expression"
+,
+"children": [
+{"name":"shift_expression"
+,
+"children": [
+{"name":"additive_expression"
+,
+"children": [
+{"name":"multiplicative_expression"
+,
+"children": [
+{"name":"cast_expression"
+,
+"children": [
+{"name":"unary_expression"
+,
+"children": [
+{"name":"postfix_expression"
+,
+"children": [
+{"name":"primary_expression"
+,
+"children": [
+{"name":"20"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"]"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":";"
+}
+]
+}
+]
+}
+]
+}
+,
 {"name":"external_declaration"
 ,
 "children": [
@@ -108,6 +256,9 @@
 {"name":"init_declarator_list"
 ,
 "children": [
+{"name":"init_declarator_list"
+,
+"children": [
 {"name":"init_declarator"
 ,
 "children": [
@@ -117,7 +268,7 @@
 {"name":"direct_declarator"
 ,
 "children": [
-{"name":"i"
+{"name":"a"
 }
 ]
 }
@@ -146,13 +297,88 @@
 }
 ]
 }
-,
-{"name":"="
+]
+}
+]
 }
 ,
-{"name":"initializer"
+{"name":","
+}
+,
+{"name":"init_declarator"
 ,
 "children": [
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"c"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":";"
+}
+]
+}
+]
+}
+,
+{"name":"statement_list"
+,
+"children": [
+{"name":"statement_list"
+,
+"children": [
+{"name":"statement_list"
+,
+"children": [
+{"name":"statement"
+,
+"children": [
+{"name":"expression_statement"
+,
+"children": [
+{"name":"expression"
+,
+"children": [
+{"name":"assignment_expression"
+,
+"children": [
+{"name":"unary_expression"
+,
+"children": [
+{"name":"postfix_expression"
+,
+"children": [
+{"name":"primary_expression"
+,
+"children": [
+{"name":"a"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"assignment_operator"
+,
+"children": [
+{"name":"="
+}
+]
+}
+,
 {"name":"assignment_expression"
 ,
 "children": [
@@ -201,9 +427,7 @@
 {"name":"primary_expression"
 ,
 "children": [
-{"name":"0"
-}
-]
+{"name":"1"
 }
 ]
 }
@@ -248,13 +472,143 @@
 }
 ]
 }
+]
+}
 ,
-{"name":"statement_list"
+{"name":"statement"
 ,
 "children": [
-{"name":"statement_list"
+{"name":"expression_statement"
 ,
 "children": [
+{"name":"expression"
+,
+"children": [
+{"name":"assignment_expression"
+,
+"children": [
+{"name":"unary_expression"
+,
+"children": [
+{"name":"postfix_expression"
+,
+"children": [
+{"name":"primary_expression"
+,
+"children": [
+{"name":"b"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"assignment_operator"
+,
+"children": [
+{"name":"="
+}
+]
+}
+,
+{"name":"assignment_expression"
+,
+"children": [
+{"name":"conditional_expression"
+,
+"children": [
+{"name":"logical_or_expression"
+,
+"children": [
+{"name":"logical_and_expression"
+,
+"children": [
+{"name":"inclusive_or_expression"
+,
+"children": [
+{"name":"exclusive_or_expression"
+,
+"children": [
+{"name":"and_expression"
+,
+"children": [
+{"name":"equality_expression"
+,
+"children": [
+{"name":"relational_expression"
+,
+"children": [
+{"name":"shift_expression"
+,
+"children": [
+{"name":"additive_expression"
+,
+"children": [
+{"name":"multiplicative_expression"
+,
+"children": [
+{"name":"cast_expression"
+,
+"children": [
+{"name":"unary_expression"
+,
+"children": [
+{"name":"postfix_expression"
+,
+"children": [
+{"name":"primary_expression"
+,
+"children": [
+{"name":"2"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":";"
+}
+]
+}
+]
+}
+]
+}
+,
 {"name":"statement"
 ,
 "children": [
@@ -288,7 +642,7 @@
 {"name":"primary_expression"
 ,
 "children": [
-{"name":"i"
+{"name":"a"
 }
 ]
 }
@@ -456,7 +810,7 @@
 {"name":"primary_expression"
 ,
 "children": [
-{"name":"i"
+{"name":"a"
 }
 ]
 }
@@ -499,7 +853,7 @@
 {"name":"primary_expression"
 ,
 "children": [
-{"name":"100"
+{"name":"10"
 }
 ]
 }
@@ -595,7 +949,7 @@
 {"name":"primary_expression"
 ,
 "children": [
-{"name":"i"
+{"name":"a"
 }
 ]
 }
@@ -648,6 +1002,18 @@
 {"name":"statement"
 ,
 "children": [
+{"name":"compound_statement"
+,
+"children": [
+{"name":"{"
+}
+,
+{"name":"statement_list"
+,
+"children": [
+{"name":"statement"
+,
+"children": [
 {"name":"expression_statement"
 ,
 "children": [
@@ -657,42 +1023,6 @@
 {"name":"assignment_expression"
 ,
 "children": [
-{"name":"conditional_expression"
-,
-"children": [
-{"name":"logical_or_expression"
-,
-"children": [
-{"name":"logical_and_expression"
-,
-"children": [
-{"name":"inclusive_or_expression"
-,
-"children": [
-{"name":"exclusive_or_expression"
-,
-"children": [
-{"name":"and_expression"
-,
-"children": [
-{"name":"equality_expression"
-,
-"children": [
-{"name":"relational_expression"
-,
-"children": [
-{"name":"shift_expression"
-,
-"children": [
-{"name":"additive_expression"
-,
-"children": [
-{"name":"multiplicative_expression"
-,
-"children": [
-{"name":"cast_expression"
-,
-"children": [
 {"name":"unary_expression"
 ,
 "children": [
@@ -705,68 +1035,14 @@
 {"name":"primary_expression"
 ,
 "children": [
-{"name":"b"
+{"name":"d"
 }
 ]
 }
 ]
 }
 ,
-{"name":"++"
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-,
-{"name":";"
-}
-]
-}
-]
-}
-]
-}
-]
-}
-]
-}
-,
-{"name":"statement"
-,
-"children": [
-{"name":"jump_statement"
-,
-"children": [
-{"name":"return"
+{"name":"["
 }
 ,
 {"name":"expression"
@@ -820,7 +1096,109 @@
 {"name":"primary_expression"
 ,
 "children": [
-{"name":"b"
+{"name":"a"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"]"
+}
+]
+}
+]
+}
+,
+{"name":"assignment_operator"
+,
+"children": [
+{"name":"="
+}
+]
+}
+,
+{"name":"assignment_expression"
+,
+"children": [
+{"name":"conditional_expression"
+,
+"children": [
+{"name":"logical_or_expression"
+,
+"children": [
+{"name":"logical_and_expression"
+,
+"children": [
+{"name":"inclusive_or_expression"
+,
+"children": [
+{"name":"exclusive_or_expression"
+,
+"children": [
+{"name":"and_expression"
+,
+"children": [
+{"name":"equality_expression"
+,
+"children": [
+{"name":"relational_expression"
+,
+"children": [
+{"name":"shift_expression"
+,
+"children": [
+{"name":"additive_expression"
+,
+"children": [
+{"name":"multiplicative_expression"
+,
+"children": [
+{"name":"cast_expression"
+,
+"children": [
+{"name":"unary_expression"
+,
+"children": [
+{"name":"postfix_expression"
+,
+"children": [
+{"name":"primary_expression"
+,
+"children": [
+{"name":"2"
+}
+]
 }
 ]
 }
@@ -858,6 +1236,19 @@
 }
 ,
 {"name":";"
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":"}"
+}
+]
+}
+]
 }
 ]
 }

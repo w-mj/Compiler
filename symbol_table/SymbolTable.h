@@ -74,6 +74,7 @@ typedef Token Item;
 #define getlength(a) (ST.get_symbol_size(a) / getvalue(a))
 #define getparanum(a) ST.get_func_param_num(a)
 #define isparam(a) ST.is_param(a)
+#define isaddr(a) ST.is_addr(a)
 
 #define istempvar(a) ST.is_temp_var(a)
 #define isdefinevar(a) ST.is_define_var(a)
@@ -217,7 +218,7 @@ public:
     bool is_symbol_arr(size_t symbol);
     bool is_symbol_const(size_t symbol);
     bool is_param(size_t symbol);
-
+    bool is_addr(size_t symbol);
     int get_arr_size(int a,int b);  //
 
     int get_constant_number(size_t symbol);

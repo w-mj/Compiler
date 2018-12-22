@@ -883,17 +883,21 @@ int SymbolTable::get_constant_number(size_t symbol) {
     switch (n.type) {
         case Number::Int: return n.value.si;
         case Number::Short: return n.value.ss;
-        case Number::UShort:break;
-        case Number::UInt:break;
-        case Number::ULong:break;
-        case Number::Long:break;
-        case Number::Float:break;
-        case Number::Double:break;
+        case Number::UShort: return n.value.us;
+        case Number::UInt: return n.value.ui;
+        case Number::ULong: n.value.ul;
+        case Number::Long: n.value.sl;
+        case Number::Float: n.value.ft;
+        case Number::Double: n.value.db;
     }
 }
 
 bool SymbolTable::is_param(size_t symbol) {
     return symbol_list[symbol].cat == Cat_Param;
+}
+
+bool SymbolTable::is_addr(size_t symbol) {
+    return symbol_list[symbol].is_addr;
 }
 
 

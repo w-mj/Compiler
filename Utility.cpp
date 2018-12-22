@@ -57,7 +57,7 @@ void colorful_print(const std::string& s, int color, char end) {
         case 1:
             cout << "\033[1;31;0m" << s << "\033[0m" << end; break;
         case 2:
-            cout << "\033[1;34;40m" << s << "\033[0m" << end; break;
+            cout << "\033[1;34;0m" << s << "\033[0m" << end; break;
         default:
             rterr("unsupported color" + to_string(color));
     }

@@ -71,7 +71,8 @@ void print_file(int line, int s1, int e1, int s2, int e2) {
 }
 
 void warring(const std::string& s) {
-    cout << s << endl;
+    colorful_print(s, COLOR_BLUE);
+    print_file(fline, fstart_pos, fend_pos);
 }
 
 void warring(const std::string& s, int line, int s1, int e1) {
