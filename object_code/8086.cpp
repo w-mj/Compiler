@@ -201,6 +201,10 @@ void getalive(){///配置变量活跃信息
 //            printf("c[%d][%d]=%d\n",i,0,c[i][0]);
 //            printf("c[%d][%d]=%d\n",i,2,c[i][2]);
         }
+        else if(s[i]==56||s[i]==17){
+            c[i][0]=huoyue[a[i][0]];
+            huoyue[a[i][0]]=1;
+        }
     }
 }
 
@@ -477,7 +481,7 @@ void makeasm()
     for(int i=0;i<=n;i++){
 //        printf("s[%d]=%d\n",i,s[i]);
 
-        if((ax!=-1||al!=-1||aa!=-1)&&alive){///若a中变量活跃，先存起来
+        if((ax!=-1||al!=-1||aa!=-1)){///若a中变量活跃，先存起来
             if(ax!=-1){
                 long_sto(ax);
             }
@@ -522,8 +526,9 @@ void makeasm()
 
             }
         }
-
-        string name=getname(a[i][0]);
+        string name;
+        if(s[i]!=57)
+            name=getname(a[i][0]);
         if(s[i]==45||s[i]==52){///如果定义了s【i】类型的,即int，float之类
             int type=getvalue(a[i][0]);
             int size1=getsize(a[i][0]);///返回数组字节数
@@ -566,11 +571,15 @@ void makeasm()
             if(name=="main"){///是主函数
                 flag=1;
                 cout << "main:"  << endl;
-                printf("\tMOV\tAX,0H\n\tMOV\tDS,AX\n");
+                printf("\tMOV\tAX,CSEG\n");
+                printf("\tADD\tAX,"),from10to16(2000),printf("\n");
+                printf("\tMOV\tDS,AX\n");
+                printf("\tADD\tAX,"),from10to16(2000),printf("\n");
+                printf("\tMOV\tES,AX\n");
 
-                printf("\tMOV\tAX,");
-                from10to16(60000);
-                       printf("\n\tMOV\tES,AX\n");
+                printf("\tADD\tAX,"),from10to16(2000),printf("\n");
+                printf("\tMOV\tSS,AX\n");
+
                 printf("\tMOV\tDI,");///DI初始化
                 from10to16(off);
                 printf("\n");
@@ -582,11 +591,6 @@ void makeasm()
                 seg_s.push(seg);
                 off_s.push(off);
                 seg+=off;
-                printf("\tPUSH\tDI\n");
-                printf("\tADD\tDI,");
-
-                from10to16(off);
-                printf("\n");
                 off=0;
                 printf("\tMOV\tBP,SP\n");
             }
@@ -612,18 +616,18 @@ void makeasm()
                     int type=getvalue(a[i][0]);
                     if(type==4){
 
-                        long_mov(a[0][0]);
+                        long_mov(a[i][0]);
                         continue;
                     }
                     else{
 
                         printf("\tMOV\tA%c,",type==2?'X':'L');
-                        pin(a[0][0]);
+                        pin(a[i][0]);
                         printf("\n");
                     }
                 }
 
-                printf("\tPOP\tDI\n");
+                printf("\tMOV\tDI,SS:[BP+2]\n");
 
                 printf("\tRET\n");
             }
@@ -878,6 +882,15 @@ void makeasm()
             }
         }
         else if(s[i]==15){///调用函数
+
+
+            printf("\tPUSH\tDI\n");
+            printf("\tADD\tDI,");
+
+            from10to16(off);
+            printf("\n");
+
+
             printf("\tCALL\t");
             cout << name;
             printf("\n");
@@ -886,16 +899,17 @@ void makeasm()
                     temp[a[i][2]]=temp_off,temp_off+=getvalue(a[i][2]);
             }
 
+            printf("\tPOP\t DX\n");
+            for(int i=1;i<=getparanum(a[i][0]);i++)
+                printf("\tPOP\t DX\n");
+            printf("\tMOV\tBP,SP\n");
+
             if(getvalue(a[i][2])==4)
                 long_sto(a[i][2]);
             else if(getvalue(a[i][2])==2)
                 printf("\tMOV\t"),pin(a[i][2]),printf(",AX\n");
             else if(getvalue(a[i][2])==1)
                 printf("\tMOV\t"),pin(a[i][2]),printf(",AL\n");
-
-
-            for(int i=1;i<=getparanum(a[i][0]);i++)
-                printf("\tPOP\t DX\n");
 
 
         }
@@ -940,7 +954,7 @@ void makeasm()
                 if(temp[a[i][2]]==-2)
                     temp[a[i][2]]=temp_off,temp_off+=getvalue(a[i][2]);///将临时变量存起来并将ES段偏移量加上size
             }
-            if((ax!=-1||al!=-1||aa!=-1)&&alive){///若a中变量活跃，先存起来
+            if((ax!=-1||al!=-1||aa!=-1)){///若a中变量活跃，先存起来
                 if(ax!=-1){
                     long_sto(ax);
                 }
