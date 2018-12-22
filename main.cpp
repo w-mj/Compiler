@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
 
 #ifdef __linux__
 #include <zconf.h>
@@ -37,9 +38,15 @@ int main(int argc, char** argv) {
         exit(2);
     }
     fname = string(argv[1]);
+    bool opt = false;
+    if (argc == 3 && strcmp(argv[2], "-o") == 0) {
+        opt = true;
+    }
+
     // fname = "test.src";
     ifstream file;
     file.open(fname);
+    string pfname = split(fname, '.')[0];
     string line;
     WordAnalysis& analyzer = WA;
 
@@ -72,18 +79,36 @@ int main(int argc, char** argv) {
     lr1.show();
     TokenGetter getter(tkl);
     lr1.process(getter);
-    cout << endl << " LR1 OK" << endl << endl;
+    // cout << endl << " LR1 OK" << endl << endl;
 
+    freopen((pfname + ".qlist").c_str(), "w", stdout);
     cout << QL << endl << endl;
-
+    freopen((pfname + ".stable").c_str(), "w", stdout);
     cout << ST << endl;
+    #ifdef __linux__
+        freopen("/dev/tty", "w", stdout);
+    #endif
+    #ifdef _WIN32
+        freopen("CON", "w", stdout);
+    #endif
 
     cout << endl;
     cout << endl;
+    if (opt) {
+        cout << "Optimizer activited." << endl;
+        optimizer o;
+    }
 
     // make8086();
+    freopen((pfname + ".asm").c_str(), "w", stdout);
     makeasm();
-    // optimizer o;
+#ifdef __linux__
+    freopen("/dev/tty", "w", stdout);
+#endif
+#ifdef _WIN32
+    freopen("CON", "w", stdout);
+#endif
+    cout << "build asm at " << pfname << ".asm" << endl;
 
     return 0;
 }
