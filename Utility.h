@@ -67,8 +67,8 @@ bool oneof(T a, Args... args) {
 #endif
 
 #ifdef __WIN32
-#define COLOR_RED 0c
-#define COLOR_BLUE 09
+#define COLOR_RED 0x0c
+#define COLOR_BLUE 0x09
 #endif
 
 void colorful_print(const std::string& s, int color, char end='\n');

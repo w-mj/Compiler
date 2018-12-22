@@ -67,6 +67,7 @@ void colorful_print(const std::string& s, int color, char end) {
 #ifdef _WIN32
 #include <windows.h>
 #include <cstdio>
+#include <io.h>
 HANDLE hConsole = NULL;
 void initConsole(void)
 {
@@ -75,7 +76,7 @@ void initConsole(void)
         fprintf(stderr, "初始化错误：无法获取控制台句柄\n");
         exit(1);
     }
-    SetConsoleTitle("选课系统");
+    SetConsoleTitle("Toy C Compiler");
     COORD size = {120, 9001};  // 设置控制台缓冲
     SetConsoleScreenBufferSize(hConsole,size);
     SMALL_RECT rc =  {0, 0, 119, 29};  // 长宽的最大值为缓冲区减1

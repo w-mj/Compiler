@@ -15,6 +15,10 @@
 #include "../word_analysis/NumericDFA.h"
 #include "../word_analysis/TokenList.h"
 
+#ifdef __WIN32
+#define uint unsigned int
+#endif
+
 
 typedef Token Item;
 
