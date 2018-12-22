@@ -55,11 +55,15 @@ int main() {
         c=a+b;
     }
 
+    if (a >0)
+        goto X;
+
     for (i = 10; i < 100; i++)
         printi(i);
     //printi(100);
     a = a;
         goto L;
+        X:
     b = b;
 
 }
