@@ -316,7 +316,7 @@ size_t SymbolTable::get_or_add_function(const size_t return_type, const std::vec
     function_list.emplace_back(param_type.size(), return_type, symbol_list.size(), 0);
     for (int i = (int)param_type.size() - 1; i >= 0 ; i--) {
         symbol_list.emplace_back("@func_" + to_string(t) + "_param_" + to_string(i), param_type[i], Cat_Param, param_offset);
-        param_offset -= type_list[param_type[i]].size;
+        param_offset -= (type_list[param_type[i]].size / 2) + (type_list[param_type[i]].size & 1);
     }
     return t;
 }

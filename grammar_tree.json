@@ -1073,6 +1073,18 @@
 {"name":"parameter_list"
 ,
 "children": [
+{"name":"parameter_list"
+,
+"children": [
+{"name":"parameter_list"
+,
+"children": [
+{"name":"parameter_list"
+,
+"children": [
+{"name":"parameter_list"
+,
+"children": [
 {"name":"parameter_declaration"
 ,
 "children": [
@@ -1082,7 +1094,164 @@
 {"name":"type_specifier"
 ,
 "children": [
-{"name":"void"
+{"name":"int"
+}
+]
+}
+]
+}
+,
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"a"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":","
+}
+,
+{"name":"parameter_declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"int"
+}
+]
+}
+]
+}
+,
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"c"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":","
+}
+,
+{"name":"parameter_declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"long"
+}
+]
+}
+]
+}
+,
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"b"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":","
+}
+,
+{"name":"parameter_declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"char"
+}
+]
+}
+]
+}
+,
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"d"
+}
+]
+}
+]
+}
+]
+}
+]
+}
+,
+{"name":","
+}
+,
+{"name":"parameter_declaration"
+,
+"children": [
+{"name":"declaration_specifiers"
+,
+"children": [
+{"name":"type_specifier"
+,
+"children": [
+{"name":"int"
+}
+]
+}
+]
+}
+,
+{"name":"declarator"
+,
+"children": [
+{"name":"direct_declarator"
+,
+"children": [
+{"name":"e"
 }
 ]
 }
