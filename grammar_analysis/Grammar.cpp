@@ -239,7 +239,8 @@ Generators Grammar::YACC_C_Grammar() {
             "type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement "
             "labeled_statement compound_statement declaration_list statement_list expression_statement "
             "selection_statement iteration_statement jump_statement translation_unit external_declaration "
-            "function_definition function_definition_head for_init for_cond for_inc new_struct_or_union");
+            "function_definition function_definition_head for_init for_cond for_inc new_struct_or_union "
+            "make_label_quat");
 
     gen.set_start("translation_unit");
 
@@ -600,7 +601,7 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("statement")
-    | "labeled_statement"| ATTR{return v[0] == nullptr? new vector<size_t*>(): new vector<size_t*>{((size_t*)v[0])};}
+    | "labeled_statement"| ATTR{ return v[0] == nullptr? new vector<size_t*>(): new vector<size_t*>{((size_t*)v[0])};}
     | "compound_statement"| ATTR{return v[0];}
     | "expression_statement"| ATTR{return v[0] == nullptr? new vector<size_t*>(): new vector<size_t*>{((size_t*)v[0])};}
     | "selection_statement"//| ATTR{return v[0] == nullptr? new vector<size_t>(): new vector<size_t>{*((size_t*)v[0])};}
@@ -609,10 +610,14 @@ Generators Grammar::YACC_C_Grammar() {
             ;
 
     gen.add("labeled_statement")
-    | "IDENTIFIER : statement"| ATTR{quat(OP::LABEL, ST.get_or_add_label(*((string*)v[0])), 0, 0); return nullptr;}
+    | "make_label_quat : statement"
     | "case constant_expression : statement"
     | "default : statement"
             ;
+
+    gen.add("make_label_quat")
+    |  "IDENTIFIER" | ATTR{quat(OP::LABEL, ST.get_or_add_label(*((string*)v[0])), 0, 0); return nullptr; }
+    ;
 
     gen.add("compound_statement")
     | "{ }" // |ATTR{ quat(OP::NOP, 0, 0, 0); return new size_t(QL.size() - 1); }  // 生成空四元式占位
