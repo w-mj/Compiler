@@ -1,13 +1,43 @@
-/*
+
 void printi(int a) {
 #asm
-    MOV AH, 0
-    MOV AL, 18H
-    LABEL:
-    PUSH AL
-    INT 21H
+    mov BP, SP
+    MOV DX, SS:[BP+2]
+    xor  ah, ah
+    mov  al, dl
+    mov  dh, 10
+    div  dh
+    ;除以10后商是否为0
+    test al, 0ffh
+    ;若为0，则代表原数为一位数
+    jz   single
+    ;商不为0，至少为两位数
+    push ax
+    xor  ah, ah
+    div  dh
+    test al, 0ffh
+    ;同理，若商为0，代表为两位数
+    jz   two
+    ;商为0时，余数不可能也为0，这样是个位数
+    push ax
+    mov  dl, al
+    add  dl, '0'
+    mov  ah, 02h
+    int  21h
+    pop  ax
+two:
+    mov  dl, ah
+    add  dl, '0'
+    mov  ah, 02h
+    int  21h
+    pop  ax
+single:
+    mov  dl, ah
+    add  dl, '0'
+    mov  ah, 02h
+    int  21h
+    ret
 #endasm
-    goto LABEL;
 }
 
 int fibonacci(int x) {
@@ -16,63 +46,10 @@ int fibonacci(int x) {
     return fibonacci(x - 1) + fibonacci(x - 2);
 }
 
-struct Stru {
-    int a, f;
-    char b;
-    long c, d, e;
-};
-
 int main(void) {
-    int a[10][20], i;
-    int b = 1;
-    struct Stru c;
-    int d, e, f;
-
-
-    c.a = a[3][4];
-    d = c.c;
-
-    a[3] = b;
-    a[3] = a[1] + a[2];
-
+    int i;
     for (i = 0; i < 10; i++) {
         printi(fibonacci(i));
     }
     return i;
-}
-
-int main() {
-    int a, b, c, d, e, f, i;
-    a = b + c;
-    d = b + c;
-    L:
-    //printi(d);
-    e = b + c;
-    f = b + c;
-    while(a<1){
-        a=10;
-        b=20;
-        c=a+b;
-    }
-
-
-    if (a >0)
-        a = 10;
-
-    for (i = 10; i < 100; i++)
-        printi(i);
-    //printi(100);
-    a = a;
-        goto L;
-        X:
-    b = b;
-
-}
-*/
-int main() {
-    int a, b, c;
-    a = b + c;
-    L:
-    b = a + c;
-    c = a + b;
 }

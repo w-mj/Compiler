@@ -312,7 +312,7 @@ size_t SymbolTable::get_or_add_function(const size_t return_type, const std::vec
 
     }
     size_t t = function_list.size();
-    int param_offset = 0;
+    int param_offset = 0;  // 函数参数首地址偏移
     function_list.emplace_back(param_type.size(), return_type, symbol_list.size(), 0);
     for (int i = (int)param_type.size() - 1; i >= 0 ; i--) {
         symbol_list.emplace_back("@func_" + to_string(t) + "_param_" + to_string(i), param_type[i], Cat_Param, param_offset);
@@ -659,7 +659,7 @@ std::string SymbolTable::get_symbol_name(size_t symbol) {
 }
 
 bool SymbolTable::is_temp_var(size_t symbol) {
-    return ST[symbol].cat == Cat_Param ||
+    return ST[symbol].cat == Cat_Temp ||
         (ST[symbol].name[0] == '@' && isdigit(ST[symbol].name[1]));
 }
 
@@ -880,7 +880,17 @@ int SymbolTable::get_constant_number(size_t symbol) {
     switch (n.type) {
         case Number::Int: return n.value.si;
         case Number::Short: return n.value.ss;
+        case Number::UShort:break;
+        case Number::UInt:break;
+        case Number::ULong:break;
+        case Number::Long:break;
+        case Number::Float:break;
+        case Number::Double:break;
     }
+}
+
+bool SymbolTable::is_param(size_t symbol) {
+    return symbol_list[symbol].cat == Cat_Param;
 }
 
 
