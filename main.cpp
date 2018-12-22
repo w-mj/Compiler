@@ -82,8 +82,8 @@ int main(int argc, char** argv) {
     cout << endl;
 
     // make8086();
-    // makeasm();
-    optimizer o;
+    makeasm();
+    // optimizer o;
 
     return 0;
 }

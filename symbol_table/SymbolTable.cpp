@@ -745,6 +745,8 @@ size_t SymbolTable::get_basic_symbol_type(size_t symbol) {
             return get_symbol_by_name("double")->type;
         case STRUCT:
             return 0;
+        case VOID:
+            return 0;
         case ARRAY:
             return recursive_type(ARR(symbol).type);
         case FUNCTION:
