@@ -70,17 +70,16 @@ int main() {
 
     cout << QL << endl << endl;
 
-    cout << ST << endl;
+//    cout << ST << endl;
 
     cout << endl;
     cout << endl;
 
-    cout << istem(7);
 
     // makeasm();
 
-    // cout << "optimized" << endl;
-    // optimizer o;
+     cout << "optimized" << endl;
+     optimizer o;
 
     // optimizer opti(QL.get_vector());
 

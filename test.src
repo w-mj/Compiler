@@ -1,55 +1,30 @@
-
-void printi(int a) {
-#asm
-    mov BP, SP
-    MOV DX, SS:[BP+2]
-    xor  ah, ah
-    mov  al, dl
-    mov  dh, 10
-    div  dh
-    ;除以10后商是否为0
-    test al, 0ffh
-    ;若为0，则代表原数为一位数
-    jz   single
-    ;商不为0，至少为两位数
-    push ax
-    xor  ah, ah
-    div  dh
-    test al, 0ffh
-    ;同理，若商为0，代表为两位数
-    jz   two
-    ;商为0时，余数不可能也为0，这样是个位数
-    push ax
-    mov  dl, al
-    add  dl, '0'
-    mov  ah, 02h
-    int  21h
-    pop  ax
-two:
-    mov  dl, ah
-    add  dl, '0'
-    mov  ah, 02h
-    int  21h
-    pop  ax
-single:
-    mov  dl, ah
-    add  dl, '0'
-    mov  ah, 02h
-    int  21h
-    ret
-#endasm
-}
-
-int fibonacci(int x) {
-    if (x == 1 || x == 2)
+int b[100];
+int fib(int x){
+    if(x==1)
         return 1;
-    return fibonacci(x - 1) + fibonacci(x - 2);
+    if(x==0)
+        return 0;
+    return fib(x-1)+fib(x-2);
 }
 
-int main(void) {
-    int i;
-    for (i = 0; i < 10; i++) {
-        printi(fibonacci(i));
+int main(){
+    struct Stu{
+    int a;
+    int b;
+    char c;
+    };
+    struct Stu s;
+    int a,d,c;
+    if(s.a==0){
+    goto B;
+    }else{
+    goto C;
     }
-    return i;
+    B:
+    d=10;
+    a=d+c;
+    C:
+    d=5;
+    c=d+a;
+    return 0;
 }

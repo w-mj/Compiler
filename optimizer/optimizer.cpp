@@ -171,7 +171,7 @@ int dag_graph::find(int op,int oprend_1,int oprend_2){
 }
 void dag_graph::treat(quat_node a) {
     if(a.op==(int)OP::NOP ){ return;}
-    else if(a.op==(int) OP::IF || a.op==(int) OP::DO || a.op==(int) OP::JMP|| a.op==(int) OP::CALL
+    else if(a.op==(int) OP::JMP|| a.op==(int) OP::CALL
           || a.op==(int) OP::CONTINUE || a.op==(int) OP::BREAK || a.op==(int) OP::EW ||a.op==(int) OP::GOTO
            || a.op==(int) OP::EFOR){
         dag_node node;
@@ -368,13 +368,13 @@ void block_graph::get_adj(){
         n++;
     }
     if(is_jmp(pre->end)){//针对于最后一个节点进行额外的一次判断
-        if(quat_list[pre->end].op!=2){
+        if(quat_list[pre->end].op!=(int)OP::GOTO){
             pre->adjlist.push_back(n);
-            now->prelist.push_back(n-1);
         }
         vector<block_node>::iterator a = node_set.begin();
+        int p = quat_list[pre->end].var;
         int i=0;
-        while (a->begin!=pre->end){
+        while (a->begin!=p && a!=node_set.end()){
             a++;
             i++;
         }
@@ -491,7 +491,6 @@ void block_graph::set_jmp_line() {
 
 optimizer::optimizer():block_graph(){
     dag();
-    show_block();
     new_quat_list.clear();
     for(int i=0;i<node_set.size();i++){
         new_quat_list.insert(new_quat_list.begin()
@@ -553,7 +552,7 @@ void optimizer::generate_quat(const dag_graph &a,vector<block_node>::iterator no
             new_quat_list[begin].oprend_2 = 0;
             begin++;
         }else if(a.node_set[i].op==(int) OP::GOTO|| a.node_set[i].op==(int) OP::JMP
-                 || a.node_set[i].op==(int)OP::IF|| a.node_set[i].op==(int)OP::EW || a.node_set[i].op==(int)OP::BREAK
+        || a.node_set[i].op==(int)OP::EW || a.node_set[i].op==(int)OP::BREAK
                  || a.node_set[i].op==(int)OP::CONTINUE|| a.node_set[i].op==(int)OP::EFOR){
             new_quat_list[begin].op = a.node_set[i].op;
             new_quat_list[begin].var = a.node_set[i].main;
