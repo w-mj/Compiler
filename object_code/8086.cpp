@@ -61,6 +61,8 @@ string label[100010];///四元式标号
 int paranum=0;///当前函数参数个数
 string op[100];
 
+bool quanju[100010];///数组指针指示的数组是不是全局的
+
 
 void preout(){///在生成主函数之前的前置输出
     printf("SSEG\tSEGMENT\tSTACK\n");
@@ -92,7 +94,8 @@ void preout(){///在生成主函数之前的前置输出
 void globalinit(){
     int f1=0;
     off=0;
-    for(int i=1;i<=n;i++){
+    for(int i=0;i<=n;i++){
+        cout << "s" << i << "= " << s[i] << endl;
         if(s[i]==31)
         {
             if(getname(a[i][0])=="main"){
@@ -112,6 +115,7 @@ void globalinit(){
             string name=getname(a[i][0]);
             int type=getvalue(a[i][0]);
             int size1=getsize(a[i][0]);///返回数组字节数
+            cout << "name=" << name << endl;
             if(isarr(a[i][0])){///为数组
 
                 if(flag==0){
@@ -230,6 +234,7 @@ string pou()
 
 void init()
 {
+    memset(quanju,0,sizeof quanju);
     op[0]="ADD";
     op[1]="SUB";
     op[7]="AND";
@@ -307,14 +312,14 @@ void long_cal(string s,int x)
         }
         else{///是数组指针
             printf("\tAX,");
-            printf("DS:[DI+"),from10to16(getaddr(x)),printf("]\n");
+            printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)),printf("]\n");
             cout << s;
             printf("\tDX,");
-            printf("DS:[DI+"),from10to16(getaddr(x)+1),printf("]\n");
+            printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)+1),printf("]\n");
         }
         return ;
     }
-    x=getoffset(x);
+
     if(isparam(x)){
         x=getoffset(x);
         printf("\tAX,");
@@ -323,13 +328,13 @@ void long_cal(string s,int x)
         printf("\tDX,");
         printf("SS:[BP+4+"),from10to16(-x),printf("]\n");
     } else {
-
+        int p=x;
         x=getoffset(x);
         printf("\tAX,");
-        printf("[DI+"),from10to16(x),printf("]\n");
+        printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+"),from10to16(x),printf("]\n");
         cout << s;
         printf("\tDX,");
-        printf("[DI+1"),from10to16(x),printf("]\n");
+        printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+2"),from10to16(x),printf("]\n");
     }
 }
 
@@ -345,13 +350,13 @@ void long_sto(int x)///存储long型数据
         }
         else{///是数组指针
             printf("\tMOV\t");
-            printf("DS:[DI+"),from10to16(getaddr(x)),printf("],AX\n");
+            printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)),printf("],AX\n");
             printf("\tMOV\t");
-            printf("DS:[DI+"),from10to16(getaddr(x)+1),printf("],DX\n");
+            printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)+1),printf("],DX\n");
         }
         return ;
     }
-    x=getoffset(x);
+
     if(isparam(x)){
         x=getoffset(x);
         printf("\tMOV\t");
@@ -359,11 +364,12 @@ void long_sto(int x)///存储long型数据
         printf("\tMOV\t");
         printf("SS:[BP+4+"),from10to16(-x),printf("],DX\n");
     } else {
+        int p=x;
         x=getoffset(x);
         printf("\tMOV\t");
-        printf("[DI+"),from10to16(x),printf("],AX\n");
+        printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+"),from10to16(x),printf("],AX\n");
         printf("\tMOV\t");
-        printf("[DI+1"),from10to16(x),printf("],DX\n");
+        printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+2"),from10to16(x),printf("],DX\n");
     }
 
 }
@@ -391,13 +397,13 @@ void long_mov(int x)///存储int型数据
         }
         else{///是数组指针
             printf("MOV\tAX,");
-            printf("DS:[DI+"),from10to16(getaddr(x)),printf("]\n");
+            printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)),printf("]\n");
             printf("MOV\tDX,");
-            printf("DS:[DI+"),from10to16(getaddr(x)+1),printf("]\n");
+            printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)+1),printf("]\n");
         }
         return ;
     }
-    x=getoffset(x);
+
     if(isparam(x)){
         x=getoffset(x);
         printf("MOV\tAX,");
@@ -405,11 +411,12 @@ void long_mov(int x)///存储int型数据
         printf("MOV\tDX,");
         printf("SS:[BP+4+"),from10to16(-x),printf("]\n");
     } else {
+        int p=x;
         x=getoffset(x);
         printf("MOV\tAX,");
-        printf("[DI+"),from10to16(x),printf("]\n");
+        printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+"),from10to16(x),printf("]\n");
         printf("MOV\tDX,");
-        printf("[DI+1"),from10to16(x),printf("]\n");
+        printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+2"),from10to16(x),printf("]\n");
     }
 }
 
@@ -443,7 +450,7 @@ void pin(int x)
         if(temp[x]!=-1)///不是数组指针
             printf("ES:["),from10to16(temp[x]),printf("]");
         else///是数组指针
-            printf("DS:[DI+"),from10to16(getaddr(x)),printf("]");
+            printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)),printf("]");
         return ;
     }
     if(isparam(x)){
@@ -451,8 +458,9 @@ void pin(int x)
         printf("SS:[BP+4+"),from10to16(-x),printf("]");
     }
     else {
+        int p=x;
         x=getoffset(x);
-        printf("[DI+"),from10to16(x),printf("]");
+        printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+"),from10to16(x),printf("]");
     }
 }
 
@@ -470,16 +478,26 @@ void makeasm()
         for(int i=0;i<=2;i++)
             scanf("%d",&a[n][i]);
     }
-    n--;
+//    n--;
 
     printf("n=%d\n",n);
     globalinit();
     getblock();///分配代码块
     getalive();///分配活跃信息
     getmark();///label信息
-
+    al=-1;aa=-1;ax=-1;
+    alive=0;
     for(int i=0;i<=n;i++){
 //        printf("s[%d]=%d\n",i,s[i]);
+
+
+        if(s[i]==57){
+            string s1=getasm(a[i][0]);
+            cout << s1 << endl;
+            continue;
+        }
+        if(s[i]==42)
+            continue;
 
         if((ax!=-1||al!=-1||aa!=-1)){///若a中变量活跃，先存起来
             if(ax!=-1){
@@ -499,8 +517,6 @@ void makeasm()
             al=-1,ax=-1,aa=-1;
 
         }
-        if(s[i]==42)
-            continue;
         if(label[i]!="")
             cout <<  label[i],cout << ":";
 //            printf("    ");
@@ -538,7 +554,7 @@ void makeasm()
                     continue;
                 }
                 if(flag==1)
-                    insertaddr(a[i][0],seg+off);
+                    insertaddr(a[i][0],off);
                 if(flag==2)
                     insertaddr(a[i][0],off);
                 if(flag==0){
@@ -554,7 +570,7 @@ void makeasm()
                     continue;
                 }
                 if(flag==1)
-                    insertaddr(a[i][0],seg+off);
+                    insertaddr(a[i][0],off);
                 if(flag==2)
                     insertaddr(a[i][0],off);
                 if(flag==0){
@@ -837,7 +853,7 @@ void makeasm()
         else if(s[i]==12||s[i]==20||s[i]==19){///赋值操作符
 
             if(isaddr(a[i][2])){
-                printf("MOV\tSI,");
+                printf("\tMOV\tSI,");
                 pin(a[i][2]);
                 printf("\n");
 
@@ -855,10 +871,10 @@ void makeasm()
 
                 printf("\tMOV\t[SI]");
                 printf(",%s\n",s1);
-
+                continue;
             }
 
-            if(getvalue(a[i][0])==4){
+            if(getvalue(a[i][2])==4){
                 long_mov(a[i][0]);
                 if(s[i]==19)
                     printf("\tNEG\tAX\n\tNEG\tDX\n");
@@ -868,7 +884,7 @@ void makeasm()
 
 
             char s1[10];s1[0]='B',s1[2]='\0';
-            if(getvalue(a[i][0])==1)s1[1]='L';
+            if(getvalue(a[i][2])==1)s1[1]='L';
             else s1[1]='X';
 
             printf("\tMOV\t%s,",s1);
@@ -1097,8 +1113,8 @@ void makeasm()
         }
         else if(s[i]==50||s[i]==54){
             if(istem(a[i][2])){
-                if(temp[a[i][2]]==-1){
-//                    temp[a[i][2]]=temp_off;
+                if(temp[a[i][2]]==-2){
+                    temp[a[i][2]]=temp_off;
                     temp_off+=2;///将临时变量存起来并将ES段偏移量加上size
                 }
 
@@ -1106,12 +1122,16 @@ void makeasm()
             int to=a[i][2];
             if(s[i]==50){
                 if(isarr(a[i][0])){
-                    printf("\tMOV\tAX,DI\n");
+                    if(!global.count(make_pair(getname(a[i][0]),getvalue(a[i][0]))))
+                        printf("\tMOV\tAX,DI\n"),quanju[a[i][2]]=0;
+                    else
+                        quanju[a[i][2]]=1;
+                    //printf("%d %d %d\n",a[i][0],getoffset(a[i][0]),getaddr(a[i][0]))
                     printf("\tADD\tAX,");
                     from10to16(getaddr(a[i][0]));
                     printf("\n");
                 }else if(isaddr(a[i][0])){
-                    printf("\tMOV\tAX,DI\n");
+                    quanju[a[i][2]]=quanju[a[i][0]];
                     printf("\tADD\tAX,");
                     pin(a[i][0]);
                     printf("\n");
@@ -1120,12 +1140,13 @@ void makeasm()
                 printf("\tMOV\tAX,");
                 pin(a[i][1]);
                 printf("\n");
-                printf("MUL\t");
-                from10to16(getsize(a[i][0]));
-                printf("\n");
-                printf("ADD\tAX,BX\n");
 
-                printf("MOV\t");
+                printf("\tMOV\tCX,"),from10to16(getarrsize(a[i][0])),printf("\n");
+
+                printf("\tMUL\tCX\n");
+                printf("\tADD\tAX,BX\n");
+
+                printf("\tMOV\t");
                 pin(a[i][2]);
                 printf(",AX\n");
             }
@@ -1146,14 +1167,11 @@ void makeasm()
             sname="";
             soff=0;
         }
-        else if(s[i]==43||s[i]==49||s[i]==48||s[i]==47){
+        else if(s[i]==43||s[i]==49||s[i]==48||s[i]==47||s[i]==41){
             printf("\tJMP\t");
             cout << label[a[i][2]] << endl;
         }
-        else if(s[i]==57){
-            string s1=getasm(a[i][0]);
-            cout << s1 << endl;
-        }
+
     }
     printf("\tMOV\tAH,4CH\n\tINT\t21H\nCSEG\tENDS\nEND main\n");
 

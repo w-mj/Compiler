@@ -65,7 +65,7 @@ typedef Token Item;
 #define getvalue(a) ST.get_basic_type_size(a)
 #define istem(a) ST.is_temp_var(a)
 #define getname(a) ST.get_symbol_name(a)
-#define getarrsize(a, b) ST.get_arr_size(a, b)
+#define getarrsize(a) ST.get_array_element_size(a)
 #define getasm(a) ST.get_asm(a)
 #define getsize(a) ST.get_symbol_size(a)
 #define isarr(a) ST.is_symbol_arr(a)
@@ -208,6 +208,7 @@ public:
     size_t get_type_index_by_symbol(size_t symbol);
     size_t get_struct_field_by_symbol_filed(size_t s, size_t f);
     size_t get_array_element_type(size_t symbol);
+    size_t get_array_element_size(size_t symbol);
     size_t get_array_length(size_t symbol);
     size_t get_symbol_size(size_t symbol);
     Function& get_function_by_symbol(size_t symbol);
@@ -222,6 +223,7 @@ public:
     int get_arr_size(int a,int b);  //
 
     int get_constant_number(size_t symbol);
+    Number& get_const(size_t symbol);
 
     size_t get_basic_symbol_type(size_t symbol);
     size_t get_basic_type_size(size_t symbol);

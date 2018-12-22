@@ -19,19 +19,25 @@
 #include "symbol_table/Quaternary.h"
 #include "optimizer/optimizer.h"
 #include "object_code/8086.h"
+#include "object_code/80862.h"
 
 using namespace std;
 string fname;
 int fline, fstart_pos, fend_pos;
 
-int main() {
+int main(int argc, char** argv) {
     char path[100];
     getcwd(path, 100);
     string ps = string(path);
     if (ps.find("cmake-build-debug"))
         chdir("../");
 
-    fname = "test.src";
+    if (argc == 1) {
+        cout << "Fatal: no input file" << endl;
+        exit(2);
+    }
+    fname = string(argv[1]);
+    // fname = "test.src";
     ifstream file;
     file.open(fname);
     string line;
@@ -75,13 +81,9 @@ int main() {
     cout << endl;
     cout << endl;
 
-
+    // make8086();
     // makeasm();
-
-     cout << "optimized" << endl;
-      optimizer o;
-
-    // optimizer opti(QL.get_vector());
+    optimizer o;
 
     return 0;
 }

@@ -4,5 +4,5 @@
 
 #ifndef COMPLIE_80862_H
 #define COMPLIE_80862_H
-
+void make8086();
 #endif //COMPLIE_80862_H

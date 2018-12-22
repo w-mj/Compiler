@@ -900,6 +900,16 @@ bool SymbolTable::is_addr(size_t symbol) {
     return symbol_list[symbol].is_addr;
 }
 
+size_t SymbolTable::get_array_element_size(size_t symbol) {
+    return type_list[get_array_element_type(symbol)].size;
+}
+
+Number &SymbolTable::get_const(size_t symbol) {
+    if (SYM(symbol).cat != Cat_Const)
+        rterr("not a constant " + to_string(symbol));
+    return constant_num_list[TYPE(symbol).data];
+}
+
 
 
 

@@ -6,6 +6,7 @@
 #define COMPLIE_ERROR_H
 
 #include <string>
+#include "../Utility.h"
 
 void error(const std::string& s);
 void error(const std::string& s, int line, int s1, int e1);
