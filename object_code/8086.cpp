@@ -836,6 +836,28 @@ void makeasm()
         }
         else if(s[i]==12||s[i]==20||s[i]==19){///赋值操作符
 
+            if(isaddr(a[i][2])){
+                printf("MOV\tSI,");
+                pin(a[i][2]);
+                printf("\n");
+
+                char s1[10];s1[0]='B',s1[2]='\0';
+                if(getvalue(a[i][0])==1)s1[1]='L';
+                else s1[1]='X';
+
+                printf("\tMOV\t%s,",s1);
+                pin(a[i][0]);
+                printf("\n");
+
+                if(s[i]==19)
+                    printf("\tNEG\t%s\n",s1);
+
+
+                printf("\tMOV\t[SI]");
+                printf(",%s\n",s1);
+
+            }
+
             if(getvalue(a[i][0])==4){
                 long_mov(a[i][0]);
                 if(s[i]==19)
@@ -1083,8 +1105,29 @@ void makeasm()
             }
             int to=a[i][2];
             if(s[i]==50){
-                int pp=getarrsize(a[i][0],getnumber(a[i][1]));///存储数组某个索引的地址
-                insertaddr(a[i][2],pp);
+                if(isarr(a[i][0])){
+                    printf("\tMOV\tAX,DI\n");
+                    printf("\tADD\tAX,");
+                    from10to16(getaddr(a[i][0]));
+                    printf("\n");
+                }else if(isaddr(a[i][0])){
+                    printf("\tMOV\tAX,DI\n");
+                    printf("\tADD\tAX,");
+                    pin(a[i][0]);
+                    printf("\n");
+                }
+                printf("\tMOV\tBX,AX\n");
+                printf("\tMOV\tAX,");
+                pin(a[i][1]);
+                printf("\n");
+                printf("MUL\t");
+                from10to16(getsize(a[i][0]));
+                printf("\n");
+                printf("ADD\tAX,BX\n");
+
+                printf("MOV\t");
+                pin(a[i][2]);
+                printf(",AX\n");
             }
             else if(s[i]==54){
                 int pp=getaddr(a[i][0])+getnumber(a[i][1]);///存储结构体某个成员的地址
