@@ -68,29 +68,29 @@ void colorful_print(const std::string& s, int color, char end) {
 #include <windows.h>
 #include <cstdio>
 #include <io.h>
-HANDLE hConsole = NULL;
-void initConsole(void)
-{
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (hConsole == NULL) {
-        fprintf(stderr, "初始化错误：无法获取控制台句柄\n");
-        exit(1);
-    }
-    SetConsoleTitle("Toy C Compiler");
-    COORD size = {120, 9001};  // 设置控制台缓冲
-    SetConsoleScreenBufferSize(hConsole,size);
-    SMALL_RECT rc =  {0, 0, 119, 29};  // 长宽的最大值为缓冲区减1
-    SetConsoleWindowInfo(hConsole, true, &rc);
-    char tt[1000];
-    getcwd(tt, 1000);
-    fputs(tt, stderr);
-}
+//HANDLE hConsole = NULL;
+//void initConsole(void)
+//{
+//    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+//    if (hConsole == NULL) {
+//        fprintf(stderr, "初始化错误：无法获取控制台句柄\n");
+//        exit(1);
+//    }
+//    SetConsoleTitle("Toy C Compiler");
+//    COORD size = {120, 9001};  // 设置控制台缓冲
+//    SetConsoleScreenBufferSize(hConsole,size);
+//    SMALL_RECT rc =  {0, 0, 119, 29};  // 长宽的最大值为缓冲区减1
+//    SetConsoleWindowInfo(hConsole, true, &rc);
+//    char tt[1000];
+//    getcwd(tt, 1000);
+//    fputs(tt, stderr);
+//}
 void colorful_print(const std::string& s, int color, char end) {
-    if (hConsole == NULL) {
-        initConsole();
-    }
-    SetConsoleTextAttribute(hConsole, color);
+//    if (hConsole == NULL) {
+//        initConsole();
+//    }
+//    SetConsoleTextAttribute(hConsole, color);
     cout << s << end;
-    SetConsoleTextAttribute(hConsole, 0x0f);
+//    SetConsoleTextAttribute(hConsole, 0x0f);
 }
 #endif

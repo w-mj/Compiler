@@ -29,7 +29,11 @@ void error(const std::string& s, int line, int s1, int e1, int s2, int e2) {
 }
 
 void print_file(int line, int s1, int e1) {
-    cout << "\033[1mat " << fname << " " << fline << ":" << fstart_pos << endl;
+
+#ifdef __linux__
+    cout << "\033[1m";
+#endif
+    cout << "at " << fname << " " << fline << ":" << fstart_pos << endl;
     ifstream fs;
     string buff;
     fs.open(fname);
@@ -45,7 +49,10 @@ void print_file(int line, int s1, int e1) {
         else
             cout << '~';
     }
-    cout << endl << "\033[0m";
+    cout << endl;
+#ifdef __linux__
+    cout << "\033[0m";
+#endif
     fs.close();
 }
 

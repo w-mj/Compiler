@@ -28,11 +28,14 @@ string fname;
 int fline, fstart_pos, fend_pos;
 
 int main(int argc, char** argv) {
-    char path[100];
+    char path[1000];
     getcwd(path, 100);
     string ps = string(path);
-    if (ps.find("cmake-build-debug"))
+    cout << ps << endl;
+    if (ps.find("cmake-build-debug") != string::npos) {
+        cout << "chdir" << endl;
         chdir("../");
+    }
 
     if (argc == 1) {
         cout << "Fatal: no input file" << endl;
@@ -48,14 +51,22 @@ int main(int argc, char** argv) {
     ifstream file;
 
     // Preprocess p(fname);
-    string afname = split(fname, '.')[0];
+    // string afname = split(fname, '.')[0];
     file.open(fname);
+
     // file.open(afname+".i");
-    string pfname = split(fname, '.')[0];
+    cout << fname << endl;
     string line;
     WordAnalysis& analyzer = WA;
 
-    analyzer.process_file(file, false);
+    freopen((fname + ".tokenlist").c_str(), "w", stdout);
+    analyzer.process_file(file, true);
+    #ifdef __linux__
+        freopen("/dev/tty", "w", stdout);
+    #endif
+    #ifdef _WIN32
+        freopen("CON", "w", stdout);
+    #endif
     file.close();
 
     // Generators basic_Exp = Grammar::Basic_Exp();
@@ -86,11 +97,12 @@ int main(int argc, char** argv) {
     lr1.process(getter);
     // cout << endl << " LR1 OK" << endl << endl;
 
-   freopen((pfname + ".quatlist").c_str(), "w", stdout);
+   freopen((fname + ".quatlist").c_str(), "w", stdout);
     cout << QL << endl << endl;
 
-   freopen((pfname + ".symboltable").c_str(), "w", stdout);
+   freopen((fname + ".symboltable").c_str(), "w", stdout);
     cout << ST << endl;
+
     #ifdef __linux__
         freopen("/dev/tty", "w", stdout);
     #endif
@@ -105,7 +117,7 @@ int main(int argc, char** argv) {
     }
 
     // make8086();
-    freopen((pfname + ".asm").c_str(), "w", stdout);
+    freopen((fname + ".asm").c_str(), "w", stdout);
     makeasm();
 #ifdef __linux__
     freopen("/dev/tty", "w", stdout);
@@ -113,8 +125,10 @@ int main(int argc, char** argv) {
 #ifdef _WIN32
     freopen("CON", "w", stdout);
 #endif
-
-    cout << endl << "build asm at " << pfname << ".asm" << endl;
+    cout << endl << "generate token list at " << fname << ".tokenlist" << endl;
+    cout << endl << "generate symbol table at " << fname << ".symboltable" << endl;
+    cout << endl << "generate quaternary list table at " << fname << ".quatlist" << endl;
+    cout << endl << "generate asm at " << fname << ".asm" << endl;
     fflush(stdout);
 
     return 0;

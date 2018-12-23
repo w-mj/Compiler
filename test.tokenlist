@@ -1,0 +1,147 @@
+
+in line: //#define A(x,y) x-y
+
+in line: //#define B 10
+
+in line: //#define C B
+
+in line: /*
+
+in line: void printi(int x) {
+
+in line: #asm
+
+in line: MOV DX, SS:[BP+4]
+
+in line: xor  ah, ah
+
+in line: mov  al, dl
+
+in line: mov  dh, 10
+
+in line: div  dh
+
+in line: test al, 0ffh
+
+in line: jz   single
+
+in line: push ax
+
+in line: xor  ah, ah
+
+in line: div  dh
+
+in line: test al, 0ffh
+
+in line: jz   two
+
+in line: push ax
+
+in line: mov  dl, al
+
+in line: add  dl, '0'
+
+in line: mov  ah, 02h
+
+in line: int  21h
+
+in line: pop  ax
+
+in line: two:
+
+in line: mov  dl, ah
+
+in line: add  dl, '0'
+
+in line: mov  ah, 02h
+
+in line: int  21h
+
+in line: pop  ax
+
+in line: single:
+
+in line: mov  dl, ah
+
+in line: add  dl, '0'
+
+in line: mov  ah, 02h
+
+in line: int  21h
+
+in line: mov dl, 0ah
+
+in line: int 21h
+
+in line: #endasm
+
+in line: return;
+
+in line: }
+
+in line: 
+
+in line: int fib(int x) {
+
+in line: int a, b;
+
+in line: if (x == 0 || x == 1)
+
+in line: return 1;
+
+in line: a = fib(x - 1);
+
+in line: b = fib(x - 2);
+
+in line: return a + b;
+
+in line: }
+
+in line: 
+
+in line: int main() {
+
+in line: int x[10], i;
+
+in line: int c,d;
+
+in line: for (i = 0; i < 10; i++) {
+
+in line: x[i]=fib(i);
+
+in line: }
+
+in line: for (i = 0; i < 10; i++) {
+
+in line: printi(x[i]);
+
+in line: }
+
+in line: return 0;
+
+in line: }
+
+in line: */
+
+in line: 
+
+in line: int main() {
+(107, 4)    keyword: int
+(105, 0)    identification: main
+(112, 2)    bound: (
+(112, 3)    bound: )
+(112, 43)    bound: {
+
+in line: int a;
+(107, 4)    keyword: int
+(105, 1)    identification: a
+(112, 42)    bound: ;
+
+in line: a = 60000;
+(105, 2)    identification: a
+(112, 30)    bound: =
+(99, 0)    constant: 60000 int
+(112, 42)    bound: ;
+
+in line: }
+(112, 44)    bound: }

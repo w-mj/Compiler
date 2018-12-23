@@ -4,9 +4,9 @@
 3# long:long *4
 4# float:float *2
 5# double:double *4
-6# @const_1:const short (1)
-7# @const_0:const short (0)
+6# @const_1:const short 
+7# @const_0:const short 
 8# main:int 
 9# a:int &0
-10# @const_60000:const int (60000)
+10# @const_60000:const int 
 
