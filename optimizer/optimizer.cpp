@@ -172,14 +172,14 @@ int dag_graph::find(int op,int oprend_1,int oprend_2){
 void dag_graph::treat(quat_node a) {
     if(a.op==(int)OP::NOP ){ return;}
     else if(a.op==(int) OP::JMP|| a.op==(int) OP::CALL
-          || a.op==(int) OP::CONTINUE || a.op==(int) OP::BREAK || a.op==(int) OP::EW ||a.op==(int) OP::GOTO
-           || a.op==(int) OP::EFOR){
+            || a.op==(int) OP::CONTINUE || a.op==(int) OP::BREAK || a.op==(int) OP::EW ||a.op==(int) OP::GOTO
+            || a.op==(int) OP::EFOR){
         dag_node node;
         node.op = a.op;
         node.main=a.var;
         insert_node(node);
         return;
-    } else if(a.op==(int) OP::LABEL || a.op==(int) OP::RETN
+    } else if(a.op==(int) OP::LABEL || a.op==(int) OP::RETN|| a.op==(int) OP::EFUNC
               || a.op==(int)OP::ASM|| a.op==(int)OP::FUNC || a.op==(int)OP::PUSH|| a.op==(int)OP::POP){
         dag_node node;
         node.op = a.op;
@@ -195,7 +195,7 @@ void dag_graph::treat(quat_node a) {
         hash_map[a.oprend_1] = node_num-1;
         return;
     } else if(a.op==(int) OP::EI || a.op==(int) OP::FOR||
-              a.op==(int) OP::WH  || a.op==(int) OP::EFUNC ||a.op==(int) OP::EDEF_STRU) {
+              a.op==(int) OP::WH   ||a.op==(int) OP::EDEF_STRU) {
         dag_node node;
         node.op = a.op;
         node.main = 0;
@@ -534,13 +534,14 @@ void optimizer::generate_quat(const dag_graph &a,vector<block_node>::iterator no
                 }
             }
         } else if(a.node_set[i].op==(int)OP::EI ||a.node_set[i].op==(int) OP::EDEF_STRU
-                   || a.node_set[i].op==(int)OP::EFUNC) {
+                  ) {
             new_quat_list[begin].op = a.node_set[i].op;
             new_quat_list[begin].var = 0;
             new_quat_list[begin].oprend_1 = 0;
             new_quat_list[begin].oprend_2 = 0;
             begin++;
         }else if(a.node_set[i].op==(int) OP::LABEL|| a.node_set[i].op==(int) OP::RETN
+        || a.node_set[i].op==(int)OP::EFUNC
                  || a.node_set[i].op==(int)OP::DEF_VAR ||
                  a.node_set[i].op==(int)OP::DEF_FUN|| a.node_set[i].op==(int)OP::ASM||
                  a.node_set[i].op==(int)OP::FUNC||a.node_set[i].op==(int)OP::PUSH
@@ -552,7 +553,7 @@ void optimizer::generate_quat(const dag_graph &a,vector<block_node>::iterator no
             new_quat_list[begin].oprend_2 = 0;
             begin++;
         }else if(a.node_set[i].op==(int) OP::GOTO|| a.node_set[i].op==(int) OP::JMP
-        || a.node_set[i].op==(int)OP::EW || a.node_set[i].op==(int)OP::BREAK
+                 || a.node_set[i].op==(int)OP::EW || a.node_set[i].op==(int)OP::BREAK
                  || a.node_set[i].op==(int)OP::CONTINUE|| a.node_set[i].op==(int)OP::EFOR){
             new_quat_list[begin].op = a.node_set[i].op;
             new_quat_list[begin].var = a.node_set[i].main;

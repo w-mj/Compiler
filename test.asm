@@ -1,4 +1,3 @@
-n=71
 SSEG	SEGMENT	STACK
 STK	DB	100 DUP(0)
 SSEG	ENDS
@@ -7,39 +6,79 @@ DSEG	ENDS
 CSEG	SEGMENT
 	ASSUME	CS:CSEG,DS:DSEG
 	ASSUME	SS:SSEG
+printi	PROC	NEAR
 	MOV	BP,SP
+    MOV DX, SS:[BP+4]
+    xor  ah, ah
+    mov  al, dl
+    mov  dh, 10
+    div  dh
+    test al, 0ffh
+    jz   single
+    push ax
+    xor  ah, ah
+    div  dh
+    test al, 0ffh
+    jz   two
+    push ax
+    mov  dl, al
+    add  dl, '0'
+    mov  ah, 02h
+    int  21h
+    pop  ax
+    two:
+    mov  dl, ah
+    add  dl, '0'
+    mov  ah, 02h
+    int  21h
+    pop  ax
+    single:
+    mov  dl, ah
+    add  dl, '0'
+    mov  ah, 02h
+    int  21h
+    mov dl, 0ah
+    int 21h
 	MOV	DI,SS:[BP+2]
 	RET
-	ENDP
+printi	ENDP
+fib	PROC	NEAR
 	MOV	BP,SP
 	MOV	AX,SS:[BP+4+0H]
 	MOV	BX,0H
 	CMP	AX,BX
-	JNZ		MOV	ES:[0H],01H
-	JMP	:	MOV	ES:[0H],00H
-	MOV	AX,SS:[BP+4+0H]
+	JNZ	mark7
+	MOV	ES:[0H],01H
+	JMP	mark8
+mark7:	MOV	ES:[0H],00H
+mark8:	MOV	AX,SS:[BP+4+0H]
 	MOV	BX,1H
 	CMP	AX,BX
-	JNZ		MOV	ES:[2H],01H
-	JMP	:	MOV	ES:[2H],00H
-	MOV	AX,ES:[0H]
+	JNZ	mark9
+	MOV	ES:[2H],01H
+	JMP	mark10
+mark9:	MOV	ES:[2H],00H
+mark10:	MOV	AX,ES:[0H]
 	OR	AX,ES:[2H]
-	JZ		MOV	ES:[4H],01H
-	JMP	:	MOV	ES:[4H],00H
-	MOV	AX,ES:[4H]
+	JZ	mark11
+	MOV	ES:[4H],01H
+	JMP	mark12
+mark11:	MOV	ES:[4H],00H
+mark12:	MOV	AX,ES:[4H]
 	AND	AX,AX
-	JZ		MOV	AL,1H
+	JZ	mark1
+	MOV	AL,1H
 	MOV	DI,SS:[BP+2]
 	RET
-	MOV	AX,SS:[BP+4+0H]
+mark1:	MOV	AX,SS:[BP+4+0H]
 	MOV	BX,1H
-		AX,BX
+	SUB	AX,BX
 	MOV	ES:[6H],AX
 	MOV	AX,ES:[6H]
 	PUSH	AX
 	PUSH	DI
 	ADD	DI,4H
-	CALL	
+	CALL	fib
 	POP	 DX
 	POP	 DX
 	MOV	BP,SP
@@ -48,13 +87,13 @@ CSEG	SEGMENT
 	MOV	[DI+2H],BX
 	MOV	AX,SS:[BP+4+0H]
 	MOV	BX,2H
-		AX,BX
+	SUB	AX,BX
 	MOV	ES:[0AH],AX
 	MOV	AX,ES:[0AH]
 	PUSH	AX
 	PUSH	DI
 	ADD	DI,4H
-	CALL	
+	CALL	fib
 	POP	 DX
 	POP	 DX
 	MOV	BP,SP
@@ -63,12 +102,13 @@ CSEG	SEGMENT
 	MOV	[DI+0H],BX
 	MOV	AX,[DI+2H]
 	MOV	BX,[DI+0H]
-		AX,BX
+	ADD	AX,BX
 	MOV	ES:[0EH],AX
 	MOV	AX,ES:[0EH]
 	MOV	DI,SS:[BP+2]
 	RET
-	ENDP
+fib	ENDP
+main:
 	MOV	AX,CSEG
 	ADD	AX,7D0H
 	MOV	DS,AX
@@ -79,21 +119,26 @@ CSEG	SEGMENT
 	MOV	DI,0H
 	MOV	BX,5H
 	MOV	[DI+0H],BX
-	MOV	AX,[DI+0H]
+mark5:	MOV	AX,[DI+0H]
 	MOV	BX,0AH
 	CMP	AX,BX
-	JAE		MOV	ES:[10H],01H
-	JMP	:	MOV	ES:[10H],00H
-	MOV	AX,ES:[10H]
+	JAE	mark13
+	MOV	ES:[10H],01H
+	JMP	mark14
+mark13:	MOV	ES:[10H],00H
+mark14:	MOV	AX,ES:[10H]
 	AND	AX,AX
-	JZ		JMP		MOV	AX,[DI+0H]
-		AX
+	JZ	mark3
+	JMP	mark4
+mark6:	MOV	AX,[DI+0H]
+	INC	AX
 	MOV	[DI+0H],AX
-	JMP		MOV	AX,[DI+0H]
+	JMP	mark5
+mark4:	MOV	AX,[DI+0H]
 	PUSH	AX
 	PUSH	DI
 	ADD	DI,4H
-	CALL	
+	CALL	fib
 	POP	 DX
 	POP	 DX
 	MOV	BP,SP
@@ -104,11 +149,12 @@ CSEG	SEGMENT
 	PUSH	AX
 	PUSH	DI
 	ADD	DI,4H
-	CALL	
+	CALL	printi
 	POP	 DX
 	POP	 DX
 	MOV	BP,SP
-	JMP		MOV	AH,4CH
+	JMP	mark6
+mark3:	MOV	AH,4CH
 	INT	21H
 CSEG	ENDS
 END main

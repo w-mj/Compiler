@@ -66,7 +66,7 @@ bool oneof(T a, Args... args) {
 #define COLOR_BLUE 2
 #endif
 
-#ifdef _WIN32
+#ifdef __WIN32
 #define COLOR_RED 0x0c
 #define COLOR_BLUE 0x09
 #endif

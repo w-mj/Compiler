@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "../Utility.h"
 
 using namespace std;
@@ -179,6 +180,15 @@ int WordAnalysis::getEscape(string::iterator s, string::iterator e) {
     throw runtime_error("unknown escape sequence: \\" + string(s, e));
 }
 
+string strip(const string& s) {
+    stringstream ss;
+    size_t i = 0;
+    while (s[i] == ' ')
+        i++;
+    while (i < s.size())
+        ss << s[i++];
+    return ss.str();
+}
 
 void WordAnalysis::process_file(std::ifstream &file, bool print) {
     string::iterator start;
@@ -187,6 +197,7 @@ void WordAnalysis::process_file(std::ifstream &file, bool print) {
     bool in_commit = false;
     bool in_asm = false;
     while (getline(file, line)) {
+        line = strip(line);
         line_cnt++;
         if (!in_commit && line == "#asm") {
             in_asm = true;

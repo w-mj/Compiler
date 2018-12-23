@@ -223,7 +223,6 @@ public:
     int get_arr_size(int a,int b);  //
 
     int get_constant_number(size_t symbol);
-    Number& get_const(size_t symbol);
 
     size_t get_basic_symbol_type(size_t symbol);
     size_t get_basic_type_size(size_t symbol);

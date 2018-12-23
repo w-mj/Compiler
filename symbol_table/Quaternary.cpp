@@ -219,7 +219,7 @@ std::ostream& operator<<(std::ostream& os, QuatList& ql) {
             case OP::GET_ADDR:os << "(&, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
             case OP::GET_VALUE:os << "(*, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
             case OP::CALL:os << "(call, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
-            case OP::RET:os << "(ret, _, _ , _ )" << endl; break;
+            case OP::RET:os << "(ret, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
             case OP::PUSH:os << "(push, "<< ST[t.num1] << ", _ , _)" << endl; break;
             case OP::POP:os << "(pop, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;
             case OP::NEG:os << "(-, "<< ST[t.num1] << ", _ , " << ST[t.tar] << ")" << endl; break;

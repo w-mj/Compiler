@@ -81,16 +81,16 @@ int main(int argc, char** argv) {
     lr1.process(getter);
     // cout << endl << " LR1 OK" << endl << endl;
 
-    freopen((pfname + ".qlist").c_str(), "w", stdout);
+   // freopen((pfname + ".qlist").c_str(), "w", stdout);
     cout << QL << endl << endl;
-    freopen((pfname + ".stable").c_str(), "w", stdout);
+   // freopen((pfname + ".stable").c_str(), "w", stdout);
     cout << ST << endl;
-    #ifdef __linux__
-        freopen("/dev/tty", "w", stdout);
-    #endif
-    #ifdef _WIN32
-        freopen("CON", "w", stdout);
-    #endif
+//    #ifdef __linux__
+//        freopen("/dev/tty", "w", stdout);
+//    #endif
+//    #ifdef _WIN32
+//        freopen("CON", "w", stdout);
+//    #endif
 
     cout << endl;
     cout << endl;
@@ -98,6 +98,7 @@ int main(int argc, char** argv) {
         cout << "Optimizer activited." << endl;
         optimizer o;
     }
+    cout << "start make object code" << endl;
 
     // make8086();
     freopen((pfname + ".asm").c_str(), "w", stdout);

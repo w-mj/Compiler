@@ -95,7 +95,7 @@ void globalinit(){
     int f1=0;
     off=0;
     for(int i=0;i<=n;i++){
-        cout << "s" << i << "= " << s[i] << endl;
+//        cout << "s" << i << "= " << s[i] << endl;
         if(s[i]==31)
         {
             if(getname(a[i][0])=="main"){
@@ -447,7 +447,7 @@ void pin(int x)
         return ;
     }
     if(istem(x)){
-        if(temp[x]!=-1)///不是数组指针
+        if(!isaddr(x)||temp)///不是数组指针
             printf("ES:["),from10to16(temp[x]),printf("]");
         else///是数组指针
             printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)),printf("]");
@@ -463,7 +463,14 @@ void pin(int x)
         printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+"),from10to16(x),printf("]");
     }
 }
+void pok(int x){
+    printf("\tMOV\tSI,");
+    printf("ES:["),from10to16(temp[x]),printf("]\n");
+    printf("\tMOV\tAX,[SI]\n");
 
+
+
+}
 void makeasm()
 {
     init();
@@ -480,7 +487,7 @@ void makeasm()
     }
 //    n--;
 
-    printf("n=%d\n",n);
+//    printf("n=%d\n",n);
     globalinit();
     getblock();///分配代码块
     getalive();///分配活跃信息
@@ -913,9 +920,14 @@ void makeasm()
                 printf("\tPUSH\tAX\n");
             }
             else if(getvalue(a[i][0])==2){
-                printf("\tMOV\tAX,");
-                pin(a[i][0]);
-                printf("\n");
+                if(!isaddr(a[i][0])) {
+                    printf("\tMOV\tAX,");
+                    pin(a[i][0]);
+                    printf("\n");
+                }else {
+                    pok(a[i][0]);
+                }
+
                 printf("\tPUSH\tAX\n");
             }
         }
@@ -1112,6 +1124,7 @@ void makeasm()
             }
         }
         else if(s[i]==50||s[i]==54){
+
             if(istem(a[i][2])){
                 if(temp[a[i][2]]==-2){
                     temp[a[i][2]]=temp_off;
@@ -1119,6 +1132,7 @@ void makeasm()
                 }
 
             }
+
             int to=a[i][2];
             if(s[i]==50){
                 if(isarr(a[i][0])){
@@ -1154,6 +1168,8 @@ void makeasm()
                 int pp=getaddr(a[i][0])+getnumber(a[i][1]);///存储结构体某个成员的地址
                 insertaddr(a[i][2],pp);
             }
+
+
 
         }
         else if(s[i]==51){
