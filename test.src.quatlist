@@ -1,0 +1,7 @@
+0# (nop, _, _, _)
+1# (func, main, _, _)
+2# (def-var, a, _, _)
+3# (=, @const_60000, _ , a)
+4# (end-func, main, _, _)
+
+

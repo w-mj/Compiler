@@ -59,14 +59,14 @@ int main(int argc, char** argv) {
     string line;
     WordAnalysis& analyzer = WA;
 
-    freopen((fname + ".tokenlist").c_str(), "w", stdout);
+    // freopen((fname + ".tokenlist").c_str(), "w", stdout);
     analyzer.process_file(file, true);
-    #ifdef __linux__
-        freopen("/dev/tty", "w", stdout);
-    #endif
-    #ifdef _WIN32
-        freopen("CON", "w", stdout);
-    #endif
+//    #ifdef __linux__
+//        freopen("/dev/tty", "w", stdout);
+//    #endif
+//    #ifdef _WIN32
+//        freopen("CON", "w", stdout);
+//    #endif
     file.close();
 
     // Generators basic_Exp = Grammar::Basic_Exp();
@@ -97,34 +97,37 @@ int main(int argc, char** argv) {
     lr1.process(getter);
     // cout << endl << " LR1 OK" << endl << endl;
 
-   freopen((fname + ".quatlist").c_str(), "w", stdout);
+   //freopen((fname + ".quatlist").c_str(), "w", stdout);
     cout << QL << endl << endl;
 
-   freopen((fname + ".symboltable").c_str(), "w", stdout);
+   //freopen((fname + ".symboltable").c_str(), "w", stdout);
     cout << ST << endl;
 
-    #ifdef __linux__
-        freopen("/dev/tty", "w", stdout);
-    #endif
-    #ifdef _WIN32
-        freopen("CON", "w", stdout);
-    #endif
+//    #ifdef __linux__
+//        freopen("/dev/tty", "w", stdout);
+//    #endif
+//    #ifdef _WIN32
+//        freopen("CON", "w", stdout);
+//    #endif
 
 
-    if (opt) {
+    if (1) {
         cout << "Optimizer activited." << endl;
         optimizer o;
     }
 
+    cout << QL << endl << endl;
+
+
     // make8086();
-    freopen((fname + ".asm").c_str(), "w", stdout);
+    // freopen((fname + ".asm").c_str(), "w", stdout);
     makeasm();
-#ifdef __linux__
-    freopen("/dev/tty", "w", stdout);
-#endif
-#ifdef _WIN32
-    freopen("CON", "w", stdout);
-#endif
+//#ifdef __linux__
+//    freopen("/dev/tty", "w", stdout);
+//#endif
+//#ifdef _WIN32
+//    freopen("CON", "w", stdout);
+//#endif
     cout << endl << "generate token list at " << fname << ".tokenlist" << endl;
     cout << endl << "generate symbol table at " << fname << ".symboltable" << endl;
     cout << endl << "generate quaternary list table at " << fname << ".quatlist" << endl;
