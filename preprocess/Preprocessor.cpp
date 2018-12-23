@@ -5,7 +5,7 @@
 //
 
 #include "Preprocessor.h"
-#include <regex>
+#include "Utility.h"
 
 #define jmp_space(x) {\
     if(*x==' '){\
@@ -16,8 +16,8 @@
 
 Preprocess::Preprocess(string file_name):file_reader(file_name) {
     this->file_name = file_name;
-    file_path1 = "../";
-    file_path2 = "../";
+    file_path1 = "";
+    file_path2 = "";
     preprocess();
 }
 
@@ -203,8 +203,10 @@ void Preprocess::out_string(string str) {
     file.append(str);
 }//保存到字符串中
 void Preprocess::output() {
-    ofstream a(file_name);
+    string pfname = split(file_name, '.')[0];
+    ofstream a(pfname+".i");
     a << file;
+    a.close();
 }//将file的内容输出至文件
 
 bool Preprocess::is_comment(string::iterator &iter, const string::iterator &end,unsigned int &flag ) {
@@ -390,7 +392,7 @@ void Preprocess::preprocess() {
             out_string("\n");
         }
     }
-    file = to_string(file_reader.get_line()) + "\n" + file;
+//    file = to_string(file_reader.get_line()) + "\n" + file;
     output();
 }
 /*

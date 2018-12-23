@@ -19,6 +19,7 @@
 #include "symbol_table/SymbolTable.h"
 #include "symbol_table/Quaternary.h"
 #include "optimizer/optimizer.h"
+#include "preprocess/Preprocessor.h"
 #include "object_code/8086.h"
 #include "object_code/80862.h"
 
@@ -45,7 +46,11 @@ int main(int argc, char** argv) {
 
     // fname = "test.src";
     ifstream file;
+
+    // Preprocess p(fname);
+    string afname = split(fname, '.')[0];
     file.open(fname);
+    // file.open(afname+".i");
     string pfname = split(fname, '.')[0];
     string line;
     WordAnalysis& analyzer = WA;

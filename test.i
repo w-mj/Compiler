@@ -1,8 +1,8 @@
-//#define A(x,y) x-y
-//#define B 10
-//#define C B
-/*
-void printi(int x) {
+
+
+
+
+/*void printi(int x) {
 #asm
     MOV DX, SS:[BP+4]
     xor  ah, ah
@@ -37,7 +37,7 @@ void printi(int x) {
     int 21h
 #endasm
 return;
-}
+}*/
 
 int fib(int x) {
     int a, b;
@@ -51,6 +51,8 @@ int fib(int x) {
 int main() {
     int x[10], i;
     int c,d;
+    c=4-3;
+    d=10;
     for (i = 0; i < 10; i++) {
         x[i]=fib(i);
     }
@@ -58,10 +60,4 @@ int main() {
         printi(x[i]);
     }
     return 0;
-}
-*/
-
-int main() {
-    int a;
-    a = 60000;
 }

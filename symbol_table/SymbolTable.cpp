@@ -652,6 +652,9 @@ std::ostream& operator<<(std::ostream& os, SymbolTable& st) {
         }
         if (s.cat == Cat_Label)
             os << ": LABEL";
+        if (s.cat == Cat_Const) {
+            os << "(" << st.constant_num_list[st.type_list[s.type].data].str() << ")";
+        }
         os << endl;
     }
     return os;
@@ -679,7 +682,10 @@ int SymbolTable::get_symbol_offset(size_t symbol) {
 }
 
 int SymbolTable::get_func_param_num(size_t symbol) {
+    if (type_list[symbol_list[symbol].type].data >= function_list.size())
+        return 0;
     return function_list[type_list[symbol_list[symbol].type].data].param_num;
+
 }
 
 int SymbolTable::get_func_param_size(size_t symbol) {
