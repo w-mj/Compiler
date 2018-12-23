@@ -1155,7 +1155,7 @@ void makeasm()
                 pin(a[i][1]);
                 printf("\n");
 
-                printf("\tMOV\tCX,"),from10to16(getarrsize(a[i][0])),printf("\n");
+                printf("\tMOV\tCX,"),from10to16(getarrsize(a[i][0])), printf("\n");
 
                 printf("\tMUL\tCX\n");
                 printf("\tADD\tAX,BX\n");
