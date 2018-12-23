@@ -377,28 +377,29 @@ void long_sto(int x)///存储long型数据
 void long_mov(int x)///存储int型数据
 {
     if(isconst(x)){
-        printf("MOV\tAX,");
+//        printf("x=%d\n",getnumber(x)%65535);
+        printf("\tMOV\tAX,");
         from10to16(getnumber(x)%65535);
         printf("\n");
 
-        printf("MOV\tDX,");
+        printf("\tMOV\tDX,");
         from10to16(getnumber(x)>>16);
         printf("\n");
 
         return;
     }
     if(istem(x)){
-        if(temp[x]==-1){///不是数组指针
-            printf("MOV\tAX,");
+        if(!isaddr(x)||temp){///不是数组指针
+            printf("\tMOV\tAX,");
             printf("ES:["),from10to16(temp[x]),printf("]\n");
-            printf("MOV\tDX,");
+            printf("\tMOV\tDX,");
             printf("ES:["),from10to16(temp[x]+1),printf("]\n");
 
         }
         else{///是数组指针
-            printf("MOV\tAX,");
+            printf("\tMOV\tAX,");
             printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)),printf("]\n");
-            printf("MOV\tDX,");
+            printf("\tMOV\tDX,");
             printf("DS:[%s",quanju[x]==0?"DI+":""),from10to16(getaddr(x)+1),printf("]\n");
         }
         return ;
@@ -406,16 +407,16 @@ void long_mov(int x)///存储int型数据
 
     if(isparam(x)){
         x=getoffset(x);
-        printf("MOV\tAX,");
+        printf("\tMOV\tAX,");
         printf("SS:[BP+6+"),from10to16(-x),printf("]\n");
-        printf("MOV\tDX,");
+        printf("\tMOV\tDX,");
         printf("SS:[BP+4+"),from10to16(-x),printf("]\n");
     } else {
         int p=x;
         x=getoffset(x);
-        printf("MOV\tAX,");
+        printf("\tMOV\tAX,");
         printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+"),from10to16(x),printf("]\n");
-        printf("MOV\tDX,");
+        printf("\tMOV\tDX,");
         printf("[%s",global.count(make_pair(getname(p),getvalue(p)))?"":"DI+2"),from10to16(x),printf("]\n");
     }
 }
@@ -473,6 +474,9 @@ void pok(int x){
 }
 void makeasm()
 {
+//    from10to16(60000);
+//    from10to16(5535);
+
     init();
     freopen("siyuan.txt","r",stdin);
 //    freopen("huibian.txt","w",stdout);
@@ -505,6 +509,10 @@ void makeasm()
         }
         if(s[i]==42)
             continue;
+
+        string name;
+        if(s[i]!=57)
+            name=getname(a[i][0]);
 
         if((ax!=-1||al!=-1||aa!=-1)){///若a中变量活跃，先存起来
             if(ax!=-1){
@@ -549,9 +557,6 @@ void makeasm()
 
             }
         }
-        string name;
-        if(s[i]!=57)
-            name=getname(a[i][0]);
         if(s[i]==45||s[i]==52){///如果定义了s【i】类型的,即int，float之类
             int type=getvalue(a[i][0]);
             int size1=getsize(a[i][0]);///返回数组字节数
@@ -590,7 +595,6 @@ void makeasm()
         }
         else if(s[i]==31){///函数定义
 
-            paranum=getparanum(a[i][0]);
             if(name=="main"){///是主函数
                 flag=1;
                 cout << "main:"  << endl;
@@ -609,6 +613,7 @@ void makeasm()
                 off=0;
             }
             else {///不是主函数
+                paranum=getparanum(a[i][0]);
                 flag=2;
                 cout << name << "\t"  << "PROC\tNEAR"<< endl;
                 seg_s.push(seg);
@@ -863,9 +868,20 @@ void makeasm()
                 printf("\tMOV\tSI,");
                 pin(a[i][2]);
                 printf("\n");
+//                printf("getvalue=%d",getvalue(a[i][2]));
+                if(getvalue(a[i][2])==4){
+                    long_mov(a[i][0]);
+                    printf("\tMOV\t[SI],AX\n");
+                    printf("\tMOV\t[SI+2],DX\n");
+                    continue;
+
+//                    printf("\tMOV\tSI,");
+//                    printf("ES:["),from10to16(temp[x]),printf("]\n");
+
+                }
 
                 char s1[10];s1[0]='B',s1[2]='\0';
-                if(getvalue(a[i][0])==1)s1[1]='L';
+                if(getvalue(a[i][2])==1)s1[1]='L';
                 else s1[1]='X';
 
                 printf("\tMOV\t%s,",s1);
@@ -1155,7 +1171,7 @@ void makeasm()
                 pin(a[i][1]);
                 printf("\n");
 
-                printf("\tMOV\tCX,"),from10to16(getarrsize(a[i][0])), printf("\n");
+                printf("\tMOV\tCX,"),from10to16(getarrsize(a[i][0])),printf("\n");
 
                 printf("\tMUL\tCX\n");
                 printf("\tADD\tAX,BX\n");
@@ -1165,8 +1181,27 @@ void makeasm()
                 printf(",AX\n");
             }
             else if(s[i]==54){
-                int pp=getaddr(a[i][0])+getnumber(a[i][1]);///存储结构体某个成员的地址
-                insertaddr(a[i][2],pp);
+
+                if(!global.count(make_pair(getname(a[i][0]),getvalue(a[i][0]))))
+                    printf("\tMOV\tAX,DI\n"),quanju[a[i][2]]=0;
+                else
+                    quanju[a[i][2]]=1;
+                //printf("%d %d %d\n",a[i][0],getoffset(a[i][0]),getaddr(a[i][0]))
+                printf("\tADD\tAX,");
+                from10to16(getaddr(a[i][0]));
+                printf("\n");
+
+                printf("\tMOV\tBX,AX\n");
+                printf("\tMOV\tAX,");
+                from10to16(getnumber(a[i][1]));
+                printf("\n");
+
+                printf("\tADD\tAX,BX\n");
+
+                printf("\tMOV\t");
+                pin(a[i][2]);
+                printf(",AX\n");
+
             }
 
 
